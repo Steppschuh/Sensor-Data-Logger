@@ -6,23 +6,25 @@ public class TimeTracker {
 
     public static final String KEY_DEFAULT = "";
 
-    String key;
-    long startTimestamp;
-    long stopTimestamp;
-    long duration;
-    Object context;
+    private String key;
+    private long startTimestamp;
+    private long stopTimestamp;
+    private long duration;
+    private Object context;
 
     public TimeTracker() {
         key = KEY_DEFAULT;
     }
 
-    public TimeTracker(Object context) {
+    public TimeTracker(String key) {
         this();
-        this.context = context;
+        this.key = key;
     }
 
-    public TimeTracker(String key) {
+    public TimeTracker(String key, Object context) {
+        this();
         this.key = key;
+        this.context = context;
     }
 
     public void start() {

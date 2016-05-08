@@ -4,9 +4,9 @@ import java.util.Date;
 
 public class Data {
 
-    long timestamp;
-    String source;
-    float[] values;
+    private long timestamp;
+    private String source;
+    private float[] values;
 
     public Data() {
         timestamp = (new Date()).getTime();

@@ -8,8 +8,8 @@ public class DataBatch {
     public static final int CAPACITY_UNLIMITED = -1;
     public static final int CAPACITY_DEFAULT = 200;
 
-    List<Data> dataList;
-    int capacity;
+    private List<Data> dataList;
+    private int capacity;
 
     public DataBatch() {
         dataList = new ArrayList<>();
