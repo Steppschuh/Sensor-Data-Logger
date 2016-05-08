@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Sensor Data Logger</string>
+    <string name="hello_world">Hello World!</string>
+</resources>
