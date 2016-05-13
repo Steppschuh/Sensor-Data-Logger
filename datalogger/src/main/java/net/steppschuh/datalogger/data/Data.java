@@ -1,7 +1,5 @@
 package net.steppschuh.datalogger.data;
 
-import java.util.Date;
-
 public class Data {
 
     private long timestamp;
@@ -9,7 +7,7 @@ public class Data {
     private float[] values;
 
     public Data() {
-        timestamp = (new Date()).getTime();
+        timestamp = System.currentTimeMillis();
     }
 
     public Data(String source, float[] values) {

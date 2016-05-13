@@ -28,11 +28,11 @@ public class TimeTracker {
     }
 
     public void start() {
-        startTimestamp = (new Date()).getTime();
+        startTimestamp = System.currentTimeMillis();
     }
 
     public void stop() {
-        stopTimestamp = (new Date()).getTime();
+        stopTimestamp = System.currentTimeMillis();
         duration = calculateDuration();
     }
 
