@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.wearable.Wearable;
+
 import net.steppschuh.datalogger.SharedConstants;
 import net.steppschuh.datalogger.message.MessageReceiver;
 
@@ -51,11 +53,13 @@ public class MainActivity extends AppCompatActivity implements MessageReceiver {
     protected void onStart() {
         super.onStart();
         app.registerMessageReceiver(this);
+        Wearable.MessageApi.addListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
     }
 
     @Override
     protected void onStop() {
         app.unregisterMessageReceiver(this);
+        Wearable.MessageApi.removeListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
         super.onStop();
     }
 

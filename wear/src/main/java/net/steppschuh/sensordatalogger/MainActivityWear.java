@@ -1,19 +1,29 @@
 package net.steppschuh.sensordatalogger;
 
 import android.os.Bundle;
+import android.os.Message;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+
+import com.google.android.gms.wearable.Wearable;
+
+import net.steppschuh.datalogger.SharedConstants;
+import net.steppschuh.datalogger.message.MessageReceiver;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivityWear extends WearableActivity {
+public class MainActivityWear extends WearableActivity implements MessageReceiver {
 
-    private static final SimpleDateFormat AMBIENT_DATE_FORMAT =
-            new SimpleDateFormat("HH:mm", Locale.US);
+    private static final String TAG = MainActivityWear.class.getSimpleName();
+    private WearApp app;
+
+    private static final SimpleDateFormat AMBIENT_DATE_FORMAT = new SimpleDateFormat("HH:mm", Locale.US);
 
     private BoxInsetLayout mContainerView;
     private TextView mTextView;
@@ -22,12 +32,55 @@ public class MainActivityWear extends WearableActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // get reference to the global application class
+        app = (WearApp) getApplicationContext();
+
+        // initialize with context activity if needed
+        if (!app.isInitialized() || app.getContextActivity() == null) {
+            app.initialize(this);
+        }
+
+        setupUi();
+    }
+
+    private void setupUi() {
         setContentView(R.layout.main_activity_wear);
         setAmbientEnabled();
 
         mContainerView = (BoxInsetLayout) findViewById(R.id.container);
         mTextView = (TextView) findViewById(R.id.text);
         mClockView = (TextView) findViewById(R.id.clock);
+
+        mContainerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    app.getGoogleApiMessenger().sendMessageToAllNodes(SharedConstants.MESSAGE_PATH_GET_STATUS, "Test");
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        app.registerMessageReceiver(this);
+        Wearable.MessageApi.addListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
+    }
+
+    @Override
+    protected void onStop() {
+        app.unregisterMessageReceiver(this);
+        Wearable.MessageApi.removeListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
+        super.onStop();
+    }
+
+    @Override
+    public void onMessageReceived(Message message) {
+        Log.v(TAG, "onMessageReceived");
     }
 
     @Override
