@@ -16,6 +16,9 @@ public class SharedConstants {
     public static final String KEY_RECORD_NAME = "record_name";
     public static final String KEY_RECORD_DURATION = "record_duration";
 
+    public static final String MESSAGE_PATH_PING = "/ping";
+    public static final String MESSAGE_PATH_ECHO = "/echo";
+
     public static final String MESSAGE_PATH_SET_MESSENGER = "/set_messenger";
     public static final String MESSAGE_PATH_START_ACTIVITY = "/start_activity";
     public static final String MESSAGE_PATH_TOGGLE_RECORDING = "/toggle_recording";

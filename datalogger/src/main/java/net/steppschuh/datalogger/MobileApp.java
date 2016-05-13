@@ -2,6 +2,7 @@ package net.steppschuh.datalogger;
 
 import android.app.Activity;
 import android.app.Application;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.util.Log;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 
+import net.steppschuh.datalogger.logging.TrackerManager;
 import net.steppschuh.datalogger.message.GoogleApiMessenger;
 import net.steppschuh.datalogger.message.MessageReceiver;
 
@@ -25,10 +27,13 @@ public class MobileApp extends Application implements MessageApi.MessageListener
     private GoogleApiMessenger googleApiMessenger;
     List<MessageReceiver> messageReceivers;
 
+    private TrackerManager trackerManager;
+
     public void initialize(Activity contextActivity) {
         this.contextActivity = contextActivity;
 
         setupGoogleApis();
+        setupTrackingManager();
 
         messageReceivers = new ArrayList<>();
         messageReceivers.add(this);
@@ -40,6 +45,11 @@ public class MobileApp extends Application implements MessageApi.MessageListener
         Log.d(TAG, "Setting up Google APIs");
         googleApiMessenger = new GoogleApiMessenger(this);
         googleApiMessenger.connect();
+    }
+
+    private void setupTrackingManager() {
+        Log.d(TAG, "Setting up Tracking manager");
+        trackerManager = new TrackerManager();
     }
 
     public boolean registerMessageReceiver(MessageReceiver messageReceiver) {
@@ -85,7 +95,21 @@ public class MobileApp extends Application implements MessageApi.MessageListener
 
     @Override
     public void onMessageReceived(Message message) {
-        Log.v(TAG, "onMessageReceived");
+        String path = message.getData().getString(SharedConstants.KEY_PATH);
+        switch (path) {
+            case SharedConstants.MESSAGE_PATH_PING: {
+                try {
+                    googleApiMessenger.sendMessageToAllNodes(SharedConstants.MESSAGE_PATH_ECHO, Build.MODEL);
+                } catch (Exception ex) {
+                    Log.w(TAG, "Unable to answer ping");
+                }
+                break;
+            }
+            default: {
+                Log.w(TAG, "Unable to handle message: " + path);
+                break;
+            }
+        }
     }
 
     /**
@@ -123,5 +147,11 @@ public class MobileApp extends Application implements MessageApi.MessageListener
         this.messageReceivers = messageReceivers;
     }
 
+    public TrackerManager getTrackerManager() {
+        return trackerManager;
+    }
 
+    public void setTrackerManager(TrackerManager trackerManager) {
+        this.trackerManager = trackerManager;
+    }
 }

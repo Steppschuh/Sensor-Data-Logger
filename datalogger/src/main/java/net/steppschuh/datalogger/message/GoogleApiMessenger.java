@@ -95,7 +95,7 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
         if (!googleApiClient.isConnected()) {
             throw new Exception("Google API client is not connected");
         }
-        Log.v(TAG, "Sending message to: " + node.getDisplayName() + " at: " + path);
+        //Log.v(TAG, "Sending message to: " + node.getDisplayName() + " at: " + path);
         return Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, data).await();
     }
 

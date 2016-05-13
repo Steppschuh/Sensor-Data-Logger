@@ -10,10 +10,16 @@ public class TimeTracker {
     private long startTimestamp;
     private long stopTimestamp;
     private long duration;
+
+    private long totalDuration;
+    private int trackingCount;
+
     private Object context;
 
     public TimeTracker() {
         key = KEY_DEFAULT;
+        trackingCount = 0;
+        totalDuration = 0;
     }
 
     public TimeTracker(String key) {
@@ -34,6 +40,8 @@ public class TimeTracker {
     public void stop() {
         stopTimestamp = System.currentTimeMillis();
         duration = calculateDuration();
+        totalDuration += duration;
+        trackingCount += 1;
     }
 
     public long calculateDuration() {
@@ -41,6 +49,17 @@ public class TimeTracker {
             return stopTimestamp - startTimestamp;
         }
         return 0;
+    }
+
+    public long calculateAverageDuration() {
+        if (trackingCount > 0) {
+            return totalDuration / trackingCount;
+        }
+        return 0;
+    }
+
+    public boolean isTracking() {
+        return startTimestamp > 0 && stopTimestamp < 1;
     }
 
     public boolean hasStartedAndStopped() {
@@ -53,8 +72,13 @@ public class TimeTracker {
         if (key != null && key.length() > 0) {
             sb.append(key).append(": ");
         }
-        sb.append(startTimestamp).append(" - ").append(stopTimestamp);
-        sb.append(" (").append(calculateDuration()).append("ms)");
+        if (trackingCount > 1) {
+            sb.append("∅ ").append(calculateAverageDuration()).append("ms");
+            sb.append(" (").append(trackingCount).append(" times tracked)");
+        } else {
+            sb.append(startTimestamp).append(" - ").append(stopTimestamp);
+            sb.append(" (").append(calculateDuration()).append("ms)");
+        }
         if (context != null) {
             sb.append(" ").append(context);
         }
@@ -104,4 +128,19 @@ public class TimeTracker {
         this.context = context;
     }
 
+    public long getTotalDuration() {
+        return totalDuration;
+    }
+
+    public void setTotalDuration(long totalDuration) {
+        this.totalDuration = totalDuration;
+    }
+
+    public int getTrackingCount() {
+        return trackingCount;
+    }
+
+    public void setTrackingCount(int trackingCount) {
+        this.trackingCount = trackingCount;
+    }
 }

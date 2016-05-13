@@ -10,6 +10,7 @@ import android.widget.Button;
 import com.google.android.gms.wearable.Wearable;
 
 import net.steppschuh.datalogger.SharedConstants;
+import net.steppschuh.datalogger.logging.TimeTracker;
 import net.steppschuh.datalogger.message.MessageReceiver;
 
 public class MainActivity extends AppCompatActivity implements MessageReceiver {
@@ -40,11 +41,7 @@ public class MainActivity extends AppCompatActivity implements MessageReceiver {
         debugButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    app.getGoogleApiMessenger().sendMessageToAllNodes(SharedConstants.MESSAGE_PATH_GET_STATUS, "Test");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                startConnectionSpeedTest();
             }
         });
     }
@@ -65,6 +62,41 @@ public class MainActivity extends AppCompatActivity implements MessageReceiver {
 
     @Override
     public void onMessageReceived(Message message) {
-        Log.v(TAG, "onMessageReceived");
+        String path = message.getData().getString(SharedConstants.KEY_PATH);
+        switch (path) {
+            case SharedConstants.MESSAGE_PATH_ECHO: {
+                TimeTracker tracker = app.getTrackerManager().getTracker("Connection Speed Test");
+                tracker.stop();
+
+                int trackingCount = tracker.getTrackingCount();
+
+                if (trackingCount < 25) {
+                    startConnectionSpeedTest();
+                } else {
+                    stopConnectionSpeedTest();
+                }
+                break;
+            }
+            default: {
+                Log.w(TAG, "Unable to handle message: " + path);
+                break;
+            }
+        }
     }
+
+    private void startConnectionSpeedTest() {
+        app.getTrackerManager().getTracker("Connection Speed Test").start();
+        try {
+            app.getGoogleApiMessenger().sendMessageToAllNodes(SharedConstants.MESSAGE_PATH_PING, "");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void stopConnectionSpeedTest() {
+        TimeTracker tracker = app.getTrackerManager().getTracker("Connection Speed Test");
+        Log.i(TAG, tracker.toString());
+        app.getTrackerManager().getTimeTrackers().remove(tracker);
+    }
+
 }
