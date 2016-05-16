@@ -6,7 +6,6 @@ import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.wearable.Wearable;
@@ -18,9 +17,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivityWear extends WearableActivity implements MessageReceiver {
+public class MainActivityWear extends WearableActivity {
 
     private static final String TAG = MainActivityWear.class.getSimpleName();
+
     private WearApp app;
 
     private static final SimpleDateFormat AMBIENT_DATE_FORMAT = new SimpleDateFormat("HH:mm", Locale.US);
@@ -33,7 +33,7 @@ public class MainActivityWear extends WearableActivity implements MessageReceive
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // get reference to the global application class
+        // get reference to global application
         app = (WearApp) getApplicationContext();
 
         // initialize with context activity if needed
@@ -56,7 +56,7 @@ public class MainActivityWear extends WearableActivity implements MessageReceive
             @Override
             public void onClick(View v) {
                 try {
-                    app.getGoogleApiMessenger().sendMessageToAllNodes(SharedConstants.MESSAGE_PATH_GET_STATUS, "Test");
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -67,20 +67,13 @@ public class MainActivityWear extends WearableActivity implements MessageReceive
     @Override
     protected void onStart() {
         super.onStart();
-        app.registerMessageReceiver(this);
         Wearable.MessageApi.addListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
     }
 
     @Override
     protected void onStop() {
-        app.unregisterMessageReceiver(this);
         Wearable.MessageApi.removeListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
         super.onStop();
-    }
-
-    @Override
-    public void onMessageReceived(Message message) {
-        Log.v(TAG, "onMessageReceived");
     }
 
     @Override

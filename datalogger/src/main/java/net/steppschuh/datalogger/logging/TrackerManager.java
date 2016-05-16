@@ -5,6 +5,8 @@ import java.util.List;
 
 public final class TrackerManager {
 
+    public static final String KEY_CONNECTION_SPEED_TEST = "Connection Speed Test";
+
     List<TimeTracker> timeTrackers;
 
     public TrackerManager() {

@@ -16,7 +16,7 @@ import java.nio.charset.Charset;
 public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = GoogleApiMessenger.class.getSimpleName();
-    private final Charset UTF8_CHARSET = Charset.forName("UTF-8");
+    public static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
     private GoogleApiClient googleApiClient;
 

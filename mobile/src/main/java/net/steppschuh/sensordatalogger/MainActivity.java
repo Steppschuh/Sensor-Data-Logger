@@ -1,5 +1,6 @@
 package net.steppschuh.sensordatalogger;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -9,21 +10,29 @@ import android.widget.Button;
 
 import com.google.android.gms.wearable.Wearable;
 
-import net.steppschuh.datalogger.SharedConstants;
 import net.steppschuh.datalogger.logging.TimeTracker;
+import net.steppschuh.datalogger.logging.TrackerManager;
+import net.steppschuh.datalogger.message.MessageHandler;
 import net.steppschuh.datalogger.message.MessageReceiver;
+import net.steppschuh.datalogger.message.SinglePathMessageHandler;
 
-public class MainActivity extends AppCompatActivity implements MessageReceiver {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
     private PhoneApp app;
+    private List<MessageHandler> messageHandlers;
+
     private Button debugButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // get reference to the global application class
+        // get reference to global application
         app = (PhoneApp) getApplicationContext();
 
         // initialize with context activity if needed
@@ -32,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements MessageReceiver {
         }
 
         setupUi();
+        setupMessageHandlers();
     }
 
     private void setupUi() {
@@ -46,26 +56,34 @@ public class MainActivity extends AppCompatActivity implements MessageReceiver {
         });
     }
 
+    private void setupMessageHandlers() {
+        messageHandlers = new ArrayList<>();
+        messageHandlers.add(getEchoMessageHandler());
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
-        app.registerMessageReceiver(this);
+        for (MessageHandler messageHandler : messageHandlers) {
+            app.registerMessageHandler(messageHandler);
+        }
         Wearable.MessageApi.addListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
     }
 
     @Override
     protected void onStop() {
-        app.unregisterMessageReceiver(this);
+        for (MessageHandler messageHandler : messageHandlers) {
+            app.unregisterMessageHandler(messageHandler);
+        }
         Wearable.MessageApi.removeListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
         super.onStop();
     }
 
-    @Override
-    public void onMessageReceived(Message message) {
-        String path = message.getData().getString(SharedConstants.KEY_PATH);
-        switch (path) {
-            case SharedConstants.MESSAGE_PATH_ECHO: {
-                TimeTracker tracker = app.getTrackerManager().getTracker("Connection Speed Test");
+    private MessageHandler getEchoMessageHandler() {
+        return new SinglePathMessageHandler(MessageHandler.PATH_ECHO) {
+            @Override
+            public void handleMessage(Message message) {
+                TimeTracker tracker = app.getTrackerManager().getTracker(TrackerManager.KEY_CONNECTION_SPEED_TEST);
                 tracker.stop();
 
                 int trackingCount = tracker.getTrackingCount();
@@ -75,26 +93,21 @@ public class MainActivity extends AppCompatActivity implements MessageReceiver {
                 } else {
                     stopConnectionSpeedTest();
                 }
-                break;
             }
-            default: {
-                Log.w(TAG, "Unable to handle message: " + path);
-                break;
-            }
-        }
+        };
     }
 
     private void startConnectionSpeedTest() {
         app.getTrackerManager().getTracker("Connection Speed Test").start();
         try {
-            app.getGoogleApiMessenger().sendMessageToAllNodes(SharedConstants.MESSAGE_PATH_PING, "");
+            app.getGoogleApiMessenger().sendMessageToAllNodes(MessageHandler.PATH_PING, Build.MODEL);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
     private void stopConnectionSpeedTest() {
-        TimeTracker tracker = app.getTrackerManager().getTracker("Connection Speed Test");
+        TimeTracker tracker = app.getTrackerManager().getTracker(TrackerManager.KEY_CONNECTION_SPEED_TEST);
         Log.i(TAG, tracker.toString());
         app.getTrackerManager().getTimeTrackers().remove(tracker);
     }

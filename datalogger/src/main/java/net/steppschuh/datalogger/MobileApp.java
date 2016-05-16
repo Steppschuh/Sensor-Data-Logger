@@ -12,12 +12,14 @@ import com.google.android.gms.wearable.MessageEvent;
 
 import net.steppschuh.datalogger.logging.TrackerManager;
 import net.steppschuh.datalogger.message.GoogleApiMessenger;
+import net.steppschuh.datalogger.message.MessageHandler;
 import net.steppschuh.datalogger.message.MessageReceiver;
+import net.steppschuh.datalogger.message.PingMessageHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MobileApp extends Application implements MessageApi.MessageListener, MessageReceiver {
+public class MobileApp extends Application implements MessageApi.MessageListener {
 
     public static final String TAG = "DataLogger";
 
@@ -25,7 +27,7 @@ public class MobileApp extends Application implements MessageApi.MessageListener
     private Activity contextActivity;
 
     private GoogleApiMessenger googleApiMessenger;
-    List<MessageReceiver> messageReceivers;
+    List<MessageHandler> messageHandlers;
 
     private TrackerManager trackerManager;
 
@@ -35,8 +37,8 @@ public class MobileApp extends Application implements MessageApi.MessageListener
         setupGoogleApis();
         setupTrackingManager();
 
-        messageReceivers = new ArrayList<>();
-        messageReceivers.add(this);
+        messageHandlers = new ArrayList<>();
+        registerMessageHandler(new PingMessageHandler(googleApiMessenger));
 
         initialized = true;
     }
@@ -52,27 +54,35 @@ public class MobileApp extends Application implements MessageApi.MessageListener
         trackerManager = new TrackerManager();
     }
 
-    public boolean registerMessageReceiver(MessageReceiver messageReceiver) {
-        if (!messageReceivers.contains(messageReceiver)) {
-            return messageReceivers.add(messageReceiver);
+    public boolean registerMessageHandler(MessageHandler messageHandler) {
+        if (!messageHandlers.contains(messageHandler)) {
+            return messageHandlers.add(messageHandler);
         }
         return false;
     }
 
-    public boolean unregisterMessageReceiver(MessageReceiver messageReceiver) {
-        if (!messageReceivers.contains(messageReceiver)) {
-            return messageReceivers.remove(messageReceiver);
+    public boolean unregisterMessageHandler(MessageHandler messageHandler) {
+        if (!messageHandlers.contains(messageHandler)) {
+            return messageHandlers.remove(messageHandler);
         }
         return false;
     }
 
-    public void notifyMessageReceivers(Message message) {
-        for (MessageReceiver messageReceiver : messageReceivers) {
+    public void notifyMessageHandlers(Message message) {
+        int matchingHandlersCount = 0;
+        String path = MessageHandler.getPathFromMessage(message);
+        for (MessageHandler messageHandler : messageHandlers) {
             try {
-                messageReceiver.onMessageReceived(message);
+                if (messageHandler.shouldHandleMessage(path)) {
+                    messageHandler.handleMessage(message);
+                    matchingHandlersCount += 1;
+                }
             } catch (Exception ex) {
-                Log.w(TAG, "Message receiver is unable to handle message: " + ex.getMessage());
+                Log.w(TAG, "Message handler is unable to handle message: " + ex.getMessage());
             }
+        }
+        if (matchingHandlersCount == 0) {
+            Log.w(TAG, "No message handler available that can handle message: " + path);
         }
     }
 
@@ -84,32 +94,15 @@ public class MobileApp extends Application implements MessageApi.MessageListener
     public void onMessageReceived(MessageEvent messageEvent) {
         // convert MessageEvent to data bundle
         Bundle data = new Bundle();
-        data.putString(SharedConstants.KEY_PATH, messageEvent.getPath());
-        data.putByteArray(SharedConstants.KEY_DATA, messageEvent.getData());
+        data.putString(MessageHandler.KEY_PATH, messageEvent.getPath());
+        data.putString(MessageHandler.KEY_SOURCE_NODE_ID, messageEvent.getSourceNodeId());
+        data.putByteArray(MessageHandler.KEY_DATA, messageEvent.getData());
 
-        // forward message to receivers
+        // forward message to handlers
         Message message = new Message();
         message.setData(data);
-        notifyMessageReceivers(message);
-    }
 
-    @Override
-    public void onMessageReceived(Message message) {
-        String path = message.getData().getString(SharedConstants.KEY_PATH);
-        switch (path) {
-            case SharedConstants.MESSAGE_PATH_PING: {
-                try {
-                    googleApiMessenger.sendMessageToAllNodes(SharedConstants.MESSAGE_PATH_ECHO, Build.MODEL);
-                } catch (Exception ex) {
-                    Log.w(TAG, "Unable to answer ping");
-                }
-                break;
-            }
-            default: {
-                Log.w(TAG, "Unable to handle message: " + path);
-                break;
-            }
-        }
+        notifyMessageHandlers(message);
     }
 
     /**
@@ -139,12 +132,12 @@ public class MobileApp extends Application implements MessageApi.MessageListener
         this.googleApiMessenger = googleApiMessenger;
     }
 
-    public List<MessageReceiver> getMessageReceivers() {
-        return messageReceivers;
+    public List<MessageHandler> getMessageHandlers() {
+        return messageHandlers;
     }
 
-    public void setMessageReceivers(List<MessageReceiver> messageReceivers) {
-        this.messageReceivers = messageReceivers;
+    public void setMessageHandlers(List<MessageHandler> messageHandlers) {
+        this.messageHandlers = messageHandlers;
     }
 
     public TrackerManager getTrackerManager() {
