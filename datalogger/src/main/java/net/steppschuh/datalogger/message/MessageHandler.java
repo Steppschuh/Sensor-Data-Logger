@@ -18,7 +18,8 @@ public class MessageHandler extends Handler {
     public static final String PATH_ANY = "/*";
     public static final String PATH_PING = "/ping";
     public static final String PATH_ECHO = "/echo";
-    public static final String PATH_SET_MESSENGER = "/set_messenger";
+    public static final String PATH_GET_STATUS = "/get_status";
+    public static final String PATH_SET_STATUS = "/set_status";
 
     private MessageReceiver messageReceiver;
     private List<String> paths;
@@ -93,7 +94,7 @@ public class MessageHandler extends Handler {
     public static String getDataFromMessageAsString(Message message) {
         byte[] data = getDataFromMessage(message);
         if (data != null) {
-            return new String(data, GoogleApiMessenger.UTF8_CHARSET);
+            return new String(data, GoogleApiMessenger.DEFAULT_CHARSET);
         }
         return null;
     }

@@ -8,13 +8,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 
 import net.steppschuh.datalogger.logging.TimeTracker;
 import net.steppschuh.datalogger.logging.TrackerManager;
 import net.steppschuh.datalogger.message.MessageHandler;
-import net.steppschuh.datalogger.message.MessageReceiver;
 import net.steppschuh.datalogger.message.SinglePathMessageHandler;
+import net.steppschuh.datalogger.status.ActivityStatus;
+import net.steppschuh.datalogger.status.GoogleApiStatus;
+import net.steppschuh.datalogger.status.Status;
+import net.steppschuh.datalogger.status.StatusUpdateHandler;
+import net.steppschuh.datalogger.status.StatusUpdateReceiver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     private PhoneApp app;
     private List<MessageHandler> messageHandlers;
+    private ActivityStatus status = new ActivityStatus();
+    private StatusUpdateHandler statusUpdateHandler;
 
     private Button debugButton;
 
@@ -36,12 +43,16 @@ public class MainActivity extends AppCompatActivity {
         app = (PhoneApp) getApplicationContext();
 
         // initialize with context activity if needed
-        if (!app.isInitialized() || app.getContextActivity() == null) {
+        if (!app.getStatus().isInitialized() || app.getContextActivity() == null) {
             app.initialize(this);
         }
 
         setupUi();
         setupMessageHandlers();
+        setupStatusUpdates();
+
+        status.setInitialized(true);
+        status.updated(statusUpdateHandler);
     }
 
     private void setupUi() {
@@ -51,7 +62,17 @@ public class MainActivity extends AppCompatActivity {
         debugButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
+                List<Node> lastConnectedNodes = ((GoogleApiStatus) app.getGoogleApiMessenger().getStatus()).getLastConnectedNodes();
+                Log.d(TAG, "Starting connection speed test with " + lastConnectedNodes.size() + " connected node(s)");
                 startConnectionSpeedTest();
+                */
+
+                try {
+                    app.getGoogleApiMessenger().sendMessageToNearbyNodes(MessageHandler.PATH_GET_STATUS, "");
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
     }
@@ -59,6 +80,18 @@ public class MainActivity extends AppCompatActivity {
     private void setupMessageHandlers() {
         messageHandlers = new ArrayList<>();
         messageHandlers.add(getEchoMessageHandler());
+        messageHandlers.add(getSetStatusMessageHandler());
+    }
+
+    private void setupStatusUpdates() {
+        statusUpdateHandler = new StatusUpdateHandler();
+        statusUpdateHandler.registerStatusUpdateReceiver(new StatusUpdateReceiver() {
+            @Override
+            public void onStatusUpdated(Status status) {
+                app.getStatus().setActivityStatus((ActivityStatus) status);
+                app.getStatus().updated(app.getStatusUpdateHandler());
+            }
+        });
     }
 
     @Override
@@ -68,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
             app.registerMessageHandler(messageHandler);
         }
         Wearable.MessageApi.addListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
+        status.setInForeground(true);
+        status.updated(statusUpdateHandler);
     }
 
     @Override
@@ -76,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
             app.unregisterMessageHandler(messageHandler);
         }
         Wearable.MessageApi.removeListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
+        status.setInForeground(false);
+        status.updated(statusUpdateHandler);
         super.onStop();
     }
 
@@ -97,10 +134,22 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
+    private MessageHandler getSetStatusMessageHandler() {
+        return new SinglePathMessageHandler(MessageHandler.PATH_SET_STATUS) {
+            @Override
+            public void handleMessage(Message message) {
+                String sourceNodeId = MessageHandler.getSourceNodeIdFromMessage(message);
+                String statusJson = MessageHandler.getDataFromMessageAsString(message);
+                Log.d(TAG, "Received status from: " + sourceNodeId + ": " + statusJson);
+            }
+        };
+    }
+
     private void startConnectionSpeedTest() {
         app.getTrackerManager().getTracker("Connection Speed Test").start();
         try {
-            app.getGoogleApiMessenger().sendMessageToAllNodes(MessageHandler.PATH_PING, Build.MODEL);
+            Log.v(TAG, "Sending a ping to connected nodes");
+            app.getGoogleApiMessenger().sendMessageToNearbyNodes(MessageHandler.PATH_PING, Build.MODEL);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -108,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void stopConnectionSpeedTest() {
         TimeTracker tracker = app.getTrackerManager().getTracker(TrackerManager.KEY_CONNECTION_SPEED_TEST);
-        Log.i(TAG, tracker.toString());
+        Log.d(TAG, tracker.toString());
         app.getTrackerManager().getTimeTrackers().remove(tracker);
     }
 

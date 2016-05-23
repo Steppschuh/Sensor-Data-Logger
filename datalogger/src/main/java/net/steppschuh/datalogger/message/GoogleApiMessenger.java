@@ -2,21 +2,36 @@ package net.steppschuh.datalogger.message;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
-import java.nio.charset.Charset;
+import net.steppschuh.datalogger.MobileApp;
+import net.steppschuh.datalogger.status.GoogleApiStatus;
+import net.steppschuh.datalogger.status.Status;
+import net.steppschuh.datalogger.status.StatusUpdateEmitter;
+import net.steppschuh.datalogger.status.StatusUpdateHandler;
+import net.steppschuh.datalogger.status.StatusUpdateReceiver;
 
-public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, StatusUpdateEmitter {
 
     private static final String TAG = GoogleApiMessenger.class.getSimpleName();
-    public static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
+    public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
+    private GoogleApiStatus status = new GoogleApiStatus();
+    private StatusUpdateHandler statusUpdateHandler;
 
     private GoogleApiClient googleApiClient;
 
@@ -32,6 +47,17 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
                 .build();
     }
 
+    public void setupStatusUpdates(final MobileApp app) {
+        statusUpdateHandler = new StatusUpdateHandler();
+        statusUpdateHandler.registerStatusUpdateReceiver(new StatusUpdateReceiver() {
+            @Override
+            public void onStatusUpdated(Status status) {
+                app.getStatus().setGoogleApiStatus((GoogleApiStatus) status);
+                app.getStatus().updated(app.getStatusUpdateHandler());
+            }
+        });
+    }
+
     public boolean connect() {
         Log.d(TAG, "Connecting Google API client");
         if (googleApiClient != null && !googleApiClient.isConnected()) {
@@ -43,6 +69,7 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
 
     public boolean disconnect() {
         Log.d(TAG, "Disconnecting Google API client");
+        status.setLastConnectedNodes(new ArrayList<Node>());
         if (googleApiClient != null && googleApiClient.isConnected()) {
             googleApiClient.disconnect();
             return true;
@@ -53,11 +80,17 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
     @Override
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "Connected");
+        updateLastConnectedNodes();
+        status.setConnected(true);
+        status.updated(statusUpdateHandler);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
         Log.d(TAG, "Connection suspended");
+        updateLastConnectedNodes();
+        status.setConnected(false);
+        status.updated(statusUpdateHandler);
     }
 
     @Override
@@ -68,24 +101,95 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
         Log.w(TAG, "Google API client connection failed: " + connectionResult.getErrorMessage());
     }
 
-    public void sendMessageToAllNodes(final String path, final String data) throws Exception {
-        sendMessageToAllNodes(path, data.getBytes(UTF8_CHARSET));
+    public void updateLastConnectedNodes() {
+        getConnectedNodes(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
+            @Override
+            public void onResult(@NonNull NodeApi.GetConnectedNodesResult getConnectedNodesResult) {
+                status.setLastConnectedNodes(getConnectedNodesResult.getNodes());
+                status.setLastConnectedNodesUpdateTimestamp(System.currentTimeMillis());
+                status.updated(statusUpdateHandler);
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("Connected Nodes:");
+                for (Node connectedNode : status.getLastConnectedNodes()) {
+                    sb.append("\n - ").append(connectedNode.getDisplayName());
+                    sb.append(": ").append(connectedNode.getId());
+                    if (connectedNode.isNearby()) {
+                        sb.append(" (nearby)");
+                    }
+                }
+                Log.v(TAG, sb.toString());
+            }
+        });
     }
 
-    public void sendMessageToAllNodes(final String path, final byte[] data) throws Exception {
+    public PendingResult<NodeApi.GetConnectedNodesResult> getConnectedNodes(ResultCallback<NodeApi.GetConnectedNodesResult> callback) {
+        PendingResult<NodeApi.GetConnectedNodesResult> pendingResult = Wearable.NodeApi.getConnectedNodes(googleApiClient);
+        pendingResult.setResultCallback(callback);
+        return pendingResult;
+    }
+
+    public Node getLastConnectedNodeById(String id) {
+        return getNodeById(id, status.getLastConnectedNodes());
+    }
+
+    public static Node getNodeById(String id, List<Node> nodes) {
+        for (Node recentNode : nodes) {
+            if (recentNode.getId().equals(id)) {
+                return recentNode;
+            }
+        }
+        return null;
+    }
+
+    public void sendMessageToNearbyNodes(final String path, final String data) throws Exception {
+        sendMessageToNearbyNodes(path, data.getBytes(DEFAULT_CHARSET));
+    }
+
+    public void sendMessageToNearbyNodes(final String path, final byte[] data) throws Exception {
         if (!googleApiClient.isConnected()) {
             throw new Exception("Google API client is not connected");
         }
-        new Thread( new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
-                for (Node node : nodes.getNodes()) {
+                NodeApi.GetConnectedNodesResult getConnectedNodesResult = Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
+                status.setLastConnectedNodes(getConnectedNodesResult.getNodes());
+                status.setLastConnectedNodesUpdateTimestamp(System.currentTimeMillis());
+                for (Node node : status.getLastConnectedNodes()) {
                     try {
+                        if (!node.isNearby()) {
+                            continue;
+                        }
                         sendMessageToNode(path, data, node);
                     } catch (Exception ex) {
                         Log.w(TAG, "Unable to send message to node: " + ex.getMessage());
                     }
+                }
+            }
+        }).start();
+    }
+
+    public void sendMessageToNode(final String path, final String data, final String nodeId) throws Exception {
+        sendMessageToNode(path, data.getBytes(DEFAULT_CHARSET), nodeId);
+    }
+
+    public void sendMessageToNode(final String path, final byte[] data, final String nodeId) throws Exception {
+        if (!googleApiClient.isConnected()) {
+            throw new Exception("Google API client is not connected");
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Node node = getLastConnectedNodeById(nodeId);
+                    if (node == null) {
+                        NodeApi.GetConnectedNodesResult getConnectedNodesResult = Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
+                        node = getNodeById(nodeId, getConnectedNodesResult.getNodes());
+                    }
+                    sendMessageToNode(path, data, node);
+                } catch (Exception ex) {
+                    Log.w(TAG, "Unable to send message to node: " + nodeId + ": " + ex.getMessage());
                 }
             }
         }).start();
@@ -105,5 +209,15 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
 
     public void setGoogleApiClient(GoogleApiClient googleApiClient) {
         this.googleApiClient = googleApiClient;
+    }
+
+    @Override
+    public Status getStatus() {
+        return status;
+    }
+
+    @Override
+    public StatusUpdateHandler getStatusUpdateHandler() {
+        return statusUpdateHandler;
     }
 }

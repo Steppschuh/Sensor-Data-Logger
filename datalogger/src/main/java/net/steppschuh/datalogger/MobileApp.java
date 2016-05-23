@@ -11,19 +11,28 @@ import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 
 import net.steppschuh.datalogger.logging.TrackerManager;
+import net.steppschuh.datalogger.message.GetStatusMessageHandler;
 import net.steppschuh.datalogger.message.GoogleApiMessenger;
 import net.steppschuh.datalogger.message.MessageHandler;
 import net.steppschuh.datalogger.message.MessageReceiver;
 import net.steppschuh.datalogger.message.PingMessageHandler;
+import net.steppschuh.datalogger.status.ActivityStatus;
+import net.steppschuh.datalogger.status.AppStatus;
+import net.steppschuh.datalogger.status.Status;
+import net.steppschuh.datalogger.status.StatusUpdateEmitter;
+import net.steppschuh.datalogger.status.StatusUpdateHandler;
+import net.steppschuh.datalogger.status.StatusUpdateReceiver;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MobileApp extends Application implements MessageApi.MessageListener {
+public class MobileApp extends Application implements MessageApi.MessageListener, StatusUpdateEmitter {
 
     public static final String TAG = "DataLogger";
 
-    private boolean initialized = false;
+    private AppStatus status = new AppStatus();
+    private StatusUpdateHandler statusUpdateHandler;
+
     private Activity contextActivity;
 
     private GoogleApiMessenger googleApiMessenger;
@@ -34,24 +43,41 @@ public class MobileApp extends Application implements MessageApi.MessageListener
     public void initialize(Activity contextActivity) {
         this.contextActivity = contextActivity;
 
+        setupStatusUpdates();
         setupGoogleApis();
         setupTrackingManager();
+        setupMessageHandlers();
 
-        messageHandlers = new ArrayList<>();
-        registerMessageHandler(new PingMessageHandler(googleApiMessenger));
+        status.setInitialized(true);
+    }
 
-        initialized = true;
+    private void setupStatusUpdates() {
+        statusUpdateHandler = new StatusUpdateHandler();
+        statusUpdateHandler.registerStatusUpdateReceiver(new StatusUpdateReceiver() {
+            @Override
+            public void onStatusUpdated(Status status) {
+                Log.v(TAG, "App Status updated: " + ((AppStatus) status).toString());
+            }
+        });
     }
 
     private void setupGoogleApis() {
         Log.d(TAG, "Setting up Google APIs");
         googleApiMessenger = new GoogleApiMessenger(this);
+        googleApiMessenger.setupStatusUpdates(this);
         googleApiMessenger.connect();
     }
 
     private void setupTrackingManager() {
         Log.d(TAG, "Setting up Tracking manager");
         trackerManager = new TrackerManager();
+    }
+
+    private void setupMessageHandlers() {
+        Log.d(TAG, "Setting up Message handlers");
+        messageHandlers = new ArrayList<>();
+        registerMessageHandler(new PingMessageHandler(googleApiMessenger));
+        registerMessageHandler(new GetStatusMessageHandler(this));
     }
 
     public boolean registerMessageHandler(MessageHandler messageHandler) {
@@ -62,7 +88,7 @@ public class MobileApp extends Application implements MessageApi.MessageListener
     }
 
     public boolean unregisterMessageHandler(MessageHandler messageHandler) {
-        if (!messageHandlers.contains(messageHandler)) {
+        if (messageHandlers.contains(messageHandler)) {
             return messageHandlers.remove(messageHandler);
         }
         return false;
@@ -101,19 +127,23 @@ public class MobileApp extends Application implements MessageApi.MessageListener
         // forward message to handlers
         Message message = new Message();
         message.setData(data);
-
         notifyMessageHandlers(message);
     }
 
     /**
      * Getter & Setter
      */
-    public boolean isInitialized() {
-        return initialized;
+    public AppStatus getStatus() {
+        return status;
     }
 
-    public void setInitialized(boolean initialized) {
-        this.initialized = initialized;
+    @Override
+    public StatusUpdateHandler getStatusUpdateHandler() {
+        return statusUpdateHandler;
+    }
+
+    public void setStatus(AppStatus status) {
+        this.status = status;
     }
 
     public Activity getContextActivity() {

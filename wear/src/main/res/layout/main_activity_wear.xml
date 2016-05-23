@@ -8,12 +8,55 @@
     tools:context="net.steppschuh.sensordatalogger.MainActivityWear"
     tools:deviceIds="wear">
 
-    <TextView
-        android:id="@+id/text"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_world"
-        app:layout_box="all" />
+        app:layout_box="all">
+
+        <TextView
+            android:id="@+id/mainText"
+            android:text="Main Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="5dp"
+            style="@style/Base.TextAppearance.AppCompat.Title"
+            />
+
+        <TextView
+            android:id="@+id/preText"
+            android:text="Pre Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@id/mainText"
+            style="@style/Base.TextAppearance.AppCompat.Subhead"
+            />
+
+        <TextView
+            android:id="@+id/postText"
+            android:text="Post Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/mainText"
+            style="@style/Base.TextAppearance.AppCompat.Subhead"
+            />
+
+        <TextView
+            android:id="@+id/logText"
+            android:text="Log Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:textSize="10sp"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            />
+
+    </RelativeLayout>
+
+
 
     <TextView
         android:id="@+id/clock"
