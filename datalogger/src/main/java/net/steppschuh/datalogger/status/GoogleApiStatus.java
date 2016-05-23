@@ -8,6 +8,7 @@ import java.util.List;
 public class GoogleApiStatus extends Status {
 
     private boolean connected = true;
+    private Node localNode;
     private List<Node> lastConnectedNodes = new ArrayList<>();
     private long lastConnectedNodesUpdateTimestamp = -1;
 
@@ -17,6 +18,14 @@ public class GoogleApiStatus extends Status {
 
     public void setConnected(boolean connected) {
         this.connected = connected;
+    }
+
+    public Node getLocalNode() {
+        return localNode;
+    }
+
+    public void setLocalNode(Node localNode) {
+        this.localNode = localNode;
     }
 
     public List<Node> getLastConnectedNodes() {

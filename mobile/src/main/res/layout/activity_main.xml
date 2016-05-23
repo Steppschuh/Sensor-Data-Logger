@@ -15,4 +15,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/debugButton">
+
+        <TextView
+            android:id="@+id/logText"
+            android:text="Log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textColor="@android:color/black"
+            android:textSize="10sp"
+            style="@style/TextAppearance.AppCompat.Small"/>
+
+    </ScrollView>
+
 </RelativeLayout>

@@ -8,6 +8,7 @@ public class DataBatch {
     public static final int CAPACITY_UNLIMITED = -1;
     public static final int CAPACITY_DEFAULT = 200;
 
+    private String source;
     private List<Data> dataList;
     private int capacity;
 
@@ -19,6 +20,11 @@ public class DataBatch {
     public DataBatch(List<Data> dataList) {
         this();
         this.dataList = dataList;
+    }
+
+    public DataBatch(String source) {
+        this();
+        this.source = source;
     }
 
     private void trimDataToCapacity() {
@@ -66,6 +72,14 @@ public class DataBatch {
 
     public void setDataList(List<Data> dataList) {
         this.dataList = dataList;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     public int getCapacity() {

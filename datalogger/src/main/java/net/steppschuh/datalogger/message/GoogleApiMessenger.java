@@ -45,6 +45,7 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
                 .addConnectionCallbacks(this)
                 .addApiIfAvailable(Wearable.API)
                 .build();
+        updateLocalNode();
     }
 
     public void setupStatusUpdates(final MobileApp app) {
@@ -99,6 +100,17 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
             // The Wearable API is unavailable
         }
         Log.w(TAG, "Google API client connection failed: " + connectionResult.getErrorMessage());
+    }
+
+    public void updateLocalNode() {
+        PendingResult<NodeApi.GetLocalNodeResult> pendingResult = Wearable.NodeApi.getLocalNode(googleApiClient);
+        pendingResult.setResultCallback(new ResultCallback<NodeApi.GetLocalNodeResult>() {
+            @Override
+            public void onResult(@NonNull NodeApi.GetLocalNodeResult getLocalNodeResult) {
+                status.setLocalNode(getLocalNodeResult.getNode());
+                status.updated(statusUpdateHandler);
+            }
+        });
     }
 
     public void updateLastConnectedNodes() {
@@ -209,6 +221,13 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
 
     public void setGoogleApiClient(GoogleApiClient googleApiClient) {
         this.googleApiClient = googleApiClient;
+    }
+
+    public String getLocalNodeId() {
+        if (status != null && status.getLocalNode() != null) {
+            return status.getLocalNode().getId();
+        }
+        return null;
     }
 
     @Override

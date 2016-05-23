@@ -10,10 +10,14 @@ public class Data {
         timestamp = System.currentTimeMillis();
     }
 
-    public Data(String source, float[] values) {
+    public Data(float[] values) {
         this();
-        this.source = source;
         this.values = values;
+    }
+
+    public Data(String source, float[] values) {
+        this(values);
+        this.source = source;
     }
 
     /**

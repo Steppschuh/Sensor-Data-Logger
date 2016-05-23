@@ -11,11 +11,13 @@ import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 
 import net.steppschuh.datalogger.logging.TrackerManager;
+import net.steppschuh.datalogger.message.DataRequestMessageHandler;
 import net.steppschuh.datalogger.message.GetStatusMessageHandler;
 import net.steppschuh.datalogger.message.GoogleApiMessenger;
 import net.steppschuh.datalogger.message.MessageHandler;
 import net.steppschuh.datalogger.message.MessageReceiver;
 import net.steppschuh.datalogger.message.PingMessageHandler;
+import net.steppschuh.datalogger.sensor.SensorDataManager;
 import net.steppschuh.datalogger.status.ActivityStatus;
 import net.steppschuh.datalogger.status.AppStatus;
 import net.steppschuh.datalogger.status.Status;
@@ -39,6 +41,7 @@ public class MobileApp extends Application implements MessageApi.MessageListener
     List<MessageHandler> messageHandlers;
 
     private TrackerManager trackerManager;
+    private SensorDataManager sensorDataManager;
 
     public void initialize(Activity contextActivity) {
         this.contextActivity = contextActivity;
@@ -47,6 +50,7 @@ public class MobileApp extends Application implements MessageApi.MessageListener
         setupGoogleApis();
         setupTrackingManager();
         setupMessageHandlers();
+        setupSensorDataManager();
 
         status.setInitialized(true);
     }
@@ -78,6 +82,12 @@ public class MobileApp extends Application implements MessageApi.MessageListener
         messageHandlers = new ArrayList<>();
         registerMessageHandler(new PingMessageHandler(googleApiMessenger));
         registerMessageHandler(new GetStatusMessageHandler(this));
+        registerMessageHandler(new DataRequestMessageHandler(this));
+    }
+
+    private void setupSensorDataManager() {
+        Log.d(TAG, "Setting up Sensor Data manager");
+        sensorDataManager = new SensorDataManager(this);
     }
 
     public boolean registerMessageHandler(MessageHandler messageHandler) {
