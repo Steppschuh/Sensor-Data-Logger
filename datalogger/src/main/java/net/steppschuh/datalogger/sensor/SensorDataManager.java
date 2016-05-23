@@ -38,29 +38,33 @@ public class SensorDataManager {
         }
     }
 
-    private void registerSensorEventListener(int sensorType) {
+    public void registerSensorEventListener(int sensorType) {
         registerSensorEventListener(sensorManager.getDefaultSensor(sensorType));
     }
 
-    private void registerSensorEventListener(Sensor sensor) {
+    public void registerSensorEventListener(Sensor sensor) {
+        if (sensorEventListeners.get(sensor.getType()) != null) {
+            return;
+        }
         sensorManager.registerListener(getSensorEventListener(sensor.getType()), sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    private void unregisterAllSensorEventListeners() {
+    public void unregisterAllSensorEventListeners() {
         List<Sensor> availableSensors = sensorManager.getSensorList(Sensor.TYPE_ALL);
         for (Sensor sensor : availableSensors) {
             unregisterSensorEventListener(sensor.getType());
         }
     }
 
-    private void unregisterSensorEventListener(int sensorType) {
+    public void unregisterSensorEventListener(int sensorType) {
         SensorEventListener sensorEventListener = sensorEventListeners.get(sensorType);
         if (sensorEventListener != null) {
             sensorManager.unregisterListener(sensorEventListener);
+            sensorEventListeners.put(sensorType, null);
         }
     }
 
-    private SensorEventListener getSensorEventListener(int sensorType) {
+    public SensorEventListener getSensorEventListener(int sensorType) {
         SensorEventListener sensorEventListener = sensorEventListeners.get(sensorType);
         if (sensorEventListener == null) {
             sensorEventListener = createSensorEventListener(sensorType);
@@ -86,7 +90,7 @@ public class SensorDataManager {
         };
     }
 
-    private DataBatch getDataBatch(int sensorType) {
+    public DataBatch getDataBatch(int sensorType) {
         DataBatch dataBatch = sensorDataBatches.get(sensorType);
         if (dataBatch == null) {
             dataBatch = createDataBatch(sensorType);

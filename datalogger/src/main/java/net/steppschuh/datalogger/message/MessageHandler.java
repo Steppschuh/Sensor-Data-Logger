@@ -20,8 +20,8 @@ public class MessageHandler extends Handler {
     public static final String PATH_ECHO = "/echo";
     public static final String PATH_GET_STATUS = "/get_status";
     public static final String PATH_SET_STATUS = "/set_status";
-    public static final String PATH_DATA_REQUEST = "/data_request";
-    public static final String PATH_DATA_REQUEST_RESPONSE = "/data_request_response";
+    public static final String PATH_SENSOR_DATA_REQUEST = "/sensor_data_request";
+    public static final String PATH_SENSOR_DATA_REQUEST_RESPONSE = "/sensor_data_request_response";
 
     private MessageReceiver messageReceiver;
     private List<String> paths;

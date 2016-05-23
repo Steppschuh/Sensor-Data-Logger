@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 
 import net.steppschuh.datalogger.data.DataRequest;
@@ -20,7 +19,6 @@ import net.steppschuh.datalogger.logging.TrackerManager;
 import net.steppschuh.datalogger.message.MessageHandler;
 import net.steppschuh.datalogger.message.SinglePathMessageHandler;
 import net.steppschuh.datalogger.status.ActivityStatus;
-import net.steppschuh.datalogger.status.GoogleApiStatus;
 import net.steppschuh.datalogger.status.Status;
 import net.steppschuh.datalogger.status.StatusUpdateHandler;
 import net.steppschuh.datalogger.status.StatusUpdateReceiver;
@@ -200,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.v(TAG, "Updating sensor event data request");
             }
             sensorDataRequest = createSensorDataRequest();
-            app.getGoogleApiMessenger().sendMessageToNearbyNodes(MessageHandler.PATH_DATA_REQUEST, sensorDataRequest.toString());
+            app.getGoogleApiMessenger().sendMessageToNearbyNodes(MessageHandler.PATH_SENSOR_DATA_REQUEST, sensorDataRequest.toString());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -213,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             Log.v(TAG, "Stopping to request sensor event data");
             sensorDataRequest.setEndTimestamp(System.currentTimeMillis());
-            app.getGoogleApiMessenger().sendMessageToNearbyNodes(MessageHandler.PATH_DATA_REQUEST, sensorDataRequest.toString());
+            app.getGoogleApiMessenger().sendMessageToNearbyNodes(MessageHandler.PATH_SENSOR_DATA_REQUEST, sensorDataRequest.toString());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

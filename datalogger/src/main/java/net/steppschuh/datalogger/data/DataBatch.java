@@ -1,6 +1,11 @@
 package net.steppschuh.datalogger.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DataBatch {
@@ -15,6 +20,13 @@ public class DataBatch {
     public DataBatch() {
         dataList = new ArrayList<>();
         capacity = CAPACITY_DEFAULT;
+    }
+
+    public DataBatch(DataBatch dataBatch) {
+        source = dataBatch.getSource();
+        dataList = new ArrayList<>(dataBatch.getDataList().size());
+        dataList.addAll(dataBatch.getDataList());
+        capacity = dataBatch.capacity;
     }
 
     public DataBatch(List<Data> dataList) {
@@ -61,6 +73,39 @@ public class DataBatch {
             return null;
         }
         return dataList.get(0);
+    }
+
+    public List<Data> getDataSince(long timestamp) {
+        List<Data> dataSince = new ArrayList<>();
+        for (int i = dataList.size() - 1; i >= 0; i--) {
+            if (dataList.get(i).getTimestamp() > timestamp) {
+                dataSince.add(dataList.get(i));
+            } else {
+                break;
+            }
+        }
+        Collections.reverse(dataSince);
+        return dataSince;
+    }
+
+    @JsonIgnore
+    @Override
+    public String toString() {
+        return toJson();
+    }
+
+    @JsonIgnore
+    public String toJson() {
+        String jsonData = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+            jsonData = mapper.writeValueAsString(this);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return jsonData;
     }
 
     /**

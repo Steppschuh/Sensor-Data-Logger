@@ -2,7 +2,6 @@ package net.steppschuh.datalogger;
 
 import android.app.Activity;
 import android.app.Application;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -11,14 +10,12 @@ import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 
 import net.steppschuh.datalogger.logging.TrackerManager;
-import net.steppschuh.datalogger.message.DataRequestMessageHandler;
+import net.steppschuh.datalogger.message.SensorDataRequestMessageHandler;
 import net.steppschuh.datalogger.message.GetStatusMessageHandler;
 import net.steppschuh.datalogger.message.GoogleApiMessenger;
 import net.steppschuh.datalogger.message.MessageHandler;
-import net.steppschuh.datalogger.message.MessageReceiver;
 import net.steppschuh.datalogger.message.PingMessageHandler;
 import net.steppschuh.datalogger.sensor.SensorDataManager;
-import net.steppschuh.datalogger.status.ActivityStatus;
 import net.steppschuh.datalogger.status.AppStatus;
 import net.steppschuh.datalogger.status.Status;
 import net.steppschuh.datalogger.status.StatusUpdateEmitter;
@@ -82,7 +79,7 @@ public class MobileApp extends Application implements MessageApi.MessageListener
         messageHandlers = new ArrayList<>();
         registerMessageHandler(new PingMessageHandler(googleApiMessenger));
         registerMessageHandler(new GetStatusMessageHandler(this));
-        registerMessageHandler(new DataRequestMessageHandler(this));
+        registerMessageHandler(new SensorDataRequestMessageHandler(this));
     }
 
     private void setupSensorDataManager() {
@@ -186,5 +183,13 @@ public class MobileApp extends Application implements MessageApi.MessageListener
 
     public void setTrackerManager(TrackerManager trackerManager) {
         this.trackerManager = trackerManager;
+    }
+
+    public SensorDataManager getSensorDataManager() {
+        return sensorDataManager;
+    }
+
+    public void setSensorDataManager(SensorDataManager sensorDataManager) {
+        this.sensorDataManager = sensorDataManager;
     }
 }
