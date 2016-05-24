@@ -61,6 +61,7 @@ public class DataBatch {
         trimDataToCapacity();
     }
 
+    @JsonIgnore
     public Data getNewestData() {
         if (dataList == null || dataList.size() < 1) {
             return null;
@@ -68,6 +69,7 @@ public class DataBatch {
         return dataList.get(dataList.size() - 1);
     }
 
+    @JsonIgnore
     public Data getOldestData() {
         if (dataList == null || dataList.size() < 1) {
             return null;

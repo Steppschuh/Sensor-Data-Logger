@@ -4,10 +4,11 @@ import android.hardware.Sensor;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import com.google.android.gms.wearable.Wearable;
@@ -22,6 +23,8 @@ import net.steppschuh.datalogger.status.ActivityStatus;
 import net.steppschuh.datalogger.status.Status;
 import net.steppschuh.datalogger.status.StatusUpdateHandler;
 import net.steppschuh.datalogger.status.StatusUpdateReceiver;
+import net.steppschuh.sensordatalogger.visualization.VisualizationCardData;
+import net.steppschuh.sensordatalogger.visualization.VisualizationCardListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +38,12 @@ public class MainActivity extends AppCompatActivity {
     private ActivityStatus status = new ActivityStatus();
     private StatusUpdateHandler statusUpdateHandler;
 
-    private Button debugButton;
+    private FloatingActionButton floatingActionButton;
     private TextView logTextView;
+    private GridView gridView;
 
     private SensorDataRequest sensorDataRequest;
+    private VisualizationCardListAdapter cardListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
     private void setupUi() {
         setContentView(R.layout.activity_main);
 
-        debugButton = (Button) findViewById(R.id.debugButton);
-        debugButton.setOnClickListener(new View.OnClickListener() {
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.floadtingActionButton);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 /*
@@ -76,10 +81,16 @@ public class MainActivity extends AppCompatActivity {
                 //requestStatusUpdateFromConnectedNodes();
                 startRequestingSensorEventData();
 
+                cardListAdapter.add(new VisualizationCardData("Test"));
             }
         });
 
         logTextView = (TextView) findViewById(R.id.logText);
+        gridView = (GridView) findViewById(R.id.gridView);
+
+        List<VisualizationCardData> visualizationCardData = new ArrayList<>();
+        cardListAdapter = new VisualizationCardListAdapter(this, R.id.gridView, visualizationCardData);
+        gridView.setAdapter(cardListAdapter);
     }
 
     private void setupMessageHandlers() {
@@ -171,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             public void handleMessage(Message message) {
                 String sourceNodeId = MessageHandler.getSourceNodeIdFromMessage(message);
                 String responseJson = MessageHandler.getDataFromMessageAsString(message);
-                Log.d(TAG, "Received sensor data request response from: " + sourceNodeId + ": " + responseJson);
+                //Log.d(TAG, "Received sensor data request response from: " + sourceNodeId + ": " + responseJson);
                 logTextView.setText(responseJson);
             }
         };

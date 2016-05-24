@@ -28,6 +28,8 @@ public class SensorDataRequestResponseGenerator {
     public void handleRequest(SensorDataRequest sensorDataRequest) {
         this.sensorDataRequest = sensorDataRequest;
 
+        Log.v(TAG, "Handling new sensor data request from " + sensorDataRequest.getSourceNodeId());
+
         if (shouldStopGeneratingRequestResponses()) {
             unregisterRequiredSensorEventListeners();
             stopGeneratingRequestResponses();
@@ -60,7 +62,13 @@ public class SensorDataRequestResponseGenerator {
     }
 
     public boolean shouldStopGeneratingRequestResponses() {
-        return sensorDataRequest.getEndTimestamp() <= System.currentTimeMillis();
+        if (sensorDataRequest.getEndTimestamp() == DataRequest.TIMESTAMP_NOT_SET) {
+            return false;
+        }
+        if (sensorDataRequest.getEndTimestamp() > System.currentTimeMillis()) {
+            return false;
+        }
+        return true;
     }
 
     private void registerRequiredSensorEventListeners() {
@@ -83,7 +91,7 @@ public class SensorDataRequestResponseGenerator {
                     // generate & send request response
                     DataRequestResponse dataRequestResponse = generateDataRequestResponse();
                     String json = dataRequestResponse.toString();
-                    app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_SENSOR_DATA_REQUEST_RESPONSE, sensorDataRequest.getSourceNodeId(), json);
+                    app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_SENSOR_DATA_REQUEST_RESPONSE, json, sensorDataRequest.getSourceNodeId());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -91,6 +99,8 @@ public class SensorDataRequestResponseGenerator {
                 // re-invoke runnable after delay
                 if (isGeneratingRequestResponses() && !shouldStopGeneratingRequestResponses()) {
                     updateHandler.postDelayed(updateRunnable, sensorDataRequest.getUpdateInteval());
+                } else {
+                    stopGeneratingRequestResponses();
                 }
             }
         };

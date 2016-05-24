@@ -202,6 +202,7 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
                     sendMessageToNode(path, data, node);
                 } catch (Exception ex) {
                     Log.w(TAG, "Unable to send message to node: " + nodeId + ": " + ex.getMessage());
+                    ex.printStackTrace();
                 }
             }
         }).start();
