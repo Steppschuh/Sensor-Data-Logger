@@ -9,6 +9,9 @@ public class SensorDataRequest extends DataRequest {
 
     private List<Integer> sensorTypes;
 
+    public SensorDataRequest() {
+    }
+
     public SensorDataRequest(List<Integer> sensorTypes) {
         super();
         this.sensorTypes = sensorTypes;

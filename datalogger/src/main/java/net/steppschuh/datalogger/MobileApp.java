@@ -57,7 +57,7 @@ public class MobileApp extends Application implements MessageApi.MessageListener
         statusUpdateHandler.registerStatusUpdateReceiver(new StatusUpdateReceiver() {
             @Override
             public void onStatusUpdated(Status status) {
-                Log.v(TAG, "App Status updated: " + ((AppStatus) status).toString());
+                //Log.v(TAG, "App Status updated: " + ((AppStatus) status).toString());
             }
         });
     }

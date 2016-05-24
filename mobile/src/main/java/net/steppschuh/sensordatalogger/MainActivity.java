@@ -73,7 +73,9 @@ public class MainActivity extends AppCompatActivity {
                 startConnectionSpeedTest();
                 */
 
-                requestStatusUpdateFromConnectedNodes();
+                //requestStatusUpdateFromConnectedNodes();
+                startRequestingSensorEventData();
+
             }
         });
 
@@ -84,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         messageHandlers = new ArrayList<>();
         messageHandlers.add(getEchoMessageHandler());
         messageHandlers.add(getSetStatusMessageHandler());
+        messageHandlers.add(getSensorDataRequestResponseMessageHandler());
     }
 
     private void setupStatusUpdates() {
@@ -162,6 +165,18 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
+    private MessageHandler getSensorDataRequestResponseMessageHandler() {
+        return new SinglePathMessageHandler(MessageHandler.PATH_SENSOR_DATA_REQUEST_RESPONSE) {
+            @Override
+            public void handleMessage(Message message) {
+                String sourceNodeId = MessageHandler.getSourceNodeIdFromMessage(message);
+                String responseJson = MessageHandler.getDataFromMessageAsString(message);
+                Log.d(TAG, "Received sensor data request response from: " + sourceNodeId + ": " + responseJson);
+                logTextView.setText(responseJson);
+            }
+        };
+    }
+
     private void requestStatusUpdateFromConnectedNodes() {
         try {
             Log.v(TAG, "Sending a status update request");
@@ -215,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
     private void startConnectionSpeedTest() {

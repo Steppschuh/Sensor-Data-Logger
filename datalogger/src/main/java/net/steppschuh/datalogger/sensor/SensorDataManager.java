@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 
 import net.steppschuh.datalogger.data.Data;
 import net.steppschuh.datalogger.data.DataBatch;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 public class SensorDataManager {
+
+    public static final String TAG = SensorDataManager.class.getSimpleName();
 
     private SensorManager sensorManager;
 
@@ -27,7 +30,7 @@ public class SensorDataManager {
     }
 
     private void initializeSensorEventListeners() {
-        sensorDataBatches = new HashMap<>();
+        sensorEventListeners = new HashMap<>();
     }
 
     private void initializeSensorDataBatches() {
@@ -43,9 +46,10 @@ public class SensorDataManager {
     }
 
     public void registerSensorEventListener(Sensor sensor) {
-        if (sensorEventListeners.get(sensor.getType()) != null) {
+        if (hasRegisteredSensorEventListener(sensor.getType())) {
             return;
         }
+        Log.v(TAG, "Registering sensor event listener for " + sensor.getType() + " - " + sensor.getName());
         sensorManager.registerListener(getSensorEventListener(sensor.getType()), sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -57,11 +61,15 @@ public class SensorDataManager {
     }
 
     public void unregisterSensorEventListener(int sensorType) {
-        SensorEventListener sensorEventListener = sensorEventListeners.get(sensorType);
-        if (sensorEventListener != null) {
-            sensorManager.unregisterListener(sensorEventListener);
+        if (hasRegisteredSensorEventListener(sensorType)) {
+            Log.v(TAG, "Unregistering sensor event listener for " + sensorType);
+            sensorManager.unregisterListener(sensorEventListeners.get(sensorType));
             sensorEventListeners.put(sensorType, null);
         }
+    }
+
+    public boolean hasRegisteredSensorEventListener(int sensorType) {
+        return sensorEventListeners.get(sensorType) != null;
     }
 
     public SensorEventListener getSensorEventListener(int sensorType) {
