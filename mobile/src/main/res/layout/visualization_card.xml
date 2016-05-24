@@ -11,15 +11,76 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         card_view:cardUseCompatPadding="true"
-        card_view:cardCornerRadius="4dp">
+        card_view:cardCornerRadius="2dp">
 
-        <TextView
-            android:id="@+id/headingText"
-            android:text="Heading Text"
-            android:layout_margin="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextAppearance.AppCompat.Body1"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/headerLayout"
+                android:background="@color/colorPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/headingText"
+                    android:text="Heading Text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="40dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    style="@style/TextAppearance.AppCompat.Title"/>
+
+                <ImageButton
+                    android:id="@+id/moreButton"
+                    android:layout_width="25dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/headingText"
+                    android:layout_alignBottom="@id/headingText"
+                    android:layout_alignParentRight="true"
+                    android:scaleType="centerInside"
+
+                    android:background="@null"
+                    android:tint="@android:color/white"
+                    android:src="@drawable/ic_more_vert_black_48dp" />
+
+                <TextView
+                    android:id="@+id/subHeadingText"
+                    android:text="Subheading Text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/headingText"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:alpha="0.5"
+                    style="@style/TextAppearance.AppCompat.Subhead"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/visualizationLayout"
+
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <TextView
+                    android:text="Visualization"
+                    android:layout_centerInParent="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
 
     </android.support.v7.widget.CardView>
 
