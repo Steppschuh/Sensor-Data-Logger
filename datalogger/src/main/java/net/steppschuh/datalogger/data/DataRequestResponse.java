@@ -12,6 +12,9 @@ public class DataRequestResponse {
     private long startTimestamp;
     private long endTimestamp;
 
+    public DataRequestResponse() {
+    }
+
     public DataRequestResponse(List<DataBatch> dataBatches) {
         this.dataBatches = dataBatches;
         endTimestamp = System.currentTimeMillis();
@@ -35,6 +38,18 @@ public class DataRequestResponse {
             ex.printStackTrace();
         }
         return jsonData;
+    }
+
+    public static DataRequestResponse fromJson(String json) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+            DataRequestResponse dataRequestResponse = mapper.readValue(json, DataRequestResponse.class);
+            return dataRequestResponse;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     public List<DataBatch> getDataBatches() {

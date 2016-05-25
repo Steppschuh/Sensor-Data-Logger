@@ -67,15 +67,13 @@
 
             <RelativeLayout
                 android:id="@+id/visualizationLayout"
-
                 android:layout_width="match_parent"
                 android:layout_height="200dp">
 
-                <TextView
-                    android:text="Visualization"
-                    android:layout_centerInParent="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                <net.steppschuh.sensordatalogger.visualization.chart.LineChartView
+                    android:id="@+id/chartView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
             </RelativeLayout>
 

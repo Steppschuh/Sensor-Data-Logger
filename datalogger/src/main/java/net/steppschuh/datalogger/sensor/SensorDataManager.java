@@ -50,7 +50,7 @@ public class SensorDataManager {
             return;
         }
         Log.v(TAG, "Registering sensor event listener for " + sensor.getType() + " - " + sensor.getName());
-        sensorManager.registerListener(getSensorEventListener(sensor.getType()), sensor, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(getSensorEventListener(sensor.getType()), sensor, SensorManager.SENSOR_DELAY_GAME);
     }
 
     public void unregisterAllSensorEventListeners() {

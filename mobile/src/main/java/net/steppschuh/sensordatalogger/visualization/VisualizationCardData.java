@@ -1,11 +1,45 @@
 package net.steppschuh.sensordatalogger.visualization;
 
+import net.steppschuh.datalogger.data.DataBatch;
+
 public class VisualizationCardData {
 
+    private String key;
     private String heading;
+    private String subHeading;
+    private DataBatch dataBatch;
 
-    public VisualizationCardData(String heading) {
-        this.heading = heading;
+    public VisualizationCardData(String key) {
+        this.key = key;
+    }
+
+    public VisualizationCardData(String deviceName, String source) {
+        this(generateKey(deviceName, source));
+        this.heading = source;
+        this.subHeading = deviceName;
+    }
+
+    public static String generateKey(String deviceName, String source) {
+        return deviceName + " - " + source;
+    }
+
+    /**
+     * Getter & Setter
+     */
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getSubHeading() {
+        return subHeading;
+    }
+
+    public void setSubHeading(String subHeading) {
+        this.subHeading = subHeading;
     }
 
     public String getHeading() {
@@ -16,4 +50,11 @@ public class VisualizationCardData {
         this.heading = heading;
     }
 
+    public DataBatch getDataBatch() {
+        return dataBatch;
+    }
+
+    public void setDataBatch(DataBatch dataBatch) {
+        this.dataBatch = dataBatch;
+    }
 }

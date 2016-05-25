@@ -11,7 +11,7 @@ import java.util.List;
 public class DataBatch {
 
     public static final int CAPACITY_UNLIMITED = -1;
-    public static final int CAPACITY_DEFAULT = 200;
+    public static final int CAPACITY_DEFAULT = 500;
 
     private String source;
     private List<Data> dataList;
@@ -58,6 +58,11 @@ public class DataBatch {
 
     public void addData(Data data) {
         dataList.add(data);
+        trimDataToCapacity();
+    }
+
+    public void addData(List<Data> data) {
+        dataList.addAll(data);
         trimDataToCapacity();
     }
 

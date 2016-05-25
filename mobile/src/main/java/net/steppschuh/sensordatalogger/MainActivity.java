@@ -11,9 +11,12 @@ import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 
+import net.steppschuh.datalogger.data.DataBatch;
 import net.steppschuh.datalogger.data.DataRequest;
+import net.steppschuh.datalogger.data.DataRequestResponse;
 import net.steppschuh.datalogger.data.SensorDataRequest;
 import net.steppschuh.datalogger.logging.TimeTracker;
 import net.steppschuh.datalogger.logging.TrackerManager;
@@ -81,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 //requestStatusUpdateFromConnectedNodes();
                 startRequestingSensorEventData();
 
-                cardListAdapter.add(new VisualizationCardData("Test"));
+                //cardListAdapter.add(new VisualizationCardData("Test"));
             }
         });
 
@@ -182,8 +185,11 @@ public class MainActivity extends AppCompatActivity {
             public void handleMessage(Message message) {
                 String sourceNodeId = MessageHandler.getSourceNodeIdFromMessage(message);
                 String responseJson = MessageHandler.getDataFromMessageAsString(message);
-                //Log.d(TAG, "Received sensor data request response from: " + sourceNodeId + ": " + responseJson);
-                logTextView.setText(responseJson);
+
+                DataRequestResponse response = DataRequestResponse.fromJson(responseJson);
+                for (DataBatch dataBatch : response.getDataBatches()) {
+                    renderDataBatch(dataBatch, sourceNodeId);
+                }
             }
         };
     }
@@ -203,8 +209,10 @@ public class MainActivity extends AppCompatActivity {
 
         String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
         SensorDataRequest sensorDataRequest = new SensorDataRequest(localNodeId, sensorTypes);
+        sensorDataRequest.setUpdateInteval(50);
         return sensorDataRequest;
     }
+
 
     private boolean isRequestingSensorEventData() {
         if (sensorDataRequest == null) {
@@ -241,6 +249,32 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void renderDataBatch(DataBatch dataBatch, String sourceNodeId) {
+        // get the visualization card
+        Node sourceNode = app.getGoogleApiMessenger().getLastConnectedNodeById(sourceNodeId);
+        String key = VisualizationCardData.generateKey(sourceNode.getDisplayName(), dataBatch.getSource());
+        VisualizationCardData visualizationCardData = cardListAdapter.getVisualizationCard(key);
+
+        // create a new card if not yet avaialable
+        if (visualizationCardData == null) {
+            visualizationCardData = new VisualizationCardData(key);
+            visualizationCardData.setHeading(dataBatch.getSource());
+            visualizationCardData.setSubHeading(sourceNode.getDisplayName());
+            cardListAdapter.add(visualizationCardData);
+            cardListAdapter.notifyDataSetChanged();
+        }
+
+        // update the card data
+        DataBatch visualizationDataBatch = visualizationCardData.getDataBatch();
+        if (visualizationDataBatch == null) {
+            visualizationDataBatch = dataBatch;
+            visualizationCardData.setDataBatch(visualizationDataBatch);
+        } else {
+            visualizationDataBatch.addData(dataBatch.getDataList());
+        }
+        cardListAdapter.invalidateVisualization(visualizationCardData.getKey());
     }
 
     private void startConnectionSpeedTest() {

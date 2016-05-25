@@ -107,8 +107,6 @@ public class SensorDataRequestResponseGenerator {
     }
 
     private DataRequestResponse generateDataRequestResponse() {
-        Log.v(TAG, "Generating request response for " + sensorDataRequest.getSensorTypes().size() + " sensor(s)");
-
         // get all required data batches
         List<DataBatch> dataBatches = new ArrayList<>();
         for (Integer sensorType : sensorDataRequest.getSensorTypes()) {
