@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.ContextCompat;
@@ -30,7 +31,7 @@ public abstract class ChartView extends View {
     public static final int DATA_DIMENSION_ALL = -1;
 
     public static final long TIMESTAMP_NOT_SET = -1;
-    public static final long TIME_RANGE_DEFAULT = TimeUnit.SECONDS.toMillis(30);
+    public static final long TIME_RANGE_DEFAULT = TimeUnit.SECONDS.toMillis(20);
     private static final float PADDING_DEFAULT_DP = 16;
 
     protected DataBatch dataBatch;
@@ -40,7 +41,7 @@ public abstract class ChartView extends View {
 
     protected Paint dataStrokePaint;
     protected Paint dataFillPaint;
-    protected Paint seperatorPaint;
+    protected Paint gridLinePaint;
     protected Paint gridLabelPaint;
     protected Paint clearPaint;
 
@@ -51,7 +52,7 @@ public abstract class ChartView extends View {
     protected int tertiaryColor;
     protected int accentColor;
     protected int backgroundColor;
-    protected int seperatorColor;
+    protected int gridColor;
     protected int[] dimensionColors;
 
 
@@ -104,7 +105,7 @@ public abstract class ChartView extends View {
         tertiaryColor = ContextCompat.getColor(getContext(), R.color.colorTertiary);
         accentColor = ContextCompat.getColor(getContext(), R.color.colorAccent);
         backgroundColor = Color.WHITE;
-        seperatorColor = Color.argb(100, 0, 0, 0);
+        gridColor = Color.argb(50, 0, 0, 0);
 
         dimensionColors = new int[3];
         dimensionColors[0] = primaryColor;
@@ -122,14 +123,14 @@ public abstract class ChartView extends View {
         dataFillPaint.setColor(primaryColor);
         dataFillPaint.setStyle(Paint.Style.FILL);
 
-        seperatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        seperatorPaint.setColor(seperatorColor);
-        seperatorPaint.setStyle(Paint.Style.STROKE);
-        seperatorPaint.setStrokeWidth(UnitHelper.convertDpToPixel(1, getContext()));
+        gridLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        gridLinePaint.setColor(gridColor);
+        gridLinePaint.setStyle(Paint.Style.STROKE);
+        gridLinePaint.setStrokeWidth(UnitHelper.convertDpToPixel(0.5f, getContext()));
 
         gridLabelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        gridLabelPaint.setColor(seperatorColor);
-        gridLabelPaint.setTextSize(15);
+        gridLabelPaint.setColor(gridColor);
+        gridLabelPaint.setTextSize(30);
 
         clearPaint = new Paint();
         clearPaint.setColor(backgroundColor);
@@ -236,7 +237,7 @@ public abstract class ChartView extends View {
         drawGrid(canvas);
         drawData(canvas);
         drawDataLabels(canvas);
-        drawDataLabels(canvas);
+        drawGridLabels(canvas);
 
         renderTimeTracker.stop();
     }
@@ -282,6 +283,16 @@ public abstract class ChartView extends View {
 
     public static String getDimensionName(int dimension) {
         return UnitHelper.getCharForNumber(dimension + 23);
+    }
+
+    public static void drawTextCentred(Canvas canvas, String text, float cx, float cy, Paint paint, Rect textBounds){
+        paint.getTextBounds(text, 0, text.length(), textBounds);
+        canvas.drawText(text, cx - textBounds.exactCenterX(), cy - textBounds.exactCenterY(), paint);
+    }
+
+    public static void drawTextCentredLeft(Canvas canvas, String text, float cx, float cy, Paint paint, Rect textBounds){
+        paint.getTextBounds(text, 0, text.length(), textBounds);
+        canvas.drawText(text, cx, cy - textBounds.exactCenterY(), paint);
     }
 
     /**

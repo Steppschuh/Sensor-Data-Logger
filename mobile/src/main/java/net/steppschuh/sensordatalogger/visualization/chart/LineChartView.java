@@ -1,11 +1,13 @@
 package net.steppschuh.sensordatalogger.visualization.chart;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.util.AttributeSet;
@@ -25,6 +27,13 @@ public class LineChartView extends ChartView {
     protected boolean fadeInNewData = false;
     protected boolean fadeOutOldData = true;
 
+    protected int horizontalGridLinesCount = 5;
+
+    protected float maximumValue = Float.MAX_VALUE;
+    protected float minimumValue = Float.MIN_VALUE;
+
+    private int debugCount = 0;
+
     public LineChartView(Context context) {
         super(context);
     }
@@ -42,14 +51,31 @@ public class LineChartView extends ChartView {
     @Override
     protected void drawGrid(Canvas canvas) {
         super.drawGrid(canvas);
+
+        // horizontal grid
+        float gridLabelOffset = gridLabelPaint.getTextSize() / 2;
+
+        float gridLineOffset = paddedHeight / (horizontalGridLinesCount - 1);
+        for (int gridLineIndex = 0; gridLineIndex < horizontalGridLinesCount; gridLineIndex++) {
+            try {
+                float y = paddedStartY + (gridLineIndex * gridLineOffset);
+                canvas.drawLine(paddedStartX + (2 * padding), y, paddedEndX, y, gridLinePaint);
+
+                //float value = mapValue(y, paddedStartY, paddedEndY, maximumValue, minimumValue);
+                float value = mapValue(y, paddedStartY, paddedEndY, maximumValue, minimumValue) + maximumValue;
+                String readableValue = String.format("%.02f", value);
+                drawTextCentredLeft(canvas, readableValue, paddedStartX, y, gridLabelPaint, new Rect());
+            } catch (Exception ex) {
+                Log.v(TAG, "Unable to render grid: " + ex.getMessage());
+            }
+        }
+
+
     }
 
     @Override
     protected void drawGridLabels(Canvas canvas) {
         super.drawGridLabels(canvas);
-
-        String value = String.valueOf(dataBatch.getNewestData().getTimestamp());
-        canvas.drawText(value, paddedStartX, paddedStartY, gridLabelPaint);
     }
 
     @Override
@@ -57,8 +83,11 @@ public class LineChartView extends ChartView {
         super.drawData(canvas);
 
         try {
-            float range = endTimestamp - startTimestamp;
-            float mappedRange = paddedEndX - paddedStartX;
+            float horizontalRange = endTimestamp - startTimestamp;
+            float mappedHorizontalRange = paddedEndX - paddedStartX;
+
+            float verticalRange = maximumValue - minimumValue;
+            float mappedVerticalRange = paddedEndY - paddedStartY;
 
             Data newestData = dataBatch.getNewestData();
             if (newestData == null) {
@@ -80,14 +109,16 @@ public class LineChartView extends ChartView {
                     currentMinimumValue = Math.min(currentMinimumValue, getMinimumValue(data.getValues()));
                     currentMaximumValue = Math.max(currentMaximumValue, getMaximumValue(data.getValues()));
 
-                    float x = mapValue(data.getTimestamp() - startTimestamp, range, mappedRange);
+                    float x = mapValue(data.getTimestamp() - startTimestamp, horizontalRange, mappedHorizontalRange);
 
                     for (int dimension = 0; dimension < data.getValues().length; dimension++) {
                         if (!shouldRenderDimension(dimension)) {
                             continue;
                         }
 
-                        float y = centerY - (data.getValues()[dimension] * 10);
+                        //float y = centerY - (data.getValues()[dimension] * 10);
+                        //float y = mapValue(verticalRange - data.getValues()[dimension], verticalRange, mappedVerticalRange);
+                        float y = mapValue(maximumValue - data.getValues()[dimension], verticalRange, mappedVerticalRange);
 
                         // add data point to path
                         if (dataIndex == 0) {
@@ -101,7 +132,9 @@ public class LineChartView extends ChartView {
                 }
             }
 
-            float newestX = mapValue(newestData.getTimestamp() - startTimestamp, range, mappedRange);
+            float newestX = mapValue(newestData.getTimestamp() - startTimestamp, horizontalRange, mappedHorizontalRange);
+
+            float fadeOverlayWidth = paddedWidth * fadePercentage;
             for (int dimension = 0; dimension < newestData.getValues().length; dimension++) {
                 if (!shouldRenderDimension(dimension)) {
                     continue;
@@ -109,37 +142,40 @@ public class LineChartView extends ChartView {
 
                 // draw all data paths
                 Paint dataPathPaint = new Paint(dataStrokePaint);
-                dataPathPaint.setColor(dimensionColors[dimension]);
+                Shader fadeOutShader = new LinearGradient(paddedStartX + (2 * padding), 0, paddedStartX + (2 * padding) + fadeOverlayWidth, 0, Color.TRANSPARENT, dimensionColors[dimension], Shader.TileMode.CLAMP);
+                dataPathPaint.setShader(fadeOutShader);
                 canvas.drawPath(dataPaths.get(dimension), dataPathPaint);
 
                 // draw starting points
                 Paint dataPointPaint = new Paint(dataFillPaint);
                 dataPointPaint.setColor(dimensionColors[dimension]);
-                float newestY = centerY - (newestData.getValues()[dimension] * 10);
+                float newestY = mapValue(maximumValue - newestData.getValues()[dimension], verticalRange, mappedVerticalRange);
                 canvas.drawCircle(newestX, newestY, 10, dataPointPaint);
             }
 
-            drawDataOverlays(canvas);
+            // update vertical range
+            //minimumValue = currentMinimumValue + (currentMinimumValue * 0.2f);
+            //maximumValue = currentMaximumValue + (currentMaximumValue * 0.2f);
+
+            float newMinimumValue = currentMinimumValue + (currentMinimumValue * 0.2f);
+            float newMaximumValue = currentMaximumValue + (currentMaximumValue * 0.2f);
+
+            if (minimumValue != newMinimumValue) {
+                fadeMinimumValueTo(newMinimumValue);
+            }
+            if (maximumValue != newMaximumValue) {
+                fadeMaximumValueTo(newMaximumValue);
+            }
+
+            debugCount++;
+            if (debugCount >= 50) {
+                debugCount = 0;
+
+                System.out.println("Min: " + minimumValue +  " Max: " + maximumValue);
+                System.out.println("Range: " + verticalRange +  " Mapped: " + mappedVerticalRange);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    protected void drawDataOverlays(Canvas canvas) {
-        float fadeOverlayWidth = paddedWidth * fadePercentage;
-
-        if (fadeInNewData) {
-            Shader shader = new LinearGradient(paddedEndX - (fadeOverlayWidth), 0, paddedEndX, 0, Color.TRANSPARENT, backgroundColor, Shader.TileMode.CLAMP);
-            Paint paint = new Paint();
-            paint.setShader(shader);
-            canvas.drawRect(new RectF(paddedEndX - (fadeOverlayWidth), paddedStartY, paddedEndX, paddedEndY), paint);
-        }
-
-        if (fadeOutOldData) {
-            Shader shader = new LinearGradient(paddedStartX, 0, paddedStartX + fadeOverlayWidth, 0, backgroundColor, Color.TRANSPARENT, Shader.TileMode.CLAMP);
-            Paint paint = new Paint();
-            paint.setShader(shader);
-            canvas.drawRect(new RectF(0, paddedStartY, paddedStartX + fadeOverlayWidth, paddedEndY), paint);
         }
     }
 
@@ -163,6 +199,30 @@ public class LineChartView extends ChartView {
         }
 
         return 1;
+    }
+
+    private void fadeMinimumValueTo(float newMinimumValue) {
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(minimumValue, newMinimumValue);
+        valueAnimator.setDuration(200);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                minimumValue = (float) animation.getAnimatedValue();
+            }
+        });
+        valueAnimator.start();
+    }
+
+    private void fadeMaximumValueTo(float newMaximumValue) {
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(maximumValue, newMaximumValue);
+        valueAnimator.setDuration(200);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                maximumValue = (float) animation.getAnimatedValue();
+            }
+        });
+        valueAnimator.start();
     }
 
     protected float mapTimestamp(long timestamp, float mappedStart, float mappedEnd) throws Exception {
@@ -210,5 +270,6 @@ public class LineChartView extends ChartView {
         }
         return maximum;
     }
+
 
 }

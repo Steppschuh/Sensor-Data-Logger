@@ -98,7 +98,7 @@ public class VisualizationCardView extends RelativeLayout {
     }
 
     public void renderData() {
-        if (data == null) {
+        if (data == null || data.getDataBatch().getNewestData() == null) {
             return;
         }
         headingTextView.setText(data.getHeading());
