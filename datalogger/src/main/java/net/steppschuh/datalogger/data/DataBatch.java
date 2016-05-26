@@ -56,6 +56,20 @@ public class DataBatch {
         }
     }
 
+    public void roundToDecimalPlaces(int decimalPlaces) {
+        for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
+            Data data = dataList.get(dataIndex);
+            for (int dimension = 0; dimension < data.getValues().length; dimension++) {
+                data.getValues()[dimension] = roundToDecimalPlaces(data.getValues()[dimension], decimalPlaces);
+            }
+        }
+    }
+
+    public static float roundToDecimalPlaces(float value, int decimalPlaces) {
+        double shift = Math.pow(10, decimalPlaces);
+        return (float) (Math.round(value * shift) / shift);
+    }
+
     public void addData(Data data) {
         dataList.add(data);
         trimDataToCapacity();
@@ -93,6 +107,10 @@ public class DataBatch {
         }
         Collections.reverse(dataSince);
         return dataSince;
+    }
+
+    public void removeDataBefore(long timestamp) {
+        dataList = getDataSince(timestamp);
     }
 
     @JsonIgnore

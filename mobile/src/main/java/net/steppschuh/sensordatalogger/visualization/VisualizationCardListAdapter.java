@@ -49,8 +49,6 @@ public class VisualizationCardListAdapter extends ArrayAdapter<VisualizationCard
         notifyDataSetChanged();
     }
 
-
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         VisualizationCardView visualizationCardView;

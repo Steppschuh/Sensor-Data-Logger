@@ -8,11 +8,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import net.steppschuh.datalogger.data.DataBatch;
+import net.steppschuh.datalogger.logging.TimeTracker;
 import net.steppschuh.datalogger.ui.UnitHelper;
 import net.steppschuh.sensordatalogger.R;
+
+import java.util.concurrent.TimeUnit;
 
 public abstract class ChartView extends View {
 
@@ -23,13 +27,19 @@ public abstract class ChartView extends View {
     public static final long UPDATE_INTERVAL_NONE = -1;
     public static final long UPDATE_INTERVAL_DEFAULT = 20;
 
-    private static final float PADDING_DEFAULT_DP = 16;
+    public static final int DATA_DIMENSION_ALL = -1;
 
+    public static final long TIMESTAMP_NOT_SET = -1;
+    public static final long TIME_RANGE_DEFAULT = TimeUnit.SECONDS.toMillis(30);
+    private static final float PADDING_DEFAULT_DP = 16;
 
     protected DataBatch dataBatch;
     protected long updateInterval = UPDATE_INTERVAL_DEFAULT;
 
-    protected Paint linePaint;
+    protected int dataDimension = DATA_DIMENSION_ALL;
+
+    protected Paint dataStrokePaint;
+    protected Paint dataFillPaint;
     protected Paint seperatorPaint;
     protected Paint gridLabelPaint;
     protected Paint clearPaint;
@@ -37,9 +47,18 @@ public abstract class ChartView extends View {
     protected int primaryColor;
     protected int primaryColorLight;
     protected int primaryColorDark;
+    protected int secondaryColor;
+    protected int tertiaryColor;
     protected int accentColor;
     protected int backgroundColor;
     protected int seperatorColor;
+    protected int[] dimensionColors;
+
+
+    protected boolean mapEndTimestampToNow = true;
+    protected long timeRange = TIME_RANGE_DEFAULT;
+    protected long startTimestamp = TIMESTAMP_NOT_SET;
+    protected long endTimestamp = TIMESTAMP_NOT_SET;
 
     protected float padding;
     protected float paddedStartX;
@@ -55,6 +74,8 @@ public abstract class ChartView extends View {
     private Handler updateHandler;
     private Runnable updateRunnable = getUpdateRunnable();
 
+    private TimeTracker renderTimeTracker;
+
     public ChartView(Context context) {
         super(context);
         initializeView();
@@ -65,43 +86,54 @@ public abstract class ChartView extends View {
         initializeView();
     }
 
-    private void initializeView() {
+    protected void initializeView() {
         updateColors();
         updatePaints();
         updateDimensions();
+        renderTimeTracker = new TimeTracker("Chart Rendering");
     }
 
-    private void updateColors() {
+    protected void updateColors() {
         primaryColor = ContextCompat.getColor(getContext(), R.color.colorPrimary);
         primaryColorLight = ContextCompat.getColor(getContext(), R.color.colorPrimaryLight);
         primaryColorDark = ContextCompat.getColor(getContext(), R.color.colorPrimaryDark);
+        secondaryColor = ContextCompat.getColor(getContext(), R.color.colorSecondary);
+        tertiaryColor = ContextCompat.getColor(getContext(), R.color.colorTertiary);
         accentColor = ContextCompat.getColor(getContext(), R.color.colorAccent);
         backgroundColor = Color.WHITE;
         seperatorColor = Color.argb(100, 0, 0, 0);
+
+        dimensionColors = new int[3];
+        dimensionColors[0] = primaryColor;
+        dimensionColors[1] = secondaryColor;
+        dimensionColors[2] = tertiaryColor;
     }
 
-    private void updatePaints() {
-        linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        linePaint.setColor(primaryColor);
+    protected void updatePaints() {
+        dataStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        dataStrokePaint.setColor(primaryColor);
+        dataStrokePaint.setStrokeWidth(UnitHelper.convertDpToPixel(1.5f, getContext()));
+        dataStrokePaint.setStyle(Paint.Style.STROKE);
+
+        dataFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        dataFillPaint.setColor(primaryColor);
+        dataFillPaint.setStyle(Paint.Style.FILL);
 
         seperatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         seperatorPaint.setColor(seperatorColor);
         seperatorPaint.setStyle(Paint.Style.STROKE);
-        seperatorPaint.setStrokeWidth(1);
+        seperatorPaint.setStrokeWidth(UnitHelper.convertDpToPixel(1, getContext()));
 
         gridLabelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         gridLabelPaint.setColor(seperatorColor);
         gridLabelPaint.setTextSize(15);
-
-        linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        linePaint.setColor(Color.BLACK);
 
         clearPaint = new Paint();
         clearPaint.setColor(backgroundColor);
         clearPaint.setStyle(Paint.Style.FILL);
     }
 
-    private void updateDimensions() {
+    protected void updateDimensions() {
         padding = UnitHelper.convertDpToPixel(PADDING_DEFAULT_DP, getContext());
         paddedStartX = padding;
         paddedStartY = padding;
@@ -112,6 +144,15 @@ public abstract class ChartView extends View {
 
         centerX = getWidth() / 2;
         centerY = getHeight() / 2;
+    }
+
+    protected void updateTimestamps() {
+        if (mapEndTimestampToNow || endTimestamp == TIMESTAMP_NOT_SET) {
+            endTimestamp = System.currentTimeMillis();
+        }
+        if (mapEndTimestampToNow || startTimestamp == TIMESTAMP_NOT_SET) {
+            startTimestamp = endTimestamp - timeRange;
+        }
     }
 
     public void startUpdateThread() {
@@ -165,13 +206,25 @@ public abstract class ChartView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if (renderTimeTracker.getTrackingCount() >= 100) {
+            long averageRenderingDuration = renderTimeTracker.calculateAverageDuration();
+            if (averageRenderingDuration > 3) {
+                Log.w(TAG, "Chart rendering for " + dataBatch.getDataList().size() + " data points took " + averageRenderingDuration + "ms!");
+            }
+            renderTimeTracker = new TimeTracker("Chart Rendering");
+        }
+        renderTimeTracker.start();
+
         super.onDraw(canvas);
+        updateTimestamps();
 
         clearCanvas(canvas);
         drawGrid(canvas);
         drawData(canvas);
         drawDataLabels(canvas);
         drawDataLabels(canvas);
+
+        renderTimeTracker.stop();
     }
 
     protected void clearCanvas(Canvas canvas) {
@@ -205,4 +258,35 @@ public abstract class ChartView extends View {
         this.dataBatch = dataBatch;
     }
 
+    public boolean isMappingEndTimestampToNow() {
+        return mapEndTimestampToNow;
+    }
+
+    public void setMapEndTimestampToNow(boolean mapEndTimestampToNow) {
+        this.mapEndTimestampToNow = mapEndTimestampToNow;
+    }
+
+    public long getTimeRange() {
+        return timeRange;
+    }
+
+    public void setTimeRange(long timeRange) {
+        this.timeRange = timeRange;
+    }
+
+    public long getStartTimestamp() {
+        return startTimestamp;
+    }
+
+    public void setStartTimestamp(long startTimestamp) {
+        this.startTimestamp = startTimestamp;
+    }
+
+    public long getEndTimestamp() {
+        return endTimestamp;
+    }
+
+    public void setEndTimestamp(long endTimestamp) {
+        this.endTimestamp = endTimestamp;
+    }
 }

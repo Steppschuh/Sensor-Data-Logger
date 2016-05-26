@@ -3,6 +3,8 @@ package net.steppschuh.sensordatalogger;
 import android.hardware.Sensor;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -182,14 +184,31 @@ public class MainActivity extends AppCompatActivity {
     private MessageHandler getSensorDataRequestResponseMessageHandler() {
         return new SinglePathMessageHandler(MessageHandler.PATH_SENSOR_DATA_REQUEST_RESPONSE) {
             @Override
-            public void handleMessage(Message message) {
-                String sourceNodeId = MessageHandler.getSourceNodeIdFromMessage(message);
-                String responseJson = MessageHandler.getDataFromMessageAsString(message);
+            public void handleMessage(final Message message) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // parse response data
+                        final String sourceNodeId = MessageHandler.getSourceNodeIdFromMessage(message);
+                        String responseJson = MessageHandler.getDataFromMessageAsString(message);
+                        final DataRequestResponse response = DataRequestResponse.fromJson(responseJson);
 
-                DataRequestResponse response = DataRequestResponse.fromJson(responseJson);
-                for (DataBatch dataBatch : response.getDataBatches()) {
-                    renderDataBatch(dataBatch, sourceNodeId);
-                }
+                        // pre-process data fro rendering
+                        for (DataBatch dataBatch : response.getDataBatches()) {
+                            dataBatch.roundToDecimalPlaces(2);
+                        }
+
+                        // render data in UI thread
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (DataBatch dataBatch : response.getDataBatches()) {
+                                    renderDataBatch(dataBatch, sourceNodeId);
+                                }
+                            }
+                        });
+                    }
+                }).start();
             }
         };
     }
@@ -209,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
 
         String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
         SensorDataRequest sensorDataRequest = new SensorDataRequest(localNodeId, sensorTypes);
-        sensorDataRequest.setUpdateInteval(50);
+        sensorDataRequest.setUpdateInteval(100);
         return sensorDataRequest;
     }
 
@@ -252,29 +271,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void renderDataBatch(DataBatch dataBatch, String sourceNodeId) {
-        // get the visualization card
-        Node sourceNode = app.getGoogleApiMessenger().getLastConnectedNodeById(sourceNodeId);
-        String key = VisualizationCardData.generateKey(sourceNode.getDisplayName(), dataBatch.getSource());
-        VisualizationCardData visualizationCardData = cardListAdapter.getVisualizationCard(key);
+        try {
+            // get the visualization card
+            Node sourceNode = app.getGoogleApiMessenger().getLastConnectedNodeById(sourceNodeId);
+            if (sourceNode == null) {
+                throw new Exception("Unknown source node");
+            }
+            String key = VisualizationCardData.generateKey(sourceNode.getDisplayName(), dataBatch.getSource());
+            VisualizationCardData visualizationCardData = cardListAdapter.getVisualizationCard(key);
 
-        // create a new card if not yet avaialable
-        if (visualizationCardData == null) {
-            visualizationCardData = new VisualizationCardData(key);
-            visualizationCardData.setHeading(dataBatch.getSource());
-            visualizationCardData.setSubHeading(sourceNode.getDisplayName());
-            cardListAdapter.add(visualizationCardData);
-            cardListAdapter.notifyDataSetChanged();
-        }
+            // create a new card if not yet avaialable
+            if (visualizationCardData == null) {
+                visualizationCardData = new VisualizationCardData(key);
+                visualizationCardData.setHeading(dataBatch.getSource());
+                visualizationCardData.setSubHeading(sourceNode.getDisplayName());
+                cardListAdapter.add(visualizationCardData);
+                cardListAdapter.notifyDataSetChanged();
+            }
 
-        // update the card data
-        DataBatch visualizationDataBatch = visualizationCardData.getDataBatch();
-        if (visualizationDataBatch == null) {
-            visualizationDataBatch = dataBatch;
-            visualizationCardData.setDataBatch(visualizationDataBatch);
-        } else {
-            visualizationDataBatch.addData(dataBatch.getDataList());
+            // update the card data
+            DataBatch visualizationDataBatch = visualizationCardData.getDataBatch();
+            if (visualizationDataBatch == null) {
+                visualizationDataBatch = dataBatch;
+                visualizationDataBatch.setCapacity(DataBatch.CAPACITY_UNLIMITED);
+                visualizationCardData.setDataBatch(visualizationDataBatch);
+            } else {
+                visualizationDataBatch.addData(dataBatch.getDataList());
+            }
+            cardListAdapter.invalidateVisualization(visualizationCardData.getKey());
+        } catch (Exception ex) {
+            Log.w(TAG, "Unable to render data batch: " + ex.getMessage());
+            ex.printStackTrace();
         }
-        cardListAdapter.invalidateVisualization(visualizationCardData.getKey());
     }
 
     private void startConnectionSpeedTest() {

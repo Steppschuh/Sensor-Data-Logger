@@ -11,28 +11,28 @@ public abstract class UnitHelper {
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.
      *
-     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param dp      A value in dp (density independent pixels) unit. Which we need to convert into pixels
      * @param context Context to get resources and device specific display metrics
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        float px = dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return px;
     }
 
     /**
      * This method converts device specific pixels to density independent pixels.
      *
-     * @param px A value in px (pixels) unit. Which we need to convert into db
+     * @param px      A value in px (pixels) unit. Which we need to convert into db
      * @param context Context to get resources and device specific display metrics
      * @return A float value to represent dp equivalent to px value
      */
-    public static float convertPixelsToDp(float px, Context context){
+    public static float convertPixelsToDp(float px, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        float dp = px / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return dp;
     }
 
@@ -40,12 +40,9 @@ public abstract class UnitHelper {
      * Sets the text size for a Paint object so a given string of text will be a
      * given width.
      *
-     * @param paint
-     *            the Paint to set the text size for
-     * @param desiredWidth
-     *            the desired width
-     * @param text
-     *            the text that should be that width
+     * @param paint        the Paint to set the text size for
+     * @param desiredWidth the desired width
+     * @param text         the text that should be that width
      */
     private static void setTextSizeForWidth(Paint paint, float desiredWidth, String text) {
         // Pick a reasonably large value for the test. Larger values produce
@@ -64,6 +61,11 @@ public abstract class UnitHelper {
 
         // Set the paint for that size.
         paint.setTextSize(desiredTextSize);
+    }
+
+    float roundToDecimalPlaces(float value, int decimalPlaces) {
+        double shift = Math.pow(10, decimalPlaces);
+        return (float) (Math.round(value * shift) / shift);
     }
 
 }
