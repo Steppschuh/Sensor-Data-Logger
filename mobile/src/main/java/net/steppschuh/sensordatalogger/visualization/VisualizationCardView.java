@@ -3,6 +3,8 @@ package net.steppschuh.sensordatalogger.visualization;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,8 +21,20 @@ public class VisualizationCardView extends RelativeLayout {
 
     private VisualizationCardData data;
 
+    boolean showDimensionValues = true;
+
+    private ImageButton moreImageButton;
+
     private TextView headingTextView;
     private TextView subHeadingTextView;
+
+    private TextView valueLeftTextView;
+    private TextView valueCenterTextView;
+    private TextView valueRightTextView;
+
+    private ImageButton valueLeftButton;
+    private ImageButton valueRightButton;
+
     private ChartView chartView;
     private String chartType = ChartView.TYPE_LINE;
 
@@ -36,8 +50,44 @@ public class VisualizationCardView extends RelativeLayout {
 
     private void initializeLayout(Context context) {
         LayoutInflater.from(context).inflate(R.layout.visualization_card, this);
+
+        moreImageButton = (ImageButton) findViewById(R.id.moreButton);
+
         headingTextView = (TextView) findViewById(R.id.headingText);
         subHeadingTextView = (TextView) findViewById(R.id.subHeadingText);
+
+        valueLeftTextView = (TextView) findViewById(R.id.valueLeftText);
+        valueCenterTextView = (TextView) findViewById(R.id.valueCenterText);
+        valueRightTextView = (TextView) findViewById(R.id.valueRightText);
+
+        valueLeftButton = (ImageButton) findViewById(R.id.valueLeftButton);
+        valueLeftButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int current = chartView.getCurrentDataDimension();
+                int breakIndex = 0;
+                if (current == breakIndex && chartView.getDataDimension() != ChartView.DATA_DIMENSION_ALL) {
+                    chartView.setDataDimension(ChartView.DATA_DIMENSION_ALL);
+                } else {
+                    chartView.setDataDimension(chartView.getPreviousDataDimension());
+                }
+            }
+        });
+
+        valueRightButton = (ImageButton) findViewById(R.id.valueRightButton);
+        valueRightButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int current = chartView.getCurrentDataDimension();
+                int breakIndex = data.getDataBatch().getNewestData().getValues().length - 1;
+                if (current == breakIndex && chartView.getDataDimension() != ChartView.DATA_DIMENSION_ALL) {
+                    chartView.setDataDimension(ChartView.DATA_DIMENSION_ALL);
+                } else {
+                    chartView.setDataDimension(chartView.getNextDataDimension());
+                }
+            }
+        });
+
         chartView = (ChartView) findViewById(R.id.chartView);
     }
 
@@ -53,6 +103,25 @@ public class VisualizationCardView extends RelativeLayout {
         }
         headingTextView.setText(data.getHeading());
         subHeadingTextView.setText(data.getSubHeading());
+
+        if (showDimensionValues) {
+            float[] latestValues = data.getDataBatch().getNewestData().getValues();
+            String[] lastestReadableValues = new String[latestValues.length];
+            for (int valueIndex = 0; valueIndex < latestValues.length; valueIndex++) {
+                lastestReadableValues[valueIndex] = String.format("%.02f", latestValues[valueIndex]);
+            }
+            if (chartView.getDataDimension() == ChartView.DATA_DIMENSION_ALL) {
+                valueCenterTextView.setText(chartView.getCurrentDimensionName());
+            } else {
+                valueCenterTextView.setText(lastestReadableValues[chartView.getCurrentDataDimension()]);
+            }
+            valueRightTextView.setText(lastestReadableValues[chartView.getNextDataDimension()]);
+            valueLeftTextView.setText(lastestReadableValues[chartView.getPreviousDataDimension()]);
+        } else {
+            valueCenterTextView.setText(chartView.getCurrentDimensionName());
+            valueRightTextView.setText(ChartView.getDimensionName(chartView.getNextDataDimension()));
+            valueLeftTextView.setText(ChartView.getDimensionName(chartView.getPreviousDataDimension()));
+        }
 
         new Thread(new Runnable() {
             @Override

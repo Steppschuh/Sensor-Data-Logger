@@ -87,6 +87,9 @@ public abstract class ChartView extends View {
     }
 
     protected void initializeView() {
+        if (isInEditMode()) {
+            return;
+        }
         updateColors();
         updatePaints();
         updateDimensions();
@@ -201,11 +204,23 @@ public abstract class ChartView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+        if (isInEditMode()) {
+            return;
+        }
         updateDimensions();
+    }
+
+    protected boolean shouldRenderDimension(int dimension) {
+        return dataDimension == DATA_DIMENSION_ALL || dataDimension == dimension;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (isInEditMode()) {
+            return;
+        }
+
         if (renderTimeTracker.getTrackingCount() >= 100) {
             long averageRenderingDuration = renderTimeTracker.calculateAverageDuration();
             if (averageRenderingDuration > 3) {
@@ -215,7 +230,6 @@ public abstract class ChartView extends View {
         }
         renderTimeTracker.start();
 
-        super.onDraw(canvas);
         updateTimestamps();
 
         clearCanvas(canvas);
@@ -245,6 +259,29 @@ public abstract class ChartView extends View {
 
     protected void drawDataLabels(Canvas canvas) {
 
+    }
+
+    public String getCurrentDimensionName() {
+        if (dataBatch == null || dataBatch.getNewestData() == null) {
+            return "?";
+        }
+        if (dataDimension == DATA_DIMENSION_ALL) {
+            StringBuilder sb = new StringBuilder();
+            int dimensionCount = dataBatch.getNewestData().getValues().length;
+            for (int dimension = 0; dimension < dimensionCount; dimension++) {
+                sb.append(getDimensionName(dimension));
+                if (dimension < dimensionCount - 1) {
+                    sb.append(", ");
+                }
+            }
+            return sb.toString();
+        } else {
+            return getDimensionName(dataDimension);
+        }
+    }
+
+    public static String getDimensionName(int dimension) {
+        return UnitHelper.getCharForNumber(dimension + 23);
     }
 
     /**
@@ -288,5 +325,47 @@ public abstract class ChartView extends View {
 
     public void setEndTimestamp(long endTimestamp) {
         this.endTimestamp = endTimestamp;
+    }
+
+    public int getDataDimension() {
+        return dataDimension;
+    }
+
+    public int getCurrentDataDimension() {
+        int currentIndex = 0;
+        if (dataDimension != ChartView.DATA_DIMENSION_ALL) {
+            currentIndex = dataDimension;
+        }
+        return currentIndex;
+    }
+
+    public int getNextDataDimension() {
+        if (dataBatch == null || dataBatch.getNewestData() == null) {
+            return 0;
+        }
+        if (dataDimension == DATA_DIMENSION_ALL) {
+            return 0;
+        } else {
+            return (getCurrentDataDimension() + 1) % dataBatch.getNewestData().getValues().length;
+        }
+    }
+
+    public int getPreviousDataDimension() {
+        if (dataBatch == null || dataBatch.getNewestData() == null) {
+            return 0;
+        }
+        if (dataDimension == DATA_DIMENSION_ALL) {
+            return dataBatch.getNewestData().getValues().length - 1;
+        } else {
+            int previousIndex = (getCurrentDataDimension() - 1) % dataBatch.getNewestData().getValues().length;
+            if (previousIndex < 0) {
+                previousIndex += dataBatch.getNewestData().getValues().length;
+            }
+            return previousIndex;
+        }
+    }
+
+    public void setDataDimension(int dataDimension) {
+        this.dataDimension = dataDimension;
     }
 }

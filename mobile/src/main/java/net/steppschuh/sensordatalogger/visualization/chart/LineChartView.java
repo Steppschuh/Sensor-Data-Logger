@@ -83,7 +83,7 @@ public class LineChartView extends ChartView {
                     float x = mapValue(data.getTimestamp() - startTimestamp, range, mappedRange);
 
                     for (int dimension = 0; dimension < data.getValues().length; dimension++) {
-                        if (dataDimension != DATA_DIMENSION_ALL && dataDimension != dimension) {
+                        if (!shouldRenderDimension(dimension)) {
                             continue;
                         }
 
@@ -103,6 +103,10 @@ public class LineChartView extends ChartView {
 
             float newestX = mapValue(newestData.getTimestamp() - startTimestamp, range, mappedRange);
             for (int dimension = 0; dimension < newestData.getValues().length; dimension++) {
+                if (!shouldRenderDimension(dimension)) {
+                    continue;
+                }
+
                 // draw all data paths
                 Paint dataPathPaint = new Paint(dataStrokePaint);
                 dataPathPaint.setColor(dimensionColors[dimension]);

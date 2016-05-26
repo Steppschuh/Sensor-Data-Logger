@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                         String responseJson = MessageHandler.getDataFromMessageAsString(message);
                         final DataRequestResponse response = DataRequestResponse.fromJson(responseJson);
 
-                        // pre-process data fro rendering
+                        // pre-process data for rendering
                         for (DataBatch dataBatch : response.getDataBatches()) {
                             dataBatch.roundToDecimalPlaces(2);
                         }

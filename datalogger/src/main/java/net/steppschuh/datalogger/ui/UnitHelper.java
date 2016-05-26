@@ -63,9 +63,8 @@ public abstract class UnitHelper {
         paint.setTextSize(desiredTextSize);
     }
 
-    float roundToDecimalPlaces(float value, int decimalPlaces) {
-        double shift = Math.pow(10, decimalPlaces);
-        return (float) (Math.round(value * shift) / shift);
+    public static String getCharForNumber(int i) {
+        return i >= 0 && i < 26 ? String.valueOf((char)(i + 65)) : null;
     }
 
 }
