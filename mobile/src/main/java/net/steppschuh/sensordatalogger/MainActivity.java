@@ -225,13 +225,14 @@ public class MainActivity extends AppCompatActivity {
     private SensorDataRequest createSensorDataRequest() {
         List<Integer> sensorTypes = new ArrayList<>();
         sensorTypes.add(Sensor.TYPE_ACCELEROMETER);
+        sensorTypes.add(Sensor.TYPE_MAGNETIC_FIELD);
+        sensorTypes.add(Sensor.TYPE_LIGHT);
 
         String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
         SensorDataRequest sensorDataRequest = new SensorDataRequest(localNodeId, sensorTypes);
-        sensorDataRequest.setUpdateInteval(100);
+        sensorDataRequest.setUpdateInteval(50);
         return sensorDataRequest;
     }
-
 
     private boolean isRequestingSensorEventData() {
         if (sensorDataRequest == null) {

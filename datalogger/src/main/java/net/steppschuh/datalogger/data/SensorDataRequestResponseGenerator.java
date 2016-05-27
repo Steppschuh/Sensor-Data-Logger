@@ -110,7 +110,12 @@ public class SensorDataRequestResponseGenerator {
         // get all required data batches
         List<DataBatch> dataBatches = new ArrayList<>();
         for (Integer sensorType : sensorDataRequest.getSensorTypes()) {
-            DataBatch dataBatch = new DataBatch(app.getSensorDataManager().getDataBatch(sensorType));
+            DataBatch existingDataBatch = app.getSensorDataManager().getDataBatch(sensorType);
+            if (existingDataBatch == null) {
+                continue;
+            }
+
+            DataBatch dataBatch = new DataBatch(existingDataBatch);
 
             // trim batch to only contain the new data
             dataBatch.setDataList(dataBatch.getDataSince(lastEndTimestamp));

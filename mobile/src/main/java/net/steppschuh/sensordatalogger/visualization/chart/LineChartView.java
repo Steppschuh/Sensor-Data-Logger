@@ -15,7 +15,6 @@ import android.util.Log;
 import net.steppschuh.datalogger.data.Data;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class LineChartView extends ChartView {
@@ -32,9 +31,14 @@ public class LineChartView extends ChartView {
 
     protected float currentMinimumValue;
     protected float currentMaximumValue;
+    protected float currentPadding;
+    protected float currentPaddedMaximumValue;
+    protected float currentPaddedMinimumValue;
+    protected float currentPaddedRange;
+
     protected float paddedMaximumValue = Float.MAX_VALUE;
     protected float paddedMinimumValue = Float.MIN_VALUE;
-    protected float paddedMinimumRange = 1;
+    protected float paddedMinimumRange = 2;
     protected float targetPaddedMaximumValue = paddedMaximumValue;
     protected float targetPaddedMinimumValue = paddedMinimumValue;
 
@@ -63,21 +67,102 @@ public class LineChartView extends ChartView {
     @Override
     protected void drawGrid(Canvas canvas) {
         super.drawGrid(canvas);
+        drawHorizontalGrid(canvas);
+    }
 
-        // horizontal grid
-        float gridLineOffset = paddedHeight / (horizontalGridLinesCount - 1);
-        for (int gridLineIndex = 0; gridLineIndex < horizontalGridLinesCount; gridLineIndex++) {
-            try {
-                float y = paddedStartY + (gridLineIndex * gridLineOffset);
-                canvas.drawLine(paddedStartX + (2 * padding), y, paddedEndX, y, gridLinePaint);
+    protected void drawHorizontalGrid(Canvas canvas) {
+        float horizontalLineOffsetX = 2 * padding;
+        float horizontalLineDistance = paddedHeight / (horizontalGridLinesCount - 1);
 
-                float value = getTimestampFromMappedVerticalPosition(y);
+        // check if we should render the line representing the 0 value
+        // if not, lines will be centered vertically
+        boolean renderZeroLine = false;
+        if (paddedMaximumValue > 1 - paddedMinimumRange && paddedMinimumValue < paddedMinimumRange) {
+            renderZeroLine = true;
+        }
 
-                String readableValue = String.format("%.02f", value);
-                drawTextCentredLeft(canvas, readableValue, paddedStartX, y, gridLabelPaint, new Rect());
-            } catch (Exception ex) {
-                Log.v(TAG, "Unable to render grid: " + ex.getMessage());
+        // calculate vertical grid line positions
+        float horizontalLinesX = paddedStartX + horizontalLineOffsetX;
+        float[] horizontalLinesY = new float[horizontalGridLinesCount];
+        boolean paddedStartYReached = false;
+        boolean paddedEndYReached = false;
+        for (int lineIndex = 0; lineIndex < horizontalGridLinesCount; lineIndex++) {
+            // first grid line
+            if (lineIndex == 0) {
+                if (renderZeroLine) {
+                    // first grid line represents 0 value
+                    horizontalLinesY[lineIndex] = getMappedVerticalPosition(0);
+                    continue;
+                } else {
+                    // first grid line is centered vertically
+                    horizontalLinesY[lineIndex] = paddedStartY + (paddedHeight / 2);
+                    continue;
+                }
             }
+
+            // remaining grid lines are altering above (uneven index) and below (even index)
+            // the first grid line
+            float nextY;
+            int gridLineCountFromStart = (int) Math.ceil((lineIndex + 1) / 2);
+            if (paddedStartYReached && paddedEndYReached) {
+                break;
+            } else if (paddedStartYReached) {
+                nextY = horizontalLinesY[lineIndex - 1] + horizontalLineDistance;
+            } else if (paddedEndYReached) {
+                nextY = horizontalLinesY[lineIndex - 1] - horizontalLineDistance;
+            } else {
+                if (lineIndex % 2 == 0) {
+                    nextY = horizontalLinesY[0] + (gridLineCountFromStart * horizontalLineDistance);
+                } else {
+                    nextY = horizontalLinesY[0] - (gridLineCountFromStart * horizontalLineDistance);
+                }
+            }
+
+            // if we run out of space (because first line wasn't centered), make use
+            // of remaining space above / below the previous grid line
+            if (renderZeroLine) {
+                if (nextY < paddedStartY && !paddedStartYReached) {
+                    paddedStartYReached = true;
+                    if (paddedEndYReached) {
+                        break;
+                    }
+                    nextY = horizontalLinesY[lineIndex - 1] + horizontalLineDistance;
+                } else if (nextY > paddedEndY && !paddedEndYReached) {
+                    paddedEndYReached = true;
+                    if (paddedStartYReached) {
+                        break;
+                    }
+                    nextY = horizontalLinesY[lineIndex - 1] - horizontalLineDistance;
+                }
+            }
+
+            horizontalLinesY[lineIndex] = nextY;
+        }
+
+        // set grid label formatting based on how large the values are
+        String readableValueStringFormat;
+        if (verticalRange < 10) {
+            readableValueStringFormat = "%.2f";
+        } else if (verticalRange < 100) {
+            readableValueStringFormat = "%.1f";
+        } else {
+            readableValueStringFormat = "%.0f";
+        }
+
+        // draw grid lines & labels
+        for (int gridLineIndex = 0; gridLineIndex < horizontalLinesY.length; gridLineIndex++) {
+            float horizontalLineY = horizontalLinesY[gridLineIndex];
+            if (horizontalLineY < paddedStartY || horizontalLineY > paddedEndY) {
+                continue;
+            }
+
+            // draw grid line
+            canvas.drawLine(horizontalLinesX, horizontalLineY, paddedEndX, horizontalLineY, gridLinePaint);
+
+            // draw grid label
+            float value = getTimestampFromMappedVerticalPosition(horizontalLinesY[gridLineIndex]);
+            String readableValue = String.format(readableValueStringFormat, value);
+            drawTextCentredRight(canvas, readableValue, horizontalLinesX - (padding / 2), horizontalLinesY[gridLineIndex], gridLabelPaint, new Rect());
         }
     }
 
@@ -91,11 +176,15 @@ public class LineChartView extends ChartView {
         super.drawData(canvas);
 
         try {
+            if (dataBatch == null) {
+                return;
+            }
             Data newestData = dataBatch.getNewestData();
             if (newestData == null) {
                 return;
             }
 
+            // update some values needed for calculations
             horizontalRange = endTimestamp - startTimestamp;
             mappedHorizontalRange = paddedEndX - paddedStartX;
 
@@ -105,6 +194,7 @@ public class LineChartView extends ChartView {
             currentMinimumValue = Float.MAX_VALUE;
             currentMaximumValue = Float.MIN_VALUE;
 
+            // prepare data paths for each dimension
             dataPaths = new HashMap<>();
             for (int dimension = 0; dimension < newestData.getValues().length; dimension++) {
                 dataPaths.put(dimension, new Path());
@@ -139,6 +229,8 @@ public class LineChartView extends ChartView {
 
             float newestX = getMappedHorizontalPosition(newestData.getTimestamp());
 
+            // iterate over dimensions and draw data paths, as well as highlights
+            // for the newest values
             float fadeOverlayWidth = paddedWidth * fadePercentage;
             for (int dimension = 0; dimension < newestData.getValues().length; dimension++) {
                 if (!shouldRenderDimension(dimension)) {
@@ -159,15 +251,25 @@ public class LineChartView extends ChartView {
             }
 
             // adjust minimum & maximum values in order to 'zoom' chart
-            float currentPaddedMaximumValue = currentMaximumValue + (currentMaximumValue * 0.2f);
-            float currentPaddedMinimumValue = currentMinimumValue - (currentMinimumValue * 0.2f);
-            float currentPaddedRange = currentPaddedMaximumValue - currentMinimumValue;
+            currentPadding = Math.abs(currentMaximumValue - currentMinimumValue) * 0.2f;
+            currentPaddedMaximumValue = currentMaximumValue + currentPadding;
+            currentPaddedMinimumValue = currentMinimumValue - currentPadding;
+            currentPaddedRange = currentPaddedMaximumValue - currentMinimumValue;
 
+            // avoid 'zooming in' too mouch
             if (currentPaddedRange < paddedMinimumRange) {
-                currentPaddedMaximumValue = currentPaddedMaximumValue + (paddedMinimumRange / 2);
-                currentPaddedMinimumValue = currentPaddedMinimumValue - (paddedMinimumRange / 2);
+                if (currentPaddedMaximumValue < 0 + paddedMinimumRange && currentPaddedMinimumValue > 0 - paddedMinimumRange) {
+                    // center values in paddedMinimumRange around 0
+                    currentPaddedMaximumValue = 0 + paddedMinimumRange;
+                    currentPaddedMinimumValue = 0 - paddedMinimumRange;
+                } else {
+                    // expand minimum & maximum to match paddedMinimumRange
+                    currentPaddedMaximumValue = currentPaddedMaximumValue + (paddedMinimumRange / 2);
+                    currentPaddedMinimumValue = currentPaddedMinimumValue - (paddedMinimumRange / 2);
+                }
             }
 
+            // animate minimum & maximum changes, if any
             if (currentPaddedMaximumValue != targetPaddedMaximumValue) {
                 fadeMaximumValueTo(currentPaddedMaximumValue);
             }
@@ -179,9 +281,9 @@ public class LineChartView extends ChartView {
             debugCount++;
             if (debugCount >= 50) {
                 debugCount = 0;
-                System.out.println("Min: " + currentMinimumValue +  " Max: " + currentMaximumValue);
-                System.out.println("Padded Min: " + currentPaddedMinimumValue +  " Padded Max: " + currentPaddedMaximumValue);
-                System.out.println("Range: " + verticalRange +  " Mapped: " + mappedVerticalRange);
+                System.out.println("Min: " + currentMinimumValue + " Max: " + currentMaximumValue);
+                System.out.println("Padded Min: " + currentPaddedMinimumValue + " Padded Max: " + currentPaddedMaximumValue);
+                System.out.println("Range: " + verticalRange + " Mapped: " + mappedVerticalRange);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -192,7 +294,6 @@ public class LineChartView extends ChartView {
     protected void drawDataLabels(Canvas canvas) {
         super.drawDataLabels(canvas);
     }
-
 
 
     protected float getDataOpacity(Data data) {

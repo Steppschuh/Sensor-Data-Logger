@@ -59,7 +59,6 @@ public abstract class ChartView extends View {
     protected int gridColor;
     protected int[] dimensionColors;
 
-
     protected boolean mapEndTimestampToNow = true;
     protected long timeRange = TIME_RANGE_DEFAULT;
     protected long startTimestamp = TIMESTAMP_NOT_SET;
@@ -111,10 +110,13 @@ public abstract class ChartView extends View {
         backgroundColor = Color.WHITE;
         gridColor = Color.argb(50, 0, 0, 0);
 
-        dimensionColors = new int[3];
+        dimensionColors = new int[6];
         dimensionColors[0] = primaryColor;
         dimensionColors[1] = secondaryColor;
         dimensionColors[2] = tertiaryColor;
+        dimensionColors[3] = primaryColor;
+        dimensionColors[4] = secondaryColor;
+        dimensionColors[5] = tertiaryColor;
     }
 
     protected void updatePaints() {
@@ -297,6 +299,11 @@ public abstract class ChartView extends View {
     public static void drawTextCentredLeft(Canvas canvas, String text, float cx, float cy, Paint paint, Rect textBounds){
         paint.getTextBounds(text, 0, text.length(), textBounds);
         canvas.drawText(text, cx, cy - textBounds.exactCenterY(), paint);
+    }
+
+    public static void drawTextCentredRight(Canvas canvas, String text, float cx, float cy, Paint paint, Rect textBounds){
+        paint.getTextBounds(text, 0, text.length(), textBounds);
+        canvas.drawText(text, cx - textBounds.width(), cy - textBounds.exactCenterY(), paint);
     }
 
     /**

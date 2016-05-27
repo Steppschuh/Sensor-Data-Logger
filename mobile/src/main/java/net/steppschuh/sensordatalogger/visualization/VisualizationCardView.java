@@ -166,7 +166,7 @@ public class VisualizationCardView extends RelativeLayout {
                 float currentValue = currentData.getValues()[dimension];
                 float lastAddedValue = lastAddedData.getValues()[dimension];
                 float delta = Math.abs(currentValue - lastAddedValue);
-                if (delta > 0.1) {
+                if (delta > 0.05) {
                     hasEqualValues = false;
                     break;
                 }

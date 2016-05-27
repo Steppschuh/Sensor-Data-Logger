@@ -46,6 +46,11 @@ public class SensorDataManager {
     }
 
     public void registerSensorEventListener(Sensor sensor) {
+        if (sensor == null) {
+            Log.w(TAG, "Unable to register null sensor");
+            return;
+        }
+
         if (hasRegisteredSensorEventListener(sensor.getType())) {
             return;
         }
