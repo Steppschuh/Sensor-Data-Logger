@@ -34,6 +34,10 @@ public abstract class ChartView extends View {
     public static final long TIME_RANGE_DEFAULT = TimeUnit.SECONDS.toMillis(20);
     private static final float PADDING_DEFAULT_DP = 16;
 
+    public static final long FADE_DURATION_FAST = 200;
+    public static final long FADE_DURATION_NORMAL = 500;
+    public static final long FADE_DURATION_SLOW = 1000;
+
     protected DataBatch dataBatch;
     protected long updateInterval = UPDATE_INTERVAL_DEFAULT;
 
