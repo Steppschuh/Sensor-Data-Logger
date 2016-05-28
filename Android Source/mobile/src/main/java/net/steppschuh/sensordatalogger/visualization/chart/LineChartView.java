@@ -228,19 +228,22 @@ public class LineChartView extends ChartView {
             }
 
             float newestX = getMappedHorizontalPosition(newestData.getTimestamp());
+            float fadeOverlayWidth = paddedWidth * fadePercentage;
+            Paint dataPathPaint = new Paint(dataStrokePaint);
+            Shader fadeOutShader;
 
             // iterate over dimensions and draw data paths, as well as highlights
             // for the newest values
-            float fadeOverlayWidth = paddedWidth * fadePercentage;
             for (int dimension = 0; dimension < newestData.getValues().length; dimension++) {
                 if (!shouldRenderDimension(dimension)) {
                     continue;
                 }
 
                 // draw all data paths
-                Paint dataPathPaint = new Paint(dataStrokePaint);
-                Shader fadeOutShader = new LinearGradient(paddedStartX + (2 * padding), 0, paddedStartX + (2 * padding) + fadeOverlayWidth, 0, Color.TRANSPARENT, dimensionColors[dimension], Shader.TileMode.CLAMP);
-                dataPathPaint.setShader(fadeOutShader);
+                if (fadeOutOldData) {
+                    fadeOutShader = new LinearGradient(paddedStartX + (2 * padding), 0, paddedStartX + (2 * padding) + fadeOverlayWidth, 0, Color.TRANSPARENT, dimensionColors[dimension], Shader.TileMode.CLAMP);
+                    dataPathPaint.setShader(fadeOutShader);
+                }
                 canvas.drawPath(dataPaths.get(dimension), dataPathPaint);
 
                 // draw starting points

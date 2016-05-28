@@ -136,7 +136,7 @@ public abstract class ChartView extends View {
 
         gridLabelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         gridLabelPaint.setColor(gridColor);
-        gridLabelPaint.setTextSize(30);
+        gridLabelPaint.setTextSize(25);
 
         clearPaint = new Paint();
         clearPaint.setColor(backgroundColor);

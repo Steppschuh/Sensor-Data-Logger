@@ -66,8 +66,8 @@
                 <RelativeLayout
                     android:id="@+id/valuePreviewLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
                     android:layout_below="@id/subHeadingText">
 
                     <TextView
@@ -116,7 +116,7 @@
                         android:layout_height="match_parent"
                         android:scaleType="centerInside"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:layout_margin="8dp"
+                        android:layout_margin="4dp"
                         android:clickable="true"
                         android:layout_toLeftOf="@id/valueCenterText"
                         android:layout_toRightOf="@id/valueLeftText"
@@ -129,7 +129,7 @@
                         android:layout_height="match_parent"
                         android:scaleType="centerInside"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:layout_margin="8dp"
+                        android:layout_margin="4dp"
                         android:clickable="true"
                         android:layout_toRightOf="@id/valueCenterText"
                         android:layout_toLeftOf="@id/valueRightText"

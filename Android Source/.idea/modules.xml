@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SensorDataLogger.iml" filepath="$PROJECT_DIR$/SensorDataLogger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Android Source.iml" filepath="$PROJECT_DIR$/Android Source.iml" />
       <module fileurl="file://$PROJECT_DIR$/datalogger/datalogger.iml" filepath="$PROJECT_DIR$/datalogger/datalogger.iml" />
       <module fileurl="file://$PROJECT_DIR$/mobile/mobile.iml" filepath="$PROJECT_DIR$/mobile/mobile.iml" />
       <module fileurl="file://$PROJECT_DIR$/wear/wear.iml" filepath="$PROJECT_DIR$/wear/wear.iml" />

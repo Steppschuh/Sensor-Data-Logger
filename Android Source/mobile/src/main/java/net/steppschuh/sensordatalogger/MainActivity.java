@@ -17,6 +17,7 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 
 import net.steppschuh.datalogger.data.DataBatch;
+import net.steppschuh.datalogger.data.DataChangedListener;
 import net.steppschuh.datalogger.data.DataRequest;
 import net.steppschuh.datalogger.data.DataRequestResponse;
 import net.steppschuh.datalogger.data.SensorDataRequest;
@@ -34,7 +35,7 @@ import net.steppschuh.sensordatalogger.visualization.VisualizationCardListAdapte
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DataChangedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -77,16 +78,8 @@ public class MainActivity extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
-                List<Node> lastConnectedNodes = ((GoogleApiStatus) app.getGoogleApiMessenger().getStatus()).getLastConnectedNodes();
-                Log.d(TAG, "Starting connection speed test with " + lastConnectedNodes.size() + " connected node(s)");
-                startConnectionSpeedTest();
-                */
-
                 //requestStatusUpdateFromConnectedNodes();
                 startRequestingSensorEventData();
-
-                //cardListAdapter.add(new VisualizationCardData("Test"));
             }
         });
 
@@ -151,6 +144,14 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
     }
 
+    @Override
+    public void onDataChanged(DataBatch dataBatch, String sourceNodeId) {
+        renderDataBatch(dataBatch, sourceNodeId);
+    }
+
+    /*
+     * Message Handlers
+     */
     private MessageHandler getEchoMessageHandler() {
         return new SinglePathMessageHandler(MessageHandler.PATH_ECHO) {
             @Override
@@ -195,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // pre-process data for rendering
                         for (DataBatch dataBatch : response.getDataBatches()) {
-                            dataBatch.roundToDecimalPlaces(2);
+                            //dataBatch.roundToDecimalPlaces(2);
                         }
 
                         // render data in UI thread
@@ -203,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 for (DataBatch dataBatch : response.getDataBatches()) {
-                                    renderDataBatch(dataBatch, sourceNodeId);
+                                    onDataChanged(dataBatch, sourceNodeId);
                                 }
                             }
                         });
@@ -226,7 +227,6 @@ public class MainActivity extends AppCompatActivity {
         List<Integer> sensorTypes = new ArrayList<>();
         sensorTypes.add(Sensor.TYPE_ACCELEROMETER);
         sensorTypes.add(Sensor.TYPE_MAGNETIC_FIELD);
-        sensorTypes.add(Sensor.TYPE_LIGHT);
 
         String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
         SensorDataRequest sensorDataRequest = new SensorDataRequest(localNodeId, sensorTypes);
@@ -253,6 +253,9 @@ public class MainActivity extends AppCompatActivity {
             }
             sensorDataRequest = createSensorDataRequest();
             app.getGoogleApiMessenger().sendMessageToNearbyNodes(MessageHandler.PATH_SENSOR_DATA_REQUEST, sensorDataRequest.toString());
+
+            String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
+            app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_SENSOR_DATA_REQUEST, sensorDataRequest.toString(), localNodeId);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -321,5 +324,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, tracker.toString());
         app.getTrackerManager().getTimeTrackers().remove(tracker);
     }
+
 
 }
