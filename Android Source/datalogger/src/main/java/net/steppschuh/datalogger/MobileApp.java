@@ -10,6 +10,7 @@ import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 
 import net.steppschuh.datalogger.logging.TrackerManager;
+import net.steppschuh.datalogger.message.GetAvailableSensorsMessageHandler;
 import net.steppschuh.datalogger.message.SensorDataRequestMessageHandler;
 import net.steppschuh.datalogger.message.GetStatusMessageHandler;
 import net.steppschuh.datalogger.message.GoogleApiMessenger;
@@ -80,6 +81,7 @@ public class MobileApp extends Application implements MessageApi.MessageListener
         registerMessageHandler(new PingMessageHandler(googleApiMessenger));
         registerMessageHandler(new GetStatusMessageHandler(this));
         registerMessageHandler(new SensorDataRequestMessageHandler(this));
+        registerMessageHandler(new GetAvailableSensorsMessageHandler(this));
     }
 
     private void setupSensorDataManager() {

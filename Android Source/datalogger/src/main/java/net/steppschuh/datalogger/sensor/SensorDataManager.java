@@ -123,22 +123,7 @@ public class SensorDataManager {
         return new DataBatch(sensorName);
     }
 
-    public static List<Sensor> filterWakeUpSensors(List<Sensor> sensors) {
-        List<Sensor> nonWakeUpSensors = new ArrayList<>();
-        for (Sensor sensor : sensors) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                if (sensor.isWakeUpSensor()) {
-                   continue;
-                }
-            } else {
-                if (sensor.getName().toLowerCase().contains("wake_up")) {
-                    continue;
-                }
-            }
-            nonWakeUpSensors.add(sensor);
-        }
-        return nonWakeUpSensors;
-    }
+
 
     /**
      * Getter & Setter

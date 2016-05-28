@@ -1,24 +1,21 @@
 package net.steppschuh.sensordatalogger;
 
 import android.content.Context;
-import android.hardware.Sensor;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
-import net.steppschuh.datalogger.ui.UnitHelper;
+import net.steppschuh.datalogger.sensor.DeviceSensor;
 
 import java.util.List;
 
 public class SensorListAdapter extends BaseAdapter {
 
     private Context context;
-    private List<Sensor> sensors;
+    private List<DeviceSensor> sensors;
 
-    public SensorListAdapter(List<Sensor> sensors, Context context) {
+    public SensorListAdapter(List<DeviceSensor> sensors, Context context) {
         this.sensors = sensors;
         this.context = context;
     }
@@ -43,13 +40,20 @@ public class SensorListAdapter extends BaseAdapter {
         convertView = new CheckBox(context);
 
 
-
         ((CheckBox) convertView).setText(generateStringFromSensor(sensors.get(position)));
         return convertView;
     }
 
-    private String generateStringFromSensor(Sensor sensor) {
+    private String generateStringFromSensor(DeviceSensor sensor) {
         //return sensor.getName() + " (" + sensor.getVendor() + ")";
         return sensor.getName();
+    }
+
+    public List<DeviceSensor> getSensors() {
+        return sensors;
+    }
+
+    public void setSensors(List<DeviceSensor> sensors) {
+        this.sensors = sensors;
     }
 }
