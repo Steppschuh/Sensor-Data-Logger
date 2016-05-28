@@ -5,11 +5,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.util.Log;
 
 import net.steppschuh.datalogger.data.Data;
 import net.steppschuh.datalogger.data.DataBatch;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +121,23 @@ public class SensorDataManager {
         }
         String sensorName = sensor.getName();
         return new DataBatch(sensorName);
+    }
+
+    public static List<Sensor> filterWakeUpSensors(List<Sensor> sensors) {
+        List<Sensor> nonWakeUpSensors = new ArrayList<>();
+        for (Sensor sensor : sensors) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (sensor.isWakeUpSensor()) {
+                   continue;
+                }
+            } else {
+                if (sensor.getName().toLowerCase().contains("wake_up")) {
+                    continue;
+                }
+            }
+            nonWakeUpSensors.add(sensor);
+        }
+        return nonWakeUpSensors;
     }
 
     /**

@@ -1,5 +1,6 @@
 package net.steppschuh.sensordatalogger;
 
+import android.app.DialogFragment;
 import android.hardware.Sensor;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,7 +36,7 @@ import net.steppschuh.sensordatalogger.visualization.VisualizationCardListAdapte
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements DataChangedListener {
+public class MainActivity extends AppCompatActivity implements DataChangedListener, RequestBuilderDialogFragment.RequestBuilderDialogListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -79,7 +80,8 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
             @Override
             public void onClick(View v) {
                 //requestStatusUpdateFromConnectedNodes();
-                startRequestingSensorEventData();
+                //startRequestingSensorEventData();
+                showRequestBuilderDialog();
             }
         });
 
@@ -193,11 +195,6 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
                         final String sourceNodeId = MessageHandler.getSourceNodeIdFromMessage(message);
                         String responseJson = MessageHandler.getDataFromMessageAsString(message);
                         final DataRequestResponse response = DataRequestResponse.fromJson(responseJson);
-
-                        // pre-process data for rendering
-                        for (DataBatch dataBatch : response.getDataBatches()) {
-                            //dataBatch.roundToDecimalPlaces(2);
-                        }
 
                         // render data in UI thread
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -326,4 +323,18 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
     }
 
 
+    private void showRequestBuilderDialog() {
+        DialogFragment requestBuilderDialogFragment = new RequestBuilderDialogFragment();
+        requestBuilderDialogFragment.show(getFragmentManager(), RequestBuilderDialogFragment.class.getSimpleName());
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        Log.d(TAG, "onDialogPositiveClick");
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        Log.d(TAG, "onDialogNegativeClick");
+    }
 }

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Sensor Data Logger</string>
+    <string name="select_sensors">Select device sensors</string>
 </resources>
