@@ -281,9 +281,9 @@ public class LineChartView extends ChartView {
             debugCount++;
             if (debugCount >= 50) {
                 debugCount = 0;
-                System.out.println("Min: " + currentMinimumValue + " Max: " + currentMaximumValue);
-                System.out.println("Padded Min: " + currentPaddedMinimumValue + " Padded Max: " + currentPaddedMaximumValue);
-                System.out.println("Range: " + verticalRange + " Mapped: " + mappedVerticalRange);
+                //System.out.println("Min: " + currentMinimumValue + " Max: " + currentMaximumValue);
+                //System.out.println("Padded Min: " + currentPaddedMinimumValue + " Padded Max: " + currentPaddedMaximumValue);
+                //System.out.println("Range: " + verticalRange + " Mapped: " + mappedVerticalRange);
             }
         } catch (Exception e) {
             e.printStackTrace();
