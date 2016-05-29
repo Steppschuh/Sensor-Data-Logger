@@ -298,24 +298,6 @@ public class LineChartView extends ChartView {
         super.drawDataLabels(canvas);
     }
 
-
-    protected float getDataOpacity(Data data) {
-        if (fadeInNewData) {
-            long timestampOffset = data.getTimestamp() - (endTimestamp - fadeTimestampRange);
-            if (timestampOffset < 0) {
-                // value is not new
-                return 1;
-            } else if (timestampOffset > fadeTimestampRange) {
-                // value is too new
-                return 0;
-            } else {
-                return timestampOffset / fadeTimestampRange;
-            }
-        }
-
-        return 1;
-    }
-
     private void fadeMinimumValueTo(float newMinimumValue) {
         targetPaddedMinimumValue = newMinimumValue;
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(paddedMinimumValue, newMinimumValue);
@@ -327,7 +309,6 @@ public class LineChartView extends ChartView {
             }
         });
         valueAnimator.start();
-
     }
 
     private void fadeMaximumValueTo(float newMaximumValue) {

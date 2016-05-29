@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 public class DataRequest {
 
     public static final long UPDATE_INTERVAL_DEFAULT = TimeUnit.SECONDS.toMillis(1);
+    public static final long UPDATE_INTERVAL_FAST = 50;
     public static final int TIMESTAMP_NOT_SET = -1;
 
     private String sourceNodeId;

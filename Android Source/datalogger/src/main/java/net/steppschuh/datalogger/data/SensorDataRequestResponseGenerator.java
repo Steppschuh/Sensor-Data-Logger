@@ -3,6 +3,8 @@ package net.steppschuh.datalogger.data;
 import android.os.Handler;
 import android.util.Log;
 
+import com.google.android.gms.wearable.Node;
+
 import net.steppschuh.datalogger.MobileApp;
 import net.steppschuh.datalogger.message.MessageHandler;
 
@@ -13,11 +15,15 @@ public class SensorDataRequestResponseGenerator {
 
     public static final String TAG = SensorDataRequestResponseGenerator.class.getSimpleName();
 
+    private static final int MAXIMUM_EXCEPTION_COUNT = 10;
+
     private MobileApp app;
     private SensorDataRequest sensorDataRequest;
     private long lastEndTimestamp;
     private Handler updateHandler;
     private Runnable updateRunnable;
+
+    private int exceptionCount = 0;
 
     public SensorDataRequestResponseGenerator(MobileApp app) {
         this.app = app;
@@ -62,6 +68,9 @@ public class SensorDataRequestResponseGenerator {
     }
 
     public boolean shouldStopGeneratingRequestResponses() {
+        if (exceptionCount >= MAXIMUM_EXCEPTION_COUNT) {
+            return true;
+        }
         if (sensorDataRequest.getEndTimestamp() == DataRequest.TIMESTAMP_NOT_SET) {
             return false;
         }
@@ -88,12 +97,20 @@ public class SensorDataRequestResponseGenerator {
             @Override
             public void run() {
                 try {
+                    Node sourceNode = app.getGoogleApiMessenger().getLastConnectedNodeById(sensorDataRequest.getSourceNodeId());
+                    if (sourceNode == null) {
+                        app.getGoogleApiMessenger().updateLastConnectedNodes();
+                        throw new Exception("Source node hasn't connected recently");
+                    }
+
                     // generate & send request response
                     DataRequestResponse dataRequestResponse = generateDataRequestResponse();
                     String json = dataRequestResponse.toString();
-                    app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_SENSOR_DATA_REQUEST_RESPONSE, json, sensorDataRequest.getSourceNodeId());
+                    app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_SENSOR_DATA_REQUEST_RESPONSE, json, sourceNode.getId());
+                    exceptionCount = 0;
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    exceptionCount += 1;
+                    Log.w(TAG, "Unable to send request response: " + ex.getMessage());
                 }
 
                 // re-invoke runnable after delay

@@ -35,10 +35,11 @@ import net.steppschuh.sensordatalogger.visualization.VisualizationCardData;
 import net.steppschuh.sensordatalogger.visualization.VisualizationCardListAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements DataChangedListener, RequestBuilderDialogFragment.RequestBuilderDialogListener {
+public class MainActivity extends AppCompatActivity implements DataChangedListener, SensorSelectionDialogFragment.SelectedSensorsUpdatedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -51,8 +52,9 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
     private TextView logTextView;
     private GridView gridView;
 
-    private SensorDataRequest sensorDataRequest;
     private VisualizationCardListAdapter cardListAdapter;
+
+    private Map<String, SensorDataRequest> sensorDataRequests = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
             @Override
             public void onClick(View v) {
                 //requestStatusUpdateFromConnectedNodes();
-                //startRequestingSensorEventData();
+                //sendSensorEventDataRequests();
                 showRequestBuilderDialog();
             }
         });
@@ -128,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         status.updated(statusUpdateHandler);
 
         // start data request
-        startRequestingSensorEventData();
+        sendSensorEventDataRequests();
     }
 
     @Override
@@ -222,40 +224,35 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         }
     }
 
-    private SensorDataRequest createSensorDataRequest() {
-        List<Integer> sensorTypes = new ArrayList<>();
-        sensorTypes.add(Sensor.TYPE_ACCELEROMETER);
-        sensorTypes.add(Sensor.TYPE_MAGNETIC_FIELD);
-
-        String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
-        SensorDataRequest sensorDataRequest = new SensorDataRequest(localNodeId, sensorTypes);
-        sensorDataRequest.setUpdateInteval(50);
-        return sensorDataRequest;
-    }
-
     private boolean isRequestingSensorEventData() {
-        if (sensorDataRequest == null) {
-            return false;
+        for (Map.Entry<String, SensorDataRequest> sensorDataRequestEntry : sensorDataRequests.entrySet()) {
+            if (sensorDataRequestEntry.getValue().getEndTimestamp() != DataRequest.TIMESTAMP_NOT_SET) {
+                return true;
+            }
         }
-        if (sensorDataRequest.getEndTimestamp() != DataRequest.TIMESTAMP_NOT_SET) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
-    private void startRequestingSensorEventData() {
+    private void sendSensorEventDataRequests() {
         try {
-            if (isRequestingSensorEventData()) {
+            if (!isRequestingSensorEventData()) {
                 Log.v(TAG, "Starting to request sensor event data");
             } else {
                 Log.v(TAG, "Updating sensor event data request");
             }
-            sensorDataRequest = createSensorDataRequest();
-            app.getGoogleApiMessenger().sendMessageToNearbyNodes(MessageHandler.PATH_SENSOR_DATA_REQUEST, sensorDataRequest.toString());
-
-            String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
-            app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_SENSOR_DATA_REQUEST, sensorDataRequest.toString(), localNodeId);
+            for (Map.Entry<String, SensorDataRequest> sensorDataRequestEntry : sensorDataRequests.entrySet()) {
+                sendSensorEventDataRequest(sensorDataRequestEntry.getKey(), sensorDataRequestEntry.getValue());
+            }
         } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void sendSensorEventDataRequest(String nodeId, SensorDataRequest request) {
+        try {
+            app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_SENSOR_DATA_REQUEST, request.toJson(), nodeId);
+        } catch (Exception ex) {
+            Log.w(TAG, "Unable to send sensor data request: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -266,8 +263,10 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         }
         try {
             Log.v(TAG, "Stopping to request sensor event data");
-            sensorDataRequest.setEndTimestamp(System.currentTimeMillis());
-            app.getGoogleApiMessenger().sendMessageToNearbyNodes(MessageHandler.PATH_SENSOR_DATA_REQUEST, sensorDataRequest.toString());
+            for (Map.Entry<String, SensorDataRequest> sensorDataRequestEntry : sensorDataRequests.entrySet()) {
+                sensorDataRequestEntry.getValue().setEndTimestamp(System.currentTimeMillis());
+            }
+            sendSensorEventDataRequests();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -325,22 +324,27 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
     }
 
     private void showRequestBuilderDialog() {
-        DialogFragment requestBuilderDialogFragment = new RequestBuilderDialogFragment();
-        requestBuilderDialogFragment.show(getFragmentManager(), RequestBuilderDialogFragment.class.getSimpleName());
+        DialogFragment requestBuilderDialogFragment = new SensorSelectionDialogFragment();
+        requestBuilderDialogFragment.show(getFragmentManager(), SensorSelectionDialogFragment.class.getSimpleName());
     }
 
     @Override
     public void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors) {
         Log.d(TAG, "onSensorsFromAllNodesSelected");
+        sendSensorEventDataRequests();
     }
 
     @Override
     public void onSensorsFromNodeSelected(String nodeId, List<DeviceSensor> sensors) {
         Log.d(TAG, "onSensorsFromNodeSelected: " + nodeId + ": " + sensors.size());
+        SensorDataRequest sensorDataRequest = SensorSelectionDialogFragment.createSensorDataRequest(sensors);
+        sensorDataRequest.setSourceNodeId(app.getGoogleApiMessenger().getLocalNodeId());
+        sensorDataRequests.put(nodeId, sensorDataRequest);
     }
 
     @Override
     public void onSensorSelectionCanceled(DialogFragment dialog) {
         Log.d(TAG, "onSensorSelectionCanceled");
     }
+
 }

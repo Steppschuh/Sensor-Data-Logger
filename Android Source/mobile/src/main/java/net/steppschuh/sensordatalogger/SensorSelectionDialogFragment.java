@@ -16,6 +16,8 @@ import android.widget.ListView;
 import com.google.android.gms.wearable.Node;
 
 import net.steppschuh.datalogger.MobileApp;
+import net.steppschuh.datalogger.data.DataRequest;
+import net.steppschuh.datalogger.data.SensorDataRequest;
 import net.steppschuh.datalogger.message.MessageHandler;
 import net.steppschuh.datalogger.message.SinglePathMessageHandler;
 import net.steppschuh.datalogger.sensor.DeviceSensor;
@@ -27,11 +29,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RequestBuilderDialogFragment extends DialogFragment {
+public class SensorSelectionDialogFragment extends DialogFragment {
 
-    public static final String TAG = RequestBuilderDialogFragment.class.getSimpleName();
+    public static final String TAG = SensorSelectionDialogFragment.class.getSimpleName();
 
-    public interface RequestBuilderDialogListener {
+    public interface AvailableSensorsUpdatedListener {
+        void onAvailableSensorsUpdated(String nodeId, List<DeviceSensor> deviceSensors);
+    }
+
+    public interface SelectedSensorsUpdatedListener {
         void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors);
 
         void onSensorsFromNodeSelected(String nodeId, List<DeviceSensor> sensors);
@@ -39,12 +45,8 @@ public class RequestBuilderDialogFragment extends DialogFragment {
         void onSensorSelectionCanceled(DialogFragment dialog);
     }
 
-    public interface AvailableSensorsUpdatedListener {
-        void onAvailableSensorsUpdated(String nodeId, List<DeviceSensor> deviceSensors);
-    }
-
     private MobileApp app;
-    private RequestBuilderDialogListener listener;
+    private SelectedSensorsUpdatedListener listener;
 
     private Map<String, Node> availableNodes = new HashMap<>();
     private Map<String, List<DeviceSensor>> availableSensors = new HashMap<>();
@@ -78,7 +80,7 @@ public class RequestBuilderDialogFragment extends DialogFragment {
         });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                listener.onSensorSelectionCanceled(RequestBuilderDialogFragment.this);
+                listener.onSensorSelectionCanceled(SensorSelectionDialogFragment.this);
             }
         });
         return builder.create();
@@ -90,9 +92,9 @@ public class RequestBuilderDialogFragment extends DialogFragment {
         app = (MobileApp) activity.getApplicationContext();
         app.registerMessageHandler(setSensorsMessageHandler);
         try {
-            listener = (RequestBuilderDialogListener) activity;
+            listener = (SelectedSensorsUpdatedListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement " + RequestBuilderDialogListener.class.getSimpleName());
+            throw new ClassCastException(activity.toString() + " must implement " + SelectedSensorsUpdatedListener.class.getSimpleName());
         }
     }
 
@@ -342,6 +344,33 @@ public class RequestBuilderDialogFragment extends DialogFragment {
                 }
             }
         };
+    }
+
+    public static SensorDataRequest createSensorDataRequest(List<DeviceSensor> selectedSensors) {
+        List<Integer> sensorTypes = new ArrayList<>();
+        for (DeviceSensor selectedSensor : selectedSensors) {
+            sensorTypes.add(selectedSensor.getType());
+        }
+
+        SensorDataRequest sensorDataRequest = new SensorDataRequest(sensorTypes);
+        sensorDataRequest.setUpdateInteval(DataRequest.UPDATE_INTERVAL_FAST);
+        return sensorDataRequest;
+    }
+
+    public SensorDataRequest createSensorDataRequest(String nodeId) {
+        List<DeviceSensor> sensors = selectedSensors.get(nodeId);
+        SensorDataRequest sensorDataRequest = createSensorDataRequest(sensors);
+        sensorDataRequest.setSourceNodeId(app.getGoogleApiMessenger().getLocalNodeId());
+        return sensorDataRequest;
+    }
+
+    public Map<String, SensorDataRequest> createSensorDataRequests() {
+        Map<String, SensorDataRequest> sensorDataRequests = new HashMap<>();
+        for (Map.Entry<String, List<DeviceSensor>> deviceSensors : selectedSensors.entrySet()) {
+            SensorDataRequest sensorDataRequest = createSensorDataRequest(deviceSensors.getKey());
+            sensorDataRequests.put(deviceSensors.getKey(), sensorDataRequest);
+        }
+        return sensorDataRequests;
     }
 
     /**
