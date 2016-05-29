@@ -324,7 +324,6 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         app.getTrackerManager().getTimeTrackers().remove(tracker);
     }
 
-
     private void showRequestBuilderDialog() {
         DialogFragment requestBuilderDialogFragment = new RequestBuilderDialogFragment();
         requestBuilderDialogFragment.show(getFragmentManager(), RequestBuilderDialogFragment.class.getSimpleName());
@@ -337,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
 
     @Override
     public void onSensorsFromNodeSelected(String nodeId, List<DeviceSensor> sensors) {
-        Log.d(TAG, "onSensorsFromNodeSelected");
+        Log.d(TAG, "onSensorsFromNodeSelected: " + nodeId + ": " + sensors.size());
     }
 
     @Override

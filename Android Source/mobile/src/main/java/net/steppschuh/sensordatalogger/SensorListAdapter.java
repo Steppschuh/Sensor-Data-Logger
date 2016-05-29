@@ -5,29 +5,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import net.steppschuh.datalogger.sensor.DeviceSensor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SensorListAdapter extends BaseAdapter {
 
     private Context context;
-    private List<DeviceSensor> sensors;
+    private List<DeviceSensor> availableSensors;
+    private List<DeviceSensor> selectedSensors;
 
-    public SensorListAdapter(List<DeviceSensor> sensors, Context context) {
-        this.sensors = sensors;
+    public SensorListAdapter(List<DeviceSensor> availableSensors, Context context) {
+        this.availableSensors = availableSensors;
+        this.selectedSensors = new ArrayList<>();
         this.context = context;
     }
 
     @Override
     public int getCount() {
-        return sensors.size();
+        return availableSensors.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return sensors.get(position);
+        return availableSensors.get(position);
     }
 
     @Override
@@ -36,24 +40,38 @@ public class SensorListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        convertView = new CheckBox(context);
-
-
-        ((CheckBox) convertView).setText(generateStringFromSensor(sensors.get(position)));
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = new CheckBox(context);
+        }
+        ((CheckBox) convertView).setText(availableSensors.get(position).getName());
+        ((CheckBox) convertView).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                DeviceSensor selectedSensor = availableSensors.get(position);
+                if (selectedSensors.contains(selectedSensor) && !isChecked) {
+                    selectedSensors.remove(selectedSensor);
+                } else if (!selectedSensors.contains(selectedSensor) && isChecked) {
+                    selectedSensors.add(selectedSensor);
+                }
+            }
+        });
         return convertView;
     }
 
-    private String generateStringFromSensor(DeviceSensor sensor) {
-        //return sensor.getName() + " (" + sensor.getVendor() + ")";
-        return sensor.getName();
+    /**
+     * Getter & Setter
+     */
+    public List<DeviceSensor> getAvailableSensors() {
+        return availableSensors;
     }
 
-    public List<DeviceSensor> getSensors() {
-        return sensors;
+    public void setAvailableSensors(List<DeviceSensor> availableSensors) {
+        this.availableSensors = availableSensors;
     }
 
-    public void setSensors(List<DeviceSensor> sensors) {
-        this.sensors = sensors;
+    public List<DeviceSensor> getSelectedSensors() {
+        return selectedSensors;
     }
+
 }

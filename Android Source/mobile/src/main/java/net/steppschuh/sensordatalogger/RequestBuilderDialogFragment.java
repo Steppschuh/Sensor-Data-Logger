@@ -33,7 +33,9 @@ public class RequestBuilderDialogFragment extends DialogFragment {
 
     public interface RequestBuilderDialogListener {
         void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors);
+
         void onSensorsFromNodeSelected(String nodeId, List<DeviceSensor> sensors);
+
         void onSensorSelectionCanceled(DialogFragment dialog);
     }
 
@@ -114,12 +116,12 @@ public class RequestBuilderDialogFragment extends DialogFragment {
                 public void onClick(View v) {
                     String nodeId = getNextSensorSelectionNodeId();
                     saveCurrentlySelectedSensors(nodeId);
+                    listener.onSensorsFromNodeSelected(nodeId, selectedSensors.get(nodeId));
 
                     if (sensorsFromAllNodesSelected()) {
                         listener.onSensorsFromAllNodesSelected(selectedSensors);
                         dialog.dismiss();
                     } else {
-                        listener.onSensorsFromNodeSelected(nodeId, selectedSensors.get(nodeId));
                         showSensorSelectionForNextNode();
                     }
                 }
@@ -138,7 +140,7 @@ public class RequestBuilderDialogFragment extends DialogFragment {
      * from the specified node. List items will be set when they are
      * available through an @AvailableSensorsUpdatedListener.
      */
-    public void showSensorSelectionForNode(String nodeId) {
+    private void showSensorSelectionForNode(String nodeId) {
         String nodeName = app.getGoogleApiMessenger().getNodeName(nodeId);
         Log.d(TAG, "Showing sensor selection for node: " + nodeName + " - " + nodeId);
 
@@ -175,7 +177,7 @@ public class RequestBuilderDialogFragment extends DialogFragment {
      * Calls @showSensorSelectionForNode with the next node id
      * that has not been shown yet
      */
-    public void showSensorSelectionForNextNode() {
+    private void showSensorSelectionForNextNode() {
         String nextNodeId = getNextSensorSelectionNodeId();
         if (nextNodeId == null) {
             Log.w(TAG, "Sensors for all nodes already selected!");
@@ -188,7 +190,7 @@ public class RequestBuilderDialogFragment extends DialogFragment {
      * Requests a @DeviceSensors object from the specified node and passes
      * it to the specified @AvailableSensorsUpdatedListener.
      */
-    public void requestAvailableSensors(String nodeId, AvailableSensorsUpdatedListener availableSensorsUpdatedListener) {
+    private void requestAvailableSensors(String nodeId, AvailableSensorsUpdatedListener availableSensorsUpdatedListener) {
         Log.d(TAG, "Requesting available sensors on node: " + nodeId);
         try {
             if (!availableSensorsUpdatedListeners.contains(availableSensorsUpdatedListener)) {
@@ -205,7 +207,7 @@ public class RequestBuilderDialogFragment extends DialogFragment {
      * Calls @requestAvailableSensors for all connected nearby nodes
      * in order to pre-fetch the available sensors for the dialog.
      */
-    public void requestAvailableSensors() {
+    private void requestAvailableSensors() {
         Log.d(TAG, "Pre-fetching available sensors from all nearby nodes");
         for (Node node : app.getGoogleApiMessenger().getLastConnectedNearbyNodes()) {
             if (!hasSelectedSensorsForNode(node.getId())) {
@@ -225,7 +227,7 @@ public class RequestBuilderDialogFragment extends DialogFragment {
      * sensors should be shown & selected by the user.
      * Returns null if sensors for all devices have been shown already.
      */
-    public String getNextSensorSelectionNodeId() {
+    private String getNextSensorSelectionNodeId() {
         // check local node
         String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
         if (!hasSelectedSensorsForNode(localNodeId)) {
@@ -263,7 +265,8 @@ public class RequestBuilderDialogFragment extends DialogFragment {
      */
     private void saveCurrentlySelectedSensors(String nodeId) {
         Log.d(TAG, "Saving currently selected sensors for " + nodeId);
-        selectedSensors.put(nodeId, new ArrayList<DeviceSensor>());
+        List<DeviceSensor> currentlySelectedSensors = multiChoiceAdapter.getSelectedSensors();
+        selectedSensors.put(nodeId, currentlySelectedSensors);
     }
 
     /**
@@ -278,7 +281,7 @@ public class RequestBuilderDialogFragment extends DialogFragment {
                 Log.d(TAG, nodeId + " updated, " + deviceSensors.size() + " sensor(s) available");
                 if (multiChoiceAdapter != null) {
                     // update adapter with sensors
-                    multiChoiceAdapter.setSensors(deviceSensors);
+                    multiChoiceAdapter.setAvailableSensors(deviceSensors);
                     multiChoiceAdapter.notifyDataSetChanged();
 
                     // update dialog title
@@ -375,6 +378,14 @@ public class RequestBuilderDialogFragment extends DialogFragment {
             return;
         }
         availableSensors.put(nodeId, sensors);
+    }
+
+    public Map<String, List<DeviceSensor>> getSelectedSensors() {
+        return selectedSensors;
+    }
+
+    public List<AvailableSensorsUpdatedListener> getAvailableSensorsUpdatedListeners() {
+        return availableSensorsUpdatedListeners;
     }
 
 }
