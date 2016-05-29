@@ -120,7 +120,9 @@ public class SensorDataManager {
             return null;
         }
         String sensorName = sensor.getName();
-        return new DataBatch(sensorName);
+        DataBatch dataBatch = new DataBatch(sensorName);
+        dataBatch.setType(sensorType);
+        return dataBatch;
     }
 
 

@@ -21,13 +21,12 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf6b13e8-2a93-4bd1-ac77-6e3ab7bd0eaf" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/RequestBuilderDialogFragment.java" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorSelectionDialogFragment.java" />
+    <list default="true" id="bf6b13e8-2a93-4bd1-ac77-6e3ab7bd0eaf" name="Default" comment="Improved exception handling in request response generator">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRequest.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRequest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequestResponseGenerator.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequestResponseGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataBatch.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataBatch.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/SensorDataManager.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/SensorDataManager.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/chart/LineChartView.java" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/chart/LineChartView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardListAdapter.java" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardListAdapter.java" />
     </list>
     <ignored path="Android Source.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -51,102 +50,17 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.037037">
-              <caret line="134" column="0" selection-start-line="134" selection-start-column="0" selection-end-line="134" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.97512436">
+              <caret line="358" column="54" selection-start-line="358" selection-start-column="54" selection-end-line="358" selection-end-column="54" />
               <folding>
-                <element signature="e#7131#8088#0" expanded="true" />
-                <element signature="e#7690#8046#0" expanded="true" />
-                <element signature="e#8045#8046#0" expanded="true" />
-                <element signature="e#8087#8088#0" expanded="true" />
+                <element signature="e#7100#8057#0" expanded="true" />
+                <element signature="e#7659#8015#0" expanded="true" />
+                <element signature="e#8014#8015#0" expanded="true" />
+                <element signature="e#8056#8057#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SensorDataRequestResponseGenerator.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequestResponseGenerator.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="104" column="0" selection-start-line="104" selection-start-column="0" selection-end-line="104" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SensorSelectionDialogFragment.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorSelectionDialogFragment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="26" column="27" selection-start-line="26" selection-start-column="27" selection-end-line="26" selection-end-column="27" />
-              <folding>
-                <element signature="e#2499#2533#0" expanded="true" />
-                <element signature="e#2666#2923#0" expanded="true" />
-                <element signature="e#2922#2923#0" expanded="true" />
-                <element signature="e#2981#3183#0" expanded="true" />
-                <element signature="e#3182#3183#0" expanded="true" />
-                <element signature="e#3245#3462#0" expanded="true" />
-                <element signature="e#3461#3462#0" expanded="true" />
-                <element signature="e#4573#5214#0" expanded="true" />
-                <element signature="e#5213#5214#0" expanded="true" />
-                <element signature="e#5943#5988#0" expanded="true" />
-                <element signature="e#8926#9291#0" expanded="true" />
-                <element signature="e#9290#9291#0" expanded="true" />
-                <element signature="e#10423#10424#0" expanded="true" />
-                <element signature="e#10484#10485#0" expanded="true" />
-                <element signature="e#11313#12367#0" expanded="true" />
-                <element signature="e#12082#12122#0" expanded="true" />
-                <element signature="e#12366#12367#0" expanded="true" />
-                <element signature="e#12771#12823#0" expanded="true" />
-                <element signature="e#12870#12907#0" expanded="true" />
-                <element signature="e#13071#13118#0" expanded="true" />
-                <element signature="e#15860#15861#0" expanded="true" />
-                <element signature="e#15897#15898#0" expanded="true" />
-                <element signature="e#16088#16089#0" expanded="true" />
-                <element signature="e#16127#16128#0" expanded="true" />
-                <element signature="e#16831#16832#0" expanded="true" />
-                <element signature="e#16869#16870#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SensorListAdapter.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorListAdapter.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#892#893#0" expanded="true" />
-                <element signature="e#945#946#0" expanded="true" />
-                <element signature="e#1370#1927#0" expanded="true" />
-                <element signature="e#1926#1927#0" expanded="true" />
-                <element signature="e#2281#2282#0" expanded="true" />
-                <element signature="e#2319#2320#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SensorDataRequest.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="7" column="45" selection-start-line="7" selection-start-column="45" selection-end-line="7" selection-end-column="45" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DataRequest.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRequest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2413793">
-              <caret line="11" column="49" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="49" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -162,6 +76,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Stephan Schultz" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="GradleLocalSettings">
@@ -4112,7 +4031,6 @@
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataChangedListener.java" />
         <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/chart/ChartView.java" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/DeviceSensor.java" />
-        <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/SensorDataManager.java" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/MessageHandler.java" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/DeviceSensors.java" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/GetAvailableSensorsMessageHandler.java" />
@@ -4124,9 +4042,13 @@
         <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/RequestBuilderDialogFragment.java" />
         <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorSelectionDialogFragment.java" />
         <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/chart/LineChartView.java" />
-        <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/GoogleApiMessenger.java" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequestResponseGenerator.java" />
+        <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardListAdapter.java" />
+        <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardData.java" />
+        <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataBatch.java" />
+        <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/SensorDataManager.java" />
+        <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -4795,6 +4717,13 @@
       <option name="number" value="Default" />
       <updated>1464426973007</updated>
     </task>
+    <task id="LOCAL-00001" summary="Improved exception handling in request response generator">
+      <created>1464521432183</created>
+      <option name="number" value="00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1464521432183</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -4810,7 +4739,7 @@
       <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32967034" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.45502093" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5502092" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -4831,8 +4760,21 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Improved exception handling in request response generator" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved exception handling in request response generator" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -4997,14 +4939,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/SensorDataManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.9967673">
-          <caret line="125" column="0" selection-start-line="125" selection-start-column="0" selection-end-line="125" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/status/GoogleApiStatus.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.073275864">
@@ -5017,14 +4951,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.47145188">
           <caret line="22" column="65" selection-start-line="22" selection-start-column="65" selection-end-line="22" selection-end-column="65" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataBatch.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3882545">
-          <caret line="115" column="4" selection-start-line="115" selection-start-column="4" selection-end-line="133" selection-end-column="5" />
           <folding />
         </state>
       </provider>
@@ -5074,14 +5000,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="7" column="45" selection-start-line="7" selection-start-column="45" selection-end-line="7" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/chart/LineChartView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.42564654">
@@ -5090,9 +5008,36 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/GoogleApiMessenger.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33297414">
+          <caret line="115" column="16" selection-start-line="115" selection-start-column="16" selection-end-line="115" selection-end-column="16" />
+          <folding>
+            <element signature="e#8432#9167#0" expanded="true" />
+            <element signature="e#9166#9167#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorListAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.9168357">
+          <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#892#893#0" expanded="true" />
+            <element signature="e#945#946#0" expanded="true" />
+            <element signature="e#1370#1927#0" expanded="true" />
+            <element signature="e#1926#1927#0" expanded="true" />
+            <element signature="e#2281#2282#0" expanded="true" />
+            <element signature="e#2319#2320#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorSelectionDialogFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
+        <state vertical-scroll-proportion="-0.03448276">
           <caret line="26" column="27" selection-start-line="26" selection-start-column="27" selection-end-line="26" selection-end-column="27" />
           <folding>
             <element signature="e#2499#2533#0" expanded="true" />
@@ -5125,59 +5070,80 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorListAdapter.java">
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRequest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#892#893#0" expanded="true" />
-            <element signature="e#945#946#0" expanded="true" />
-            <element signature="e#1370#1927#0" expanded="true" />
-            <element signature="e#1926#1927#0" expanded="true" />
-            <element signature="e#2281#2282#0" expanded="true" />
-            <element signature="e#2319#2320#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="-0.25646552">
+          <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java">
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.037037">
-          <caret line="134" column="0" selection-start-line="134" selection-start-column="0" selection-end-line="134" selection-end-column="0" />
-          <folding>
-            <element signature="e#7131#8088#0" expanded="true" />
-            <element signature="e#7690#8046#0" expanded="true" />
-            <element signature="e#8045#8046#0" expanded="true" />
-            <element signature="e#8087#8088#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.073275864">
+          <caret line="7" column="43" selection-start-line="7" selection-start-column="43" selection-end-line="7" selection-end-column="43" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/GoogleApiMessenger.java">
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/SensorDataManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33297414">
-          <caret line="115" column="16" selection-start-line="115" selection-start-column="16" selection-end-line="115" selection-end-column="16" />
-          <folding>
-            <element signature="e#8432#9167#0" expanded="true" />
-            <element signature="e#9166#9167#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.36961207">
+          <caret line="109" column="32" selection-start-line="109" selection-start-column="32" selection-end-line="109" selection-end-column="32" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequestResponseGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="104" column="0" selection-start-line="104" selection-start-column="0" selection-end-line="104" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.57866377">
+          <caret line="135" column="0" selection-start-line="135" selection-start-column="0" selection-end-line="135" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRequest.java">
+    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardListAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2413793">
-          <caret line="11" column="49" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="49" />
+        <state vertical-scroll-proportion="0.5237069">
+          <caret line="89" column="5" selection-start-line="89" selection-start-column="5" selection-end-line="89" selection-end-column="5" />
+          <folding>
+            <element signature="e#3593#3594#0" expanded="true" />
+            <element signature="e#3634#3635#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataBatch.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.23814656">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding>
+            <element signature="e#4006#4007#0" expanded="true" />
+            <element signature="e#4033#4034#0" expanded="true" />
+            <element signature="e#4070#4071#0" expanded="true" />
+            <element signature="e#4102#4103#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardData.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.40301725">
+          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.97512436">
+          <caret line="358" column="54" selection-start-line="358" selection-start-column="54" selection-end-line="358" selection-end-column="54" />
+          <folding>
+            <element signature="e#7100#8057#0" expanded="true" />
+            <element signature="e#7659#8015#0" expanded="true" />
+            <element signature="e#8014#8015#0" expanded="true" />
+            <element signature="e#8056#8057#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

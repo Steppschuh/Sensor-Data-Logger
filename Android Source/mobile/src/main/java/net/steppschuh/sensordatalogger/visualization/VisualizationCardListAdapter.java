@@ -15,7 +15,6 @@ public class VisualizationCardListAdapter extends ArrayAdapter<VisualizationCard
     Map<String, VisualizationCardData> visualizationCards;
     Map<String, VisualizationCardView> visualizationCardViews;
 
-
     public VisualizationCardListAdapter(Context context, int resource) {
         super(context, resource);
         visualizationCards = new HashMap<>();
@@ -29,15 +28,6 @@ public class VisualizationCardListAdapter extends ArrayAdapter<VisualizationCard
         for (VisualizationCardData visualizationCardData : cardData) {
             visualizationCards.put(visualizationCardData.getKey(), visualizationCardData);
         }
-    }
-
-    public void setVisualizationCards(List<VisualizationCardData> visualizationCardData) {
-        clear();
-        addAll(visualizationCardData);
-    }
-
-    public VisualizationCardData getVisualizationCard(String key) {
-        return visualizationCards.get(key);
     }
 
     public void invalidateVisualization(String key) {
@@ -98,4 +88,22 @@ public class VisualizationCardListAdapter extends ArrayAdapter<VisualizationCard
         super.clear();
         this.visualizationCards = new HashMap<>();
     }
+
+    public void setVisualizationCards(List<VisualizationCardData> visualizationCardData) {
+        clear();
+        addAll(visualizationCardData);
+    }
+
+    public VisualizationCardData getVisualizationCard(String key) {
+        return visualizationCards.get(key);
+    }
+
+    public Map<String, VisualizationCardData> getVisualizationCards() {
+        return visualizationCards;
+    }
+
+    public Map<String, VisualizationCardView> getVisualizationCardViews() {
+        return visualizationCardViews;
+    }
+
 }

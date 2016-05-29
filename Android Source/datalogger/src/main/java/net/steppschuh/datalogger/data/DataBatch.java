@@ -13,6 +13,7 @@ public class DataBatch {
     public static final int CAPACITY_UNLIMITED = -1;
     public static final int CAPACITY_DEFAULT = 500;
 
+    private int type;
     private String source;
     private List<Data> dataList;
     private int capacity;
@@ -23,6 +24,7 @@ public class DataBatch {
     }
 
     public DataBatch(DataBatch dataBatch) {
+        type = dataBatch.getType();
         source = dataBatch.getSource();
         dataList = new ArrayList<>(dataBatch.getDataList().size());
         dataList.addAll(dataBatch.getDataList());
@@ -142,6 +144,14 @@ public class DataBatch {
 
     public void setDataList(List<Data> dataList) {
         this.dataList = dataList;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public String getSource() {

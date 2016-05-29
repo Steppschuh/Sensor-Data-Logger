@@ -1,7 +1,6 @@
 package net.steppschuh.sensordatalogger;
 
 import android.app.DialogFragment;
-import android.hardware.Sensor;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
             public void onClick(View v) {
                 //requestStatusUpdateFromConnectedNodes();
                 //sendSensorEventDataRequests();
-                showRequestBuilderDialog();
+                showSensorSelectionDialog();
             }
         });
 
@@ -224,6 +223,32 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         }
     }
 
+    @Override
+    public void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors) {
+        Log.d(TAG, "onSensorsFromAllNodesSelected");
+    }
+
+    @Override
+    public void onSensorsFromNodeSelected(String nodeId, List<DeviceSensor> sensors) {
+        Log.d(TAG, "onSensorsFromNodeSelected: " + nodeId + ": " + sensors.size());
+        SensorDataRequest sensorDataRequest = SensorSelectionDialogFragment.createSensorDataRequest(sensors);
+        sensorDataRequest.setSourceNodeId(app.getGoogleApiMessenger().getLocalNodeId());
+        sensorDataRequests.put(nodeId, sensorDataRequest);
+
+        sendSensorEventDataRequests();
+        removeUnnededVisualizationCards();
+    }
+
+    @Override
+    public void onSensorSelectionCanceled(DialogFragment dialog) {
+        Log.d(TAG, "onSensorSelectionCanceled");
+    }
+
+    private void showSensorSelectionDialog() {
+        DialogFragment sensorSelectionDialogFragment = new SensorSelectionDialogFragment();
+        sensorSelectionDialogFragment.show(getFragmentManager(), SensorSelectionDialogFragment.class.getSimpleName());
+    }
+
     private boolean isRequestingSensorEventData() {
         for (Map.Entry<String, SensorDataRequest> sensorDataRequestEntry : sensorDataRequests.entrySet()) {
             if (sensorDataRequestEntry.getValue().getEndTimestamp() != DataRequest.TIMESTAMP_NOT_SET) {
@@ -307,6 +332,43 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         }
     }
 
+    private void removeUnnededVisualizationCards() {
+        Map<String, VisualizationCardData> removableVisualizationCards = new HashMap<>();
+
+        Map<String, VisualizationCardData> visualizationCards = cardListAdapter.getVisualizationCards();
+        for (Map.Entry<String, VisualizationCardData> visualizationCardDataEntry : visualizationCards.entrySet()) {
+            String nodeId = visualizationCardDataEntry.getKey();
+            VisualizationCardData visualizationCard = visualizationCardDataEntry.getValue();
+
+            SensorDataRequest sensorDataRequest = sensorDataRequests.get(nodeId);
+
+            // check if there's any request for the current node
+            if (sensorDataRequest == null) {
+                removableVisualizationCards.put(nodeId, visualizationCard);
+                continue;
+            }
+
+            // check if the request has reached is end timestamp
+            if (sensorDataRequest.getEndTimestamp() != SensorDataRequest.TIMESTAMP_NOT_SET) {
+                if (sensorDataRequest.getEndTimestamp() <= System.currentTimeMillis()) {
+                    removableVisualizationCards.put(nodeId, visualizationCard);
+                    continue;
+                }
+            }
+
+            // check if the current sensor is selected
+            Integer sensorType = visualizationCard.getDataBatch().getType();
+            if (!sensorDataRequest.getSensorTypes().contains(sensorType)) {
+                removableVisualizationCards.put(nodeId, visualizationCard);
+                continue;
+            }
+        }
+
+        for (Map.Entry<String, VisualizationCardData> visualizationCardDataEntry : removableVisualizationCards.entrySet()) {
+            cardListAdapter.remove(visualizationCardDataEntry.getValue());
+        }
+    }
+
     private void startConnectionSpeedTest() {
         app.getTrackerManager().getTracker("Connection Speed Test").start();
         try {
@@ -323,28 +385,5 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         app.getTrackerManager().getTimeTrackers().remove(tracker);
     }
 
-    private void showRequestBuilderDialog() {
-        DialogFragment requestBuilderDialogFragment = new SensorSelectionDialogFragment();
-        requestBuilderDialogFragment.show(getFragmentManager(), SensorSelectionDialogFragment.class.getSimpleName());
-    }
-
-    @Override
-    public void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors) {
-        Log.d(TAG, "onSensorsFromAllNodesSelected");
-        sendSensorEventDataRequests();
-    }
-
-    @Override
-    public void onSensorsFromNodeSelected(String nodeId, List<DeviceSensor> sensors) {
-        Log.d(TAG, "onSensorsFromNodeSelected: " + nodeId + ": " + sensors.size());
-        SensorDataRequest sensorDataRequest = SensorSelectionDialogFragment.createSensorDataRequest(sensors);
-        sensorDataRequest.setSourceNodeId(app.getGoogleApiMessenger().getLocalNodeId());
-        sensorDataRequests.put(nodeId, sensorDataRequest);
-    }
-
-    @Override
-    public void onSensorSelectionCanceled(DialogFragment dialog) {
-        Log.d(TAG, "onSensorSelectionCanceled");
-    }
 
 }
