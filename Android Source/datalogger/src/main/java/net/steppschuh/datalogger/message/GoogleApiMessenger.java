@@ -141,6 +141,15 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
         return pendingResult;
     }
 
+    public String getNodeName(String id) {
+        Node node = getLastConnectedNodeById(id);
+        if (node != null) {
+            return node.getDisplayName();
+        } else {
+            return id;
+        }
+    }
+
     public Node getLastConnectedNodeById(String id) {
         String localNodeId = getLocalNodeId();
         if (localNodeId != null && localNodeId.equals(id)) {

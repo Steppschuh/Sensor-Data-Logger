@@ -5,4 +5,5 @@
     <string name="available_sensors_on_this_device">Sensors on this device</string>
     <string name="no_sensors_available">No sensors available</string>
     <string name="loading_available_sensors">Loading available sensors ...</string>
+    <string name="loading_sensors_on_device">Loading sensors on [DEVICENAME] ...</string>
 </resources>

@@ -32,17 +32,17 @@ public class RequestBuilderDialogFragment extends DialogFragment {
     public static final String TAG = RequestBuilderDialogFragment.class.getSimpleName();
 
     public interface RequestBuilderDialogListener {
-        public void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors);
-        public void onSensorsFromNodeSelected(String nodeId, List<DeviceSensor> sensors);
-        public void onSensorSelectionCanceled(DialogFragment dialog);
+        void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors);
+        void onSensorsFromNodeSelected(String nodeId, List<DeviceSensor> sensors);
+        void onSensorSelectionCanceled(DialogFragment dialog);
     }
 
     public interface AvailableSensorsUpdatedListener {
-        public void onAvailableSensorsUpdated(String nodeId, List<DeviceSensor> deviceSensors);
+        void onAvailableSensorsUpdated(String nodeId, List<DeviceSensor> deviceSensors);
     }
 
-    MobileApp app;
-    RequestBuilderDialogListener listener;
+    private MobileApp app;
+    private RequestBuilderDialogListener listener;
 
     private Map<String, Node> availableNodes = new HashMap<>();
     private Map<String, List<DeviceSensor>> availableSensors = new HashMap<>();
@@ -52,6 +52,36 @@ public class RequestBuilderDialogFragment extends DialogFragment {
 
     private List<AvailableSensorsUpdatedListener> availableSensorsUpdatedListeners = new ArrayList<>();
 
+    /**
+     * Creates the basic alert dialog with a multi-choice list.
+     * It will be customized and filled with data from connected device
+     * once it's shown
+     */
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.loading_available_sensors);
+
+        final CharSequence[] availableSensors = new CharSequence[0];
+        builder.setMultiChoiceItems(availableSensors, null, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                // this will be overwritten to prevent default behaviour
+            }
+        });
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // this will be overwritten to prevent default behaviour
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                listener.onSensorSelectionCanceled(RequestBuilderDialogFragment.this);
+            }
+        });
+        return builder.create();
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -60,7 +90,7 @@ public class RequestBuilderDialogFragment extends DialogFragment {
         try {
             listener = (RequestBuilderDialogListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement RequestBuilderDialogListener");
+            throw new ClassCastException(activity.toString() + " must implement " + RequestBuilderDialogListener.class.getSimpleName());
         }
     }
 
@@ -103,84 +133,18 @@ public class RequestBuilderDialogFragment extends DialogFragment {
         showSensorSelectionForNextNode();
     }
 
-    private void saveCurrentlySelectedSensors(String nodeId) {
-        Log.d(TAG, "Saving currently selected sensors for " + nodeId);
-        selectedSensors.put(nodeId, new ArrayList<DeviceSensor>());
-    }
-
-    public void requestAvailableSensors() {
-        Log.d(TAG, "Pre-fetching available sensors from all nearby nodes");
-        for (Node node : app.getGoogleApiMessenger().getLastConnectedNearbyNodes()) {
-            if (!hasSelectedSensorsForNode(node.getId())) {
-                requestAvailableSensors(node.getId(), new AvailableSensorsUpdatedListener() {
-                    @Override
-                    public void onAvailableSensorsUpdated(String nodeId, List<DeviceSensor> deviceSensors) {
-                        Log.d(TAG, "Fetched available sensors on " + nodeId);
-                        availableSensors.put(nodeId, deviceSensors);
-                    }
-                });
-            }
-        }
-    }
-
-    public void requestAvailableSensors(String nodeId, AvailableSensorsUpdatedListener availableSensorsUpdatedListener) {
-        Log.d(TAG, "Requesting available sensors on node: " + nodeId);
-        try {
-            if (!availableSensorsUpdatedListeners.contains(availableSensorsUpdatedListener)) {
-                availableSensorsUpdatedListeners.add(availableSensorsUpdatedListener);
-            }
-            app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_GET_SENSORS, "", nodeId);
-        } catch (Exception e) {
-            Log.d(TAG, "Unable to request available sensors on node: " + nodeId);
-            e.printStackTrace();
-        }
-    }
-
-    public boolean sensorsFromAllNodesSelected() {
-        return getNextSensorSelectionNodeId() == null;
-    }
-
-    public boolean hasSelectedSensorsForNode(String nodeId) {
-        return selectedSensors.get(nodeId) != null;
-    }
-
-    public String getNextSensorSelectionNodeId() {
-        // check local node
-        String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
-        if (!hasSelectedSensorsForNode(localNodeId)) {
-            return localNodeId;
-        }
-
-        // check already requested available sensors
-        for (Map.Entry<String, List<DeviceSensor>> availableSensors : this.availableSensors.entrySet()) {
-            if (!hasSelectedSensorsForNode(availableSensors.getKey())) {
-                return availableSensors.getKey();
-            }
-        }
-
-        // check nearby connected nodes
-        for (Node node : app.getGoogleApiMessenger().getLastConnectedNearbyNodes()) {
-            if (!hasSelectedSensorsForNode(node.getId())) {
-                return node.getId();
-            }
-        }
-
-        return null;
-    }
-
-    public void showSensorSelectionForNextNode() {
-        String nextNodeId = getNextSensorSelectionNodeId();
-        if (nextNodeId == null) {
-            Log.w(TAG, "Sensors for all nodes already selected!");
-            return;
-        }
-        showSensorSelectionForNode(nextNodeId);
-    }
-
+    /**
+     * Updates the existing dialog to show a list of available sensors
+     * from the specified node. List items will be set when they are
+     * available through an @AvailableSensorsUpdatedListener.
+     */
     public void showSensorSelectionForNode(String nodeId) {
-        Log.d(TAG, "Showing sensor selection for node: " + nodeId);
+        String nodeName = app.getGoogleApiMessenger().getNodeName(nodeId);
+        Log.d(TAG, "Showing sensor selection for node: " + nodeName + " - " + nodeId);
+
         // prepare dialog for new sensor selection
-        getDialog().setTitle(getString(R.string.loading_available_sensors));
+        String title = getString(R.string.loading_sensors_on_device).replace("[DEVICENAME]", nodeName);
+        getDialog().setTitle(title);
 
         // create & apply new list adapter
         multiChoiceAdapter = new SensorListAdapter(new ArrayList<DeviceSensor>(), getActivity());
@@ -207,6 +171,106 @@ public class RequestBuilderDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * Calls @showSensorSelectionForNode with the next node id
+     * that has not been shown yet
+     */
+    public void showSensorSelectionForNextNode() {
+        String nextNodeId = getNextSensorSelectionNodeId();
+        if (nextNodeId == null) {
+            Log.w(TAG, "Sensors for all nodes already selected!");
+            return;
+        }
+        showSensorSelectionForNode(nextNodeId);
+    }
+
+    /**
+     * Requests a @DeviceSensors object from the specified node and passes
+     * it to the specified @AvailableSensorsUpdatedListener.
+     */
+    public void requestAvailableSensors(String nodeId, AvailableSensorsUpdatedListener availableSensorsUpdatedListener) {
+        Log.d(TAG, "Requesting available sensors on node: " + nodeId);
+        try {
+            if (!availableSensorsUpdatedListeners.contains(availableSensorsUpdatedListener)) {
+                availableSensorsUpdatedListeners.add(availableSensorsUpdatedListener);
+            }
+            app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_GET_SENSORS, "", nodeId);
+        } catch (Exception e) {
+            Log.d(TAG, "Unable to request available sensors on node: " + nodeId);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Calls @requestAvailableSensors for all connected nearby nodes
+     * in order to pre-fetch the available sensors for the dialog.
+     */
+    public void requestAvailableSensors() {
+        Log.d(TAG, "Pre-fetching available sensors from all nearby nodes");
+        for (Node node : app.getGoogleApiMessenger().getLastConnectedNearbyNodes()) {
+            if (!hasSelectedSensorsForNode(node.getId())) {
+                requestAvailableSensors(node.getId(), new AvailableSensorsUpdatedListener() {
+                    @Override
+                    public void onAvailableSensorsUpdated(String nodeId, List<DeviceSensor> deviceSensors) {
+                        Log.d(TAG, "Fetched available sensors on " + nodeId);
+                        availableSensors.put(nodeId, deviceSensors);
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Returns the node id of the next device for which the available
+     * sensors should be shown & selected by the user.
+     * Returns null if sensors for all devices have been shown already.
+     */
+    public String getNextSensorSelectionNodeId() {
+        // check local node
+        String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
+        if (!hasSelectedSensorsForNode(localNodeId)) {
+            return localNodeId;
+        }
+
+        // check already requested available sensors
+        for (Map.Entry<String, List<DeviceSensor>> availableSensors : this.availableSensors.entrySet()) {
+            if (!hasSelectedSensorsForNode(availableSensors.getKey())) {
+                return availableSensors.getKey();
+            }
+        }
+
+        // check nearby connected nodes
+        for (Node node : app.getGoogleApiMessenger().getLastConnectedNearbyNodes()) {
+            if (!hasSelectedSensorsForNode(node.getId())) {
+                return node.getId();
+            }
+        }
+
+        return null;
+    }
+
+    public boolean sensorsFromAllNodesSelected() {
+        return getNextSensorSelectionNodeId() == null;
+    }
+
+    public boolean hasSelectedSensorsForNode(String nodeId) {
+        return selectedSensors.get(nodeId) != null;
+    }
+
+    /**
+     * Writes the selected sensors for the specified node id
+     * into the @selectedSensors map
+     */
+    private void saveCurrentlySelectedSensors(String nodeId) {
+        Log.d(TAG, "Saving currently selected sensors for " + nodeId);
+        selectedSensors.put(nodeId, new ArrayList<DeviceSensor>());
+    }
+
+    /**
+     * Returns an @AvailableSensorsUpdatedListener that will update the
+     * dialog's @multiChoiceAdapter in order to render the checkboxes
+     * for the available sensors
+     */
     private AvailableSensorsUpdatedListener createAvailableSensorsUpdatedListener() {
         return new AvailableSensorsUpdatedListener() {
             @Override
@@ -232,6 +296,9 @@ public class RequestBuilderDialogFragment extends DialogFragment {
         };
     }
 
+    /**
+     * Returns a readable dialog title based on the specified node id
+     */
     private String getDialogTitleForAvailableSensors(String nodeId) {
         String title;
         if (nodeId.equals(app.getGoogleApiMessenger().getLocalNodeId())) {
@@ -243,41 +310,16 @@ public class RequestBuilderDialogFragment extends DialogFragment {
             }
         } else {
             // connected device
-            String deviceName = nodeId;
-            Node deviceNode = app.getGoogleApiMessenger().getLastConnectedNodeById(nodeId);
-            if (deviceNode != null) {
-                deviceName = deviceNode.getDisplayName();
-            }
-            title = getString(R.string.available_sensors_on_device).replace("[DEVICENAME]", deviceName);
+            String nodeName = app.getGoogleApiMessenger().getNodeName(nodeId);
+            title = getString(R.string.available_sensors_on_device).replace("[DEVICENAME]", nodeName);
         }
         return title;
     }
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.loading_available_sensors);
-
-        final CharSequence[] availableSensors = new CharSequence[0];
-        builder.setMultiChoiceItems(availableSensors, null, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                // this will be overwritten to prevent default behaviour
-            }
-        });
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // this will be overwritten to prevent default behaviour
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                listener.onSensorSelectionCanceled(RequestBuilderDialogFragment.this);
-            }
-        });
-        return builder.create();
-    }
-
+    /**
+     * Returns a @SinglePathMessageHandler that will notify @availableSensorsUpdatedListeners
+     * with the @DeviceSensors parsed from the received message
+     */
     private MessageHandler getSetSensorsMessageHandler() {
         return new SinglePathMessageHandler(MessageHandler.PATH_SET_SENSORS) {
             @Override
