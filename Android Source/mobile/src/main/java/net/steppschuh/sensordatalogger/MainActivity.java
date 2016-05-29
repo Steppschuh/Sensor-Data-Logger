@@ -26,6 +26,7 @@ import net.steppschuh.datalogger.logging.TimeTracker;
 import net.steppschuh.datalogger.logging.TrackerManager;
 import net.steppschuh.datalogger.message.MessageHandler;
 import net.steppschuh.datalogger.message.SinglePathMessageHandler;
+import net.steppschuh.datalogger.sensor.DeviceSensor;
 import net.steppschuh.datalogger.status.ActivityStatus;
 import net.steppschuh.datalogger.status.Status;
 import net.steppschuh.datalogger.status.StatusUpdateHandler;
@@ -35,6 +36,7 @@ import net.steppschuh.sensordatalogger.visualization.VisualizationCardListAdapte
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements DataChangedListener, RequestBuilderDialogFragment.RequestBuilderDialogListener {
 
@@ -329,12 +331,17 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        Log.d(TAG, "onDialogPositiveClick");
+    public void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors) {
+        Log.d(TAG, "onSensorsFromAllNodesSelected");
     }
 
     @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-        Log.d(TAG, "onDialogNegativeClick");
+    public void onSensorsFromNodeSelected(String nodeId, List<DeviceSensor> sensors) {
+        Log.d(TAG, "onSensorsFromNodeSelected");
+    }
+
+    @Override
+    public void onSensorSelectionCanceled(DialogFragment dialog) {
+        Log.d(TAG, "onSensorSelectionCanceled");
     }
 }

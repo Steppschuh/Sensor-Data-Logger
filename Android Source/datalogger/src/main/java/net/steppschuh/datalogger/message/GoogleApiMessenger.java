@@ -149,6 +149,20 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
         return getNodeById(id, status.getLastConnectedNodes());
     }
 
+    public List<Node> getLastConnectedNodes() {
+        if (status != null) {
+            return status.getLastConnectedNodes();
+        }
+        return new ArrayList<>();
+    }
+
+    public List<Node> getLastConnectedNearbyNodes() {
+        if (status != null) {
+            return getNearbyNodes(status.getLastConnectedNodes());
+        }
+        return new ArrayList<>();
+    }
+
     public static Node getNodeById(String id, List<Node> nodes) {
         for (Node recentNode : nodes) {
             if (recentNode.getId().equals(id)) {
@@ -236,6 +250,16 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
             return status.getLocalNode().getId();
         }
         return null;
+    }
+
+    public static List<Node> getNearbyNodes(List<Node> nodes) {
+        List<Node> nearbyNodes = new ArrayList<>();
+        for (Node node : nodes) {
+            if (node.isNearby()) {
+                nearbyNodes.add(node);
+            }
+        }
+        return nearbyNodes;
     }
 
     @Override
