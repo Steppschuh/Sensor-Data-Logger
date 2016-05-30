@@ -268,7 +268,12 @@ public class SensorSelectionDialogFragment extends DialogFragment {
      */
     private void saveCurrentlySelectedSensors(String nodeId) {
         Log.d(TAG, "Saving currently selected sensors for " + nodeId);
-        List<DeviceSensor> currentlySelectedSensors = multiChoiceAdapter.getSelectedSensors();
+        List<DeviceSensor> currentlySelectedSensors;
+        if (multiChoiceAdapter == null) {
+            currentlySelectedSensors = multiChoiceAdapter.getSelectedSensors();
+        } else {
+            currentlySelectedSensors = new ArrayList<>();
+        }
         selectedSensors.put(nodeId, currentlySelectedSensors);
     }
 
@@ -282,6 +287,10 @@ public class SensorSelectionDialogFragment extends DialogFragment {
             @Override
             public void onAvailableSensorsUpdated(String nodeId, List<DeviceSensor> deviceSensors) {
                 Log.d(TAG, nodeId + " updated, " + deviceSensors.size() + " sensor(s) available");
+                if (!nodeId.equals(getNextSensorSelectionNodeId())) {
+                    Log.w(TAG, "Tried to update list adapter with data wrong node: " + nodeId);
+                    return;
+                }
                 if (multiChoiceAdapter != null) {
                     // update adapter with sensors
                     multiChoiceAdapter.setAvailableSensors(deviceSensors);
@@ -289,13 +298,6 @@ public class SensorSelectionDialogFragment extends DialogFragment {
                     // restore previously selected sensors
                     List<DeviceSensor> selectedSensors = previouslySelectedSensors.get(nodeId);
                     if (selectedSensors != null) {
-
-                        StringBuilder sb = new StringBuilder("Restoring selected sensors for " + nodeId + ":");
-                        for (DeviceSensor sensor : selectedSensors) {
-                            sb.append("\n - " + sensor.getName());
-                        }
-                        Log.d(TAG, sb.toString());
-
                         multiChoiceAdapter.setPreviouslySelectedSensors(selectedSensors);
                     }
                     multiChoiceAdapter.notifyDataSetChanged();

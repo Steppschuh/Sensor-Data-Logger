@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.google.android.gms.wearable.MessageApi;
@@ -26,7 +27,7 @@ import net.steppschuh.datalogger.status.StatusUpdateReceiver;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MobileApp extends Application implements MessageApi.MessageListener, StatusUpdateEmitter {
+public class MobileApp extends MultiDexApplication implements MessageApi.MessageListener, StatusUpdateEmitter {
 
     public static final String TAG = "DataLogger";
 
