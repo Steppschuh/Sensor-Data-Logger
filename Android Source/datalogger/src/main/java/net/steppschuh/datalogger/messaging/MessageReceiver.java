@@ -1,4 +1,4 @@
-package net.steppschuh.datalogger.message;
+package net.steppschuh.datalogger.messaging;
 
 import android.os.Message;
 

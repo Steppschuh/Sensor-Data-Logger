@@ -21,14 +21,28 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf6b13e8-2a93-4bd1-ac77-6e3ab7bd0eaf" name="Default" comment="Implemented restoring of previously selected sensors">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../.gitignore" afterPath="$PROJECT_DIR$/../.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/multidex_instrumentation_1_0_1.xml" afterPath="$PROJECT_DIR$/.idea/libraries/multidex_instrumentation_1_0_1.xml" />
+    <list default="true" id="bf6b13e8-2a93-4bd1-ac77-6e3ab7bd0eaf" name="Default" comment="Improved sensor selection dialog">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/ReachabilityChecker.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRequest.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/request/DataRequest.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRequestResponse.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/request/DataRequestResponse.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequest.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/request/SensorDataRequest.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequestResponseGenerator.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/request/SensorDataRequestResponseGenerator.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/GetAvailableSensorsMessageHandler.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/GetAvailableSensorsMessageHandler.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/GetStatusMessageHandler.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/GetStatusMessageHandler.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/GoogleApiMessenger.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/GoogleApiMessenger.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/MessageHandler.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/MessageHandler.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/MessageReceiver.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/MessageReceiver.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/PingMessageHandler.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/PingMessageHandler.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/SensorDataRequestMessageHandler.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/SensorDataRequestMessageHandler.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/SinglePathMessageHandler.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/SinglePathMessageHandler.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/MobileApp.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/MobileApp.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gradle.properties" afterPath="$PROJECT_DIR$/gradle.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/build.gradle" afterPath="$PROJECT_DIR$/mobile/build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorSelectionDialogFragment.java" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorSelectionDialogFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardData.java" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardData.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/res/layout/activity_main.xml" afterPath="$PROJECT_DIR$/mobile/src/main/res/layout/activity_main.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/mobile/src/main/res/values/strings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/wear/src/main/java/net/steppschuh/sensordatalogger/MainActivityWear.java" afterPath="$PROJECT_DIR$/wear/src/main/java/net/steppschuh/sensordatalogger/MainActivityWear.java" />
     </list>
     <ignored path="Android Source.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -56,27 +70,61 @@
         <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="374" column="72" selection-start-line="374" selection-start-column="72" selection-end-line="374" selection-end-column="72" />
+              <caret line="171" column="24" selection-start-line="171" selection-start-column="24" selection-end-line="171" selection-end-column="24" />
               <folding>
-                <element signature="e#7179#8136#0" expanded="true" />
-                <element signature="e#7738#8094#0" expanded="true" />
-                <element signature="e#8093#8094#0" expanded="true" />
-                <element signature="e#8135#8136#0" expanded="true" />
+                <element signature="e#7211#7247#0" expanded="true" />
+                <element signature="e#7250#7289#0" expanded="true" />
+                <element signature="e#9288#9644#0" expanded="true" />
+                <element signature="e#9643#9644#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SensorSelectionDialogFragment.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorSelectionDialogFragment.java">
+      <file leaf-file-name="MainActivityWear.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/wear/src/main/java/net/steppschuh/sensordatalogger/MainActivityWear.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="5.116915">
-              <caret line="281" column="62" selection-start-line="281" selection-start-column="62" selection-end-line="281" selection-end-column="62" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="175" column="9" selection-start-line="175" selection-start-column="9" selection-end-line="175" selection-end-column="9" />
+              <folding>
+                <element signature="e#2655#2656#0" expanded="true" />
+                <element signature="e#2706#2707#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ReachabilityChecker.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/ReachabilityChecker.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.6486486">
+              <caret line="103" column="7" selection-start-line="103" selection-start-column="7" selection-end-line="103" selection-end-column="7" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#3070#3272#0" expanded="true" />
-                <element signature="e#3271#3272#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GoogleApiMessenger.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/GoogleApiMessenger.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="50" column="43" selection-start-line="50" selection-start-column="41" selection-end-line="50" selection-end-column="43" />
+              <folding>
+                <element signature="e#1523#1524#0" expanded="true" />
+                <element signature="e#1558#1559#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MessageHandler.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/MessageHandler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="22" column="51" selection-start-line="22" selection-start-column="51" selection-end-line="22" selection-end-column="51" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -4116,22 +4164,29 @@
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/DeviceSensors.java" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/GetAvailableSensorsMessageHandler.java" />
         <option value="$PROJECT_DIR$/mobile/src/main/res/layout/visualization_card.xml" />
-        <option value="$PROJECT_DIR$/mobile/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRequest.java" />
         <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/RequestBuilderDialogFragment.java" />
         <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/chart/LineChartView.java" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/GoogleApiMessenger.java" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequestResponseGenerator.java" />
         <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardListAdapter.java" />
-        <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardData.java" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataBatch.java" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/SensorDataManager.java" />
         <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorListAdapter.java" />
-        <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java" />
         <option value="$PROJECT_DIR$/gradle.properties" />
         <option value="$PROJECT_DIR$/mobile/build.gradle" />
+        <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/PingMessageHandler.java" />
+        <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/EchoMessageHandler.java" />
         <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/MobileApp.java" />
         <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorSelectionDialogFragment.java" />
+        <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardData.java" />
+        <option value="$PROJECT_DIR$/mobile/src/main/res/layout/activity_main.xml" />
+        <option value="$PROJECT_DIR$/mobile/src/main/res/values/strings.xml" />
+        <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/MessageHandler.java" />
+        <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/GoogleApiMessenger.java" />
+        <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java" />
+        <option value="$PROJECT_DIR$/wear/src/main/java/net/steppschuh/sensordatalogger/MainActivityWear.java" />
+        <option value="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/ReachabilityChecker.java" />
       </list>
     </option>
   </component>
@@ -4239,6 +4294,46 @@
               <option name="myItemId" value="mobile" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="values" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mobile" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mobile" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="layout" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -4326,6 +4421,16 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="mobile" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="datalogger" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
             </PATH_ELEMENT>
@@ -4360,6 +4465,50 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="datalogger" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="datalogger" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="datalogger" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="status" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="datalogger" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="datalogger" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="service" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -4402,7 +4551,33 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="message" />
+              <option name="myItemId" value="messaging" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="datalogger" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="datalogger" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="messaging" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="handler" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -4428,6 +4603,32 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="datalogger" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="datalogger" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="request" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -4437,15 +4638,16 @@
     <property name="settings.editor.selected.configurable" value="gradle.experimental" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="FullScreen" value="true" />
-    <property name="device.picker.selection" value="0149C7ED0101B009" />
-    <property name="SearchEverywhereHistoryKey" value="showSe&#9;PSI&#9;JAVA://net.steppschuh.sensordatalogger.MainActivity#showSensorSelectionDialog&#10;Google&#9;FILE&#9;file:///Users/Steppschuh/Documents/Projects/SensorDataLogger/Android Source/datalogger/src/main/java/net/steppschuh/datalogger/message/GoogleApiMessenger.java&#10;sensor&#9;PSI&#9;JAVA://net.steppschuh.datalogger.sensor.SensorDataManager&#10;createSe&#9;PSI&#9;JAVA://net.steppschuh.sensordatalogger.MainActivity#createSensorDataRequest" />
+    <property name="device.picker.selection" value="410KPFX0070059" />
+    <property name="SearchEverywhereHistoryKey" value="onre&#9;PSI&#9;JAVA://net.steppschuh.datalogger.messaging.ReachabilityChecker.NodeReachabilityUpdateReceiver#onReachabilityUpdated&#10;generateKey&#9;PSI&#9;JAVA://net.steppschuh.sensordatalogger.visualization.VisualizationCardData#generateKey&#10;showSe&#9;PSI&#9;JAVA://net.steppschuh.sensordatalogger.MainActivity#showSensorSelectionDialog&#10;Google&#9;FILE&#9;file:///Users/Steppschuh/Documents/Projects/SensorDataLogger/Android Source/datalogger/src/main/java/net/steppschuh/datalogger/message/GoogleApiMessenger.java&#10;sensor&#9;PSI&#9;JAVA://net.steppschuh.datalogger.sensor.SensorDataManager&#10;createSe&#9;PSI&#9;JAVA://net.steppschuh.sensordatalogger.MainActivity#createSensorDataRequest" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="net.steppschuh.datalogger.messaging.handler" />
       <recent name="net.steppschuh.datalogger.message" />
     </key>
   </component>
-  <component name="RunManager" selected="Android Application.mobile">
+  <component name="RunManager" selected="Android Application.wear">
     <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android Application">
       <module name="" />
       <option name="DEPLOY" value="true" />
@@ -4772,7 +4974,13 @@
       <option name="project" value="LOCAL" />
       <updated>1464601902767</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Improved sensor selection dialog">
+      <created>1464607952511</created>
+      <option name="number" value="00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1464607952515</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -4785,20 +4993,20 @@
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41736403" sideWeight="0.497558" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31276152" sideWeight="0.495116" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32967034" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5502092" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5502092" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41736403" sideWeight="0.502442" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41736403" sideWeight="0.504884" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24969475" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24969475" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39958158" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32967034" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -4825,24 +5033,21 @@
     <MESSAGE value="Improved exception handling in request response generator" />
     <MESSAGE value="Removing unneeded visualization cards" />
     <MESSAGE value="Implemented restoring of previously selected sensors" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented restoring of previously selected sensors" />
+    <MESSAGE value="Improved sensor selection dialog" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved sensor selection dialog" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <option name="time" value="2" />
     </breakpoint-manager>
-    <watches-manager />
+    <watches-manager>
+      <configuration name="mobile">
+        <watch expression="((GoogleApiStatus)((GoogleApiMessenger)((PhoneApp)app).googleApiMessenger).status).lastConnectedNodes" custom="net.steppschuh.sensordatalogger.PhoneApp,net.steppschuh.datalogger.messaging.GoogleApiMessenger,net.steppschuh.datalogger.status.GoogleApiStatus" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataChangedListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/chart/ChartView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -4851,7 +5056,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRequestResponse.java">
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/request/DataRequestResponse.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.110929854">
           <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
@@ -4875,15 +5080,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/wear/src/main/java/net/steppschuh/sensordatalogger/MainActivityWear.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="174" column="0" selection-start-line="174" selection-start-column="0" selection-end-line="174" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/SensorDataRequestMessageHandler.java">
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/SensorDataRequestMessageHandler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="17" column="34" selection-start-line="17" selection-start-column="34" selection-end-line="17" selection-end-column="34" />
@@ -4969,22 +5166,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/status/GoogleApiStatus.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.073275864">
-          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/MessageHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.47145188">
-          <caret line="22" column="65" selection-start-line="22" selection-start-column="65" selection-end-line="22" selection-end-column="65" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/DeviceSensors.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.6933116">
@@ -4995,7 +5176,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/GetAvailableSensorsMessageHandler.java">
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/GetAvailableSensorsMessageHandler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.41598696">
           <caret line="26" column="13" selection-start-line="26" selection-start-column="13" selection-end-line="26" selection-end-column="13" />
@@ -5014,14 +5195,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mobile/src/main/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.136">
-          <caret line="7" column="43" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="43" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/chart/LineChartView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.42564654">
@@ -5030,18 +5203,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/message/GoogleApiMessenger.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33297414">
-          <caret line="115" column="16" selection-start-line="115" selection-start-column="16" selection-end-line="115" selection-end-column="16" />
-          <folding>
-            <element signature="e#8432#9167#0" expanded="true" />
-            <element signature="e#9166#9167#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRequest.java">
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/request/DataRequest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.25646552">
           <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
@@ -5049,7 +5211,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequest.java">
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/request/SensorDataRequest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.073275864">
           <caret line="7" column="43" selection-start-line="7" selection-start-column="43" selection-end-line="7" selection-end-column="43" />
@@ -5065,29 +5227,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/SensorDataRequestResponseGenerator.java">
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/request/SensorDataRequestResponseGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.57866377">
           <caret line="135" column="0" selection-start-line="135" selection-start-column="0" selection-end-line="135" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardListAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5237069">
-          <caret line="89" column="5" selection-start-line="89" selection-start-column="5" selection-end-line="89" selection-end-column="5" />
-          <folding>
-            <element signature="e#3593#3594#0" expanded="false" />
-            <element signature="e#3634#3635#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardData.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.40301725">
-          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -5154,27 +5297,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/MobileApp.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="50" column="31" selection-start-line="50" selection-start-column="31" selection-end-line="50" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="374" column="72" selection-start-line="374" selection-start-column="72" selection-end-line="374" selection-end-column="72" />
-          <folding>
-            <element signature="e#7179#8136#0" expanded="true" />
-            <element signature="e#7738#8094#0" expanded="true" />
-            <element signature="e#8093#8094#0" expanded="true" />
-            <element signature="e#8135#8136#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorListAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.6937618">
@@ -5194,14 +5316,181 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataChangedListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.09159483">
+          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/wear/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/jars/classes.jar!/com/google/android/gms/common/api/GoogleApiClient.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5660377">
+          <caret line="439" column="26" selection-start-line="439" selection-start-column="26" selection-end-line="439" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/status/Status.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.20150863">
+          <caret line="15" column="18" selection-start-line="15" selection-start-column="18" selection-end-line="15" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/wear/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/jars/classes.jar!/com/google/android/gms/common/api/Result.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.5185184">
+          <caret line="7" column="7" selection-start-line="7" selection-start-column="7" selection-end-line="7" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/wear/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/jars/classes.jar!/com/google/android/gms/common/api/Status.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.056603774">
+          <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/PingMessageHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.29310346">
+          <caret line="20" column="84" selection-start-line="20" selection-start-column="49" selection-end-line="20" selection-end-column="84" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Android/sdk/sources/android-23/java/util/List.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44288793">
+          <caret line="110" column="0" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/status/GoogleApiStatus.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding>
+            <element signature="e#779#780#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/MobileApp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6937618">
+          <caret line="169" column="47" selection-start-line="169" selection-start-column="47" selection-end-line="169" selection-end-column="47" />
+          <folding>
+            <element signature="e#6053#6054#0" expanded="true" />
+            <element signature="e#6094#6095#0" expanded="true" />
+            <element signature="e#6953#6954#0" expanded="true" />
+            <element signature="e#6995#6996#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardListAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6885776">
+          <caret line="96" column="33" selection-start-line="96" selection-start-column="33" selection-end-line="96" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/SensorSelectionDialogFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="5.116915">
-          <caret line="281" column="62" selection-start-line="281" selection-start-column="62" selection-end-line="281" selection-end-column="62" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="289" column="69" selection-start-line="289" selection-start-column="69" selection-end-line="289" selection-end-column="69" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#3070#3272#0" expanded="true" />
-            <element signature="e#3271#3272#0" expanded="true" />
+            <element signature="e#3106#3308#0" expanded="true" />
+            <element signature="e#3307#3308#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/visualization/VisualizationCardData.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="17" column="30" selection-start-line="17" selection-start-column="30" selection-end-line="17" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mobile/src/main/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.38368055">
+          <caret line="13" column="69" selection-start-line="13" selection-start-column="69" selection-end-line="13" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mobile/src/main/res/layout/activity_main.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5034843">
+          <caret line="27" column="15" selection-start-line="27" selection-start-column="15" selection-end-line="27" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/handler/MessageHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="22" column="51" selection-start-line="22" selection-start-column="51" selection-end-line="22" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/GoogleApiMessenger.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="50" column="43" selection-start-line="50" selection-start-column="41" selection-end-line="50" selection-end-column="43" />
+          <folding>
+            <element signature="e#1523#1524#0" expanded="true" />
+            <element signature="e#1558#1559#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="171" column="24" selection-start-line="171" selection-start-column="24" selection-end-line="171" selection-end-column="24" />
+          <folding>
+            <element signature="e#7211#7247#0" expanded="true" />
+            <element signature="e#7250#7289#0" expanded="true" />
+            <element signature="e#9288#9644#0" expanded="true" />
+            <element signature="e#9643#9644#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/wear/src/main/java/net/steppschuh/sensordatalogger/MainActivityWear.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="175" column="9" selection-start-line="175" selection-start-column="9" selection-end-line="175" selection-end-column="9" />
+          <folding>
+            <element signature="e#2655#2656#0" expanded="true" />
+            <element signature="e#2706#2707#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/messaging/ReachabilityChecker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6486486">
+          <caret line="103" column="7" selection-start-line="103" selection-start-column="7" selection-end-line="103" selection-end-column="7" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

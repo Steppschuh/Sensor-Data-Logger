@@ -1,32 +1,25 @@
-package net.steppschuh.datalogger.data;
+package net.steppschuh.datalogger.data.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import java.util.concurrent.TimeUnit;
+import net.steppschuh.datalogger.data.DataBatch;
 
-public class DataRequest {
+import java.util.List;
 
-    public static final long UPDATE_INTERVAL_DEFAULT = TimeUnit.SECONDS.toMillis(1);
-    public static final long UPDATE_INTERVAL_FAST = 50;
-    public static final int TIMESTAMP_NOT_SET = -1;
+public class DataRequestResponse {
 
-    private String sourceNodeId;
-    private String dataSource;
-    private long updateInteval;
+    private List<DataBatch> dataBatches;
     private long startTimestamp;
     private long endTimestamp;
 
-    public DataRequest() {
-        updateInteval = UPDATE_INTERVAL_DEFAULT;
-        startTimestamp = System.currentTimeMillis();
-        endTimestamp = TIMESTAMP_NOT_SET;
+    public DataRequestResponse() {
     }
 
-    public DataRequest(String sourceNodeId) {
-        this();
-        this.sourceNodeId = sourceNodeId;
+    public DataRequestResponse(List<DataBatch> dataBatches) {
+        this.dataBatches = dataBatches;
+        endTimestamp = System.currentTimeMillis();
     }
 
     @JsonIgnore
@@ -49,35 +42,24 @@ public class DataRequest {
         return jsonData;
     }
 
-    public static DataRequest fromJson(String json) {
+    public static DataRequestResponse fromJson(String json) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-            DataRequest dataRequest = mapper.readValue(json, DataRequest.class);
-            return dataRequest;
+            DataRequestResponse dataRequestResponse = mapper.readValue(json, DataRequestResponse.class);
+            return dataRequestResponse;
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return null;
     }
 
-    /**
-     * Getter & Setter
-     */
-    public String getDataSource() {
-        return dataSource;
+    public List<DataBatch> getDataBatches() {
+        return dataBatches;
     }
 
-    public void setDataSource(String dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    public long getUpdateInteval() {
-        return updateInteval;
-    }
-
-    public void setUpdateInteval(long updateInteval) {
-        this.updateInteval = updateInteval;
+    public void setDataBatches(List<DataBatch> dataBatches) {
+        this.dataBatches = dataBatches;
     }
 
     public long getStartTimestamp() {
@@ -94,13 +76,5 @@ public class DataRequest {
 
     public void setEndTimestamp(long endTimestamp) {
         this.endTimestamp = endTimestamp;
-    }
-
-    public String getSourceNodeId() {
-        return sourceNodeId;
-    }
-
-    public void setSourceNodeId(String sourceNodeId) {
-        this.sourceNodeId = sourceNodeId;
     }
 }

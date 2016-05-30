@@ -7,26 +7,31 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 
 import net.steppschuh.datalogger.data.DataBatch;
 import net.steppschuh.datalogger.data.DataChangedListener;
-import net.steppschuh.datalogger.data.DataRequest;
-import net.steppschuh.datalogger.data.DataRequestResponse;
-import net.steppschuh.datalogger.data.SensorDataRequest;
+import net.steppschuh.datalogger.data.request.DataRequest;
+import net.steppschuh.datalogger.data.request.DataRequestResponse;
+import net.steppschuh.datalogger.data.request.SensorDataRequest;
 import net.steppschuh.datalogger.logging.TimeTracker;
 import net.steppschuh.datalogger.logging.TrackerManager;
-import net.steppschuh.datalogger.message.MessageHandler;
-import net.steppschuh.datalogger.message.SinglePathMessageHandler;
+import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
+import net.steppschuh.datalogger.messaging.ReachabilityChecker;
+import net.steppschuh.datalogger.messaging.handler.MessageHandler;
+import net.steppschuh.datalogger.messaging.handler.SinglePathMessageHandler;
 import net.steppschuh.datalogger.sensor.DeviceSensor;
 import net.steppschuh.datalogger.status.ActivityStatus;
+import net.steppschuh.datalogger.status.GoogleApiStatus;
 import net.steppschuh.datalogger.status.Status;
 import net.steppschuh.datalogger.status.StatusUpdateHandler;
 import net.steppschuh.datalogger.status.StatusUpdateReceiver;
@@ -38,7 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements DataChangedListener, SensorSelectionDialogFragment.SelectedSensorsUpdatedListener {
+public class MainActivity extends AppCompatActivity implements DataChangedListener, ReachabilityChecker.NodeReachabilityUpdateReceiver, SensorSelectionDialogFragment.SelectedSensorsUpdatedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -83,8 +88,6 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //requestStatusUpdateFromConnectedNodes();
-                //sendSensorEventDataRequests();
                 showSensorSelectionDialog();
             }
         });
@@ -99,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
 
     private void setupMessageHandlers() {
         messageHandlers = new ArrayList<>();
-        messageHandlers.add(getEchoMessageHandler());
         messageHandlers.add(getSetStatusMessageHandler());
         messageHandlers.add(getSensorDataRequestResponseMessageHandler());
     }
@@ -111,6 +113,15 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
             public void onStatusUpdated(Status status) {
                 app.getStatus().setActivityStatus((ActivityStatus) status);
                 app.getStatus().updated(app.getStatusUpdateHandler());
+            }
+        });
+
+        app.getGoogleApiMessenger().getStatusUpdateHandler().registerStatusUpdateReceiver(new StatusUpdateReceiver() {
+            @Override
+            public void onStatusUpdated(Status status) {
+                GoogleApiStatus googleApiStatus = (GoogleApiStatus) status;
+                int nearbyNodes = GoogleApiMessenger.getNearbyNodes(googleApiStatus.getLastConnectedNodes()).size();
+                //Toast.makeText(MainActivity.this, "Connected devices: " + nearbyNodes, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -134,9 +145,23 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        // update reachabilities of nearby nodes
+        app.getReachabilityChecker().checkReachabilities(this);
+    }
+
+    @Override
     protected void onStop() {
         // stop data request
         stopRequestingSensorEventData();
+
+        // let other devices know that the app won't be reachable anymore
+        app.getGoogleApiMessenger().sendMessageToNearbyNodes(MessageHandler.PATH_CLOSING, Build.MODEL);
+
+        // unregister reachability callback
+        app.getReachabilityChecker().unregisterReachabilityUpdateReceiver(this);
 
         // unregister message handlers
         for (MessageHandler messageHandler : messageHandlers) {
@@ -150,6 +175,29 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         super.onStop();
     }
 
+    /**
+     * Will be called when the reachability of a connected @Node
+     * (e.g. wearable device) has changed
+     */
+    @Override
+    public void onReachabilityUpdated(String nodeId, boolean isReachable) {
+        Log.d(TAG, "Reachability of " + nodeId + " changed to: " + String.valueOf(isReachable));
+
+        // generate a readable message
+        String nodeName = app.getGoogleApiMessenger().getNodeName(nodeId);
+        String message = isReachable ? getString(R.string.device_connected) : getString(R.string.device_disconnected);
+        message = message.replace("[DEVICENAME]", nodeName);
+
+        // notify the user with a @Snackbar
+        View parentLayout = findViewById(android.R.id.content);
+        Snackbar.make(parentLayout, message, Snackbar.LENGTH_LONG)
+                .setDuration(Snackbar.LENGTH_LONG)
+                .show();
+    }
+
+    /**
+     * Will be called when a @Node sends (sensor) @Data to this device
+     */
     @Override
     public void onDataChanged(DataBatch dataBatch, String sourceNodeId) {
         renderDataBatch(dataBatch, sourceNodeId);
@@ -158,24 +206,6 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
     /*
      * Message Handlers
      */
-    private MessageHandler getEchoMessageHandler() {
-        return new SinglePathMessageHandler(MessageHandler.PATH_ECHO) {
-            @Override
-            public void handleMessage(Message message) {
-                TimeTracker tracker = app.getTrackerManager().getTracker(TrackerManager.KEY_CONNECTION_SPEED_TEST);
-                tracker.stop();
-
-                int trackingCount = tracker.getTrackingCount();
-
-                if (trackingCount < 25) {
-                    startConnectionSpeedTest();
-                } else {
-                    stopConnectionSpeedTest();
-                }
-            }
-        };
-    }
-
     private MessageHandler getSetStatusMessageHandler() {
         return new SinglePathMessageHandler(MessageHandler.PATH_SET_STATUS) {
             @Override
@@ -197,18 +227,19 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
                     public void run() {
                         // parse response data
                         final String sourceNodeId = MessageHandler.getSourceNodeIdFromMessage(message);
-                        String responseJson = MessageHandler.getDataFromMessageAsString(message);
+                        final String responseJson = MessageHandler.getDataFromMessageAsString(message);
                         final DataRequestResponse response = DataRequestResponse.fromJson(responseJson);
 
                         // render data in UI thread
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        Runnable notifyDataChangedRunnable = new Runnable() {
                             @Override
                             public void run() {
                                 for (DataBatch dataBatch : response.getDataBatches()) {
                                     onDataChanged(dataBatch, sourceNodeId);
                                 }
                             }
-                        });
+                        };
+                        new Handler(Looper.getMainLooper()).post(notifyDataChangedRunnable);
                     }
                 }).start();
             }
@@ -224,12 +255,30 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         }
     }
 
+    /**
+     * Will create and show a dialog that allows the user to check the @DeviceSensor
+     * on each connected node that he wants to stream
+     */
+    private void showSensorSelectionDialog() {
+        SensorSelectionDialogFragment sensorSelectionDialogFragment = new SensorSelectionDialogFragment();
+        sensorSelectionDialogFragment.setPreviouslySelectedSensors(selectedSensors);
+        sensorSelectionDialogFragment.show(getFragmentManager(), SensorSelectionDialogFragment.class.getSimpleName());
+    }
+
+    /**
+     * Will be called when the sensor selection dialog has been closed after
+     * sensors from all nodes have been selected
+     */
     @Override
     public void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors) {
         Log.d(TAG, "Sensors from all nodes selected");
         this.selectedSensors = selectedSensors;
     }
 
+    /**
+     * Will be called when the sensor selection dialog has shown @DeviceSensor from
+     * the specified node
+     */
     @Override
     public void onSensorsFromNodeSelected(String nodeId, List<DeviceSensor> sensors) {
         StringBuilder sb = new StringBuilder("Selected sensors for " + nodeId + ":");
@@ -248,15 +297,13 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         removeUnneededVisualizationCards();
     }
 
+    /**
+     * Will be called if the sensor selection dialog has been canceled during
+     * the sensor selection of any node
+     */
     @Override
     public void onSensorSelectionCanceled(DialogFragment dialog) {
         Log.d(TAG, "Sensor selection canceled");
-    }
-
-    private void showSensorSelectionDialog() {
-        SensorSelectionDialogFragment sensorSelectionDialogFragment = new SensorSelectionDialogFragment();
-        sensorSelectionDialogFragment.setPreviouslySelectedSensors(selectedSensors);
-        sensorSelectionDialogFragment.show(getFragmentManager(), SensorSelectionDialogFragment.class.getSimpleName());
     }
 
     /**
@@ -367,15 +414,15 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
             }
 
             // get the visualization card
-            Node sourceNode = app.getGoogleApiMessenger().getLastConnectedNodeById(sourceNodeId);
-            if (sourceNode == null) {
-                throw new Exception("Unknown source node");
-            }
-            String key = VisualizationCardData.generateKey(sourceNode.getDisplayName(), dataBatch.getSource());
+            String key = VisualizationCardData.generateKey(sourceNodeId, dataBatch.getSource());
             VisualizationCardData visualizationCardData = cardListAdapter.getVisualizationCard(key);
 
             // create a new card if not yet avaialable
             if (visualizationCardData == null) {
+                Node sourceNode = app.getGoogleApiMessenger().getLastConnectedNodeById(sourceNodeId);
+                if (sourceNode == null) {
+                    throw new Exception("Unknown source node");
+                }
                 visualizationCardData = new VisualizationCardData(key);
                 visualizationCardData.setHeading(dataBatch.getSource());
                 visualizationCardData.setSubHeading(sourceNode.getDisplayName());
@@ -392,6 +439,7 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
             } else {
                 visualizationDataBatch.addData(dataBatch.getDataList());
             }
+
             cardListAdapter.invalidateVisualization(visualizationCardData.getKey());
         } catch (Exception ex) {
             Log.w(TAG, "Unable to render data batch: " + ex.getMessage());
@@ -423,22 +471,5 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
             cardListAdapter.remove(visualizationCardDataEntry.getValue());
         }
     }
-
-    private void startConnectionSpeedTest() {
-        app.getTrackerManager().getTracker("Connection Speed Test").start();
-        try {
-            Log.v(TAG, "Sending a ping to connected nodes");
-            app.getGoogleApiMessenger().sendMessageToNearbyNodes(MessageHandler.PATH_PING, Build.MODEL);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private void stopConnectionSpeedTest() {
-        TimeTracker tracker = app.getTrackerManager().getTracker(TrackerManager.KEY_CONNECTION_SPEED_TEST);
-        Log.d(TAG, tracker.toString());
-        app.getTrackerManager().getTimeTrackers().remove(tracker);
-    }
-
 
 }

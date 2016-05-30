@@ -1,6 +1,7 @@
 package net.steppschuh.sensordatalogger;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.wearable.activity.WearableActivity;
@@ -11,8 +12,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.wearable.Wearable;
 
-import net.steppschuh.datalogger.message.MessageHandler;
-import net.steppschuh.datalogger.message.SinglePathMessageHandler;
+import net.steppschuh.datalogger.messaging.handler.MessageHandler;
+import net.steppschuh.datalogger.messaging.handler.SinglePathMessageHandler;
 import net.steppschuh.datalogger.status.ActivityStatus;
 import net.steppschuh.datalogger.status.Status;
 import net.steppschuh.datalogger.status.StatusUpdateEmitter;
@@ -80,7 +81,6 @@ public class MainActivityWear extends WearableActivity implements StatusUpdateEm
 
     private void setupMessageHandlers() {
         messageHandlers = new ArrayList<>();
-        messageHandlers.add(getPingMessageHandler());
     }
 
     private void setupStatusUpdates() {
@@ -97,20 +97,32 @@ public class MainActivityWear extends WearableActivity implements StatusUpdateEm
     @Override
     protected void onStart() {
         super.onStart();
+        // register message handlers
         for (MessageHandler messageHandler : messageHandlers) {
             app.registerMessageHandler(messageHandler);
         }
         Wearable.MessageApi.addListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
+
+        // update status
         status.setInForeground(true);
         status.updated(statusUpdateHandler);
+
+        // update reachabilities of nearby nodes
+        app.getReachabilityChecker().checkReachabilities(null);
     }
 
     @Override
     protected void onStop() {
+        // let other devices know that the app won't be reachable anymore
+        app.getGoogleApiMessenger().sendMessageToNearbyNodes(MessageHandler.PATH_CLOSING, Build.MODEL);
+
+        // unregister message handlers
         for (MessageHandler messageHandler : messageHandlers) {
             app.unregisterMessageHandler(messageHandler);
         }
         Wearable.MessageApi.removeListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
+
+        // update status
         status.setInForeground(false);
         status.updated(statusUpdateHandler);
         super.onStop();
@@ -162,15 +174,6 @@ public class MainActivityWear extends WearableActivity implements StatusUpdateEm
             postTextView.setVisibility(View.VISIBLE);
             logTextView.setVisibility(View.VISIBLE);
         }
-    }
-
-    private MessageHandler getPingMessageHandler() {
-        return new SinglePathMessageHandler(MessageHandler.PATH_PING) {
-            @Override
-            public void handleMessage(Message message) {
-                Log.v(TAG, "Ping received from " + MessageHandler.getDataFromMessageAsString(message));
-            }
-        };
     }
 
     @Override

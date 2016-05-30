@@ -13,14 +13,14 @@ public class VisualizationCardData {
         this.key = key;
     }
 
-    public VisualizationCardData(String deviceName, String source) {
-        this(generateKey(deviceName, source));
+    public VisualizationCardData(String nodeId, String deviceName, String source) {
+        this(generateKey(nodeId, source));
         this.heading = source;
         this.subHeading = deviceName;
     }
 
-    public static String generateKey(String deviceName, String source) {
-        return deviceName + " - " + source;
+    public static String generateKey(String nodeId, String source) {
+        return nodeId + " - " + source;
     }
 
     /**

@@ -1,7 +1,6 @@
 package net.steppschuh.datalogger;
 
 import android.app.Activity;
-import android.app.Application;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.multidex.MultiDexApplication;
@@ -11,12 +10,13 @@ import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 
 import net.steppschuh.datalogger.logging.TrackerManager;
-import net.steppschuh.datalogger.message.GetAvailableSensorsMessageHandler;
-import net.steppschuh.datalogger.message.SensorDataRequestMessageHandler;
-import net.steppschuh.datalogger.message.GetStatusMessageHandler;
-import net.steppschuh.datalogger.message.GoogleApiMessenger;
-import net.steppschuh.datalogger.message.MessageHandler;
-import net.steppschuh.datalogger.message.PingMessageHandler;
+import net.steppschuh.datalogger.messaging.ReachabilityChecker;
+import net.steppschuh.datalogger.messaging.handler.GetAvailableSensorsMessageHandler;
+import net.steppschuh.datalogger.messaging.handler.SensorDataRequestMessageHandler;
+import net.steppschuh.datalogger.messaging.handler.GetStatusMessageHandler;
+import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
+import net.steppschuh.datalogger.messaging.handler.MessageHandler;
+import net.steppschuh.datalogger.messaging.handler.PingMessageHandler;
 import net.steppschuh.datalogger.sensor.SensorDataManager;
 import net.steppschuh.datalogger.status.AppStatus;
 import net.steppschuh.datalogger.status.Status;
@@ -41,6 +41,7 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
 
     private TrackerManager trackerManager;
     private SensorDataManager sensorDataManager;
+    private ReachabilityChecker reachabilityChecker;
 
     public void initialize(Activity contextActivity) {
         this.contextActivity = contextActivity;
@@ -50,6 +51,7 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
         setupTrackingManager();
         setupMessageHandlers();
         setupSensorDataManager();
+        setupReachabilityChecker();
 
         status.setInitialized(true);
     }
@@ -79,7 +81,6 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
     private void setupMessageHandlers() {
         Log.d(TAG, "Setting up Message handlers");
         messageHandlers = new ArrayList<>();
-        registerMessageHandler(new PingMessageHandler(googleApiMessenger));
         registerMessageHandler(new GetStatusMessageHandler(this));
         registerMessageHandler(new SensorDataRequestMessageHandler(this));
         registerMessageHandler(new GetAvailableSensorsMessageHandler(this));
@@ -88,6 +89,11 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
     private void setupSensorDataManager() {
         Log.d(TAG, "Setting up Sensor Data manager");
         sensorDataManager = new SensorDataManager(this);
+    }
+
+    private void setupReachabilityChecker() {
+        reachabilityChecker = new ReachabilityChecker(this);
+        reachabilityChecker.registerMessageHandlers();
     }
 
     public boolean registerMessageHandler(MessageHandler messageHandler) {
@@ -194,5 +200,13 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
 
     public void setSensorDataManager(SensorDataManager sensorDataManager) {
         this.sensorDataManager = sensorDataManager;
+    }
+
+    public ReachabilityChecker getReachabilityChecker() {
+        return reachabilityChecker;
+    }
+
+    public void setReachabilityChecker(ReachabilityChecker reachabilityChecker) {
+        this.reachabilityChecker = reachabilityChecker;
     }
 }

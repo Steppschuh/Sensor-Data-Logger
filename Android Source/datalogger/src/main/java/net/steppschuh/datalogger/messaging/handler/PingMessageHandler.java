@@ -1,8 +1,10 @@
-package net.steppschuh.datalogger.message;
+package net.steppschuh.datalogger.messaging.handler;
 
 import android.os.Build;
 import android.os.Message;
 import android.util.Log;
+
+import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
 
 public class PingMessageHandler extends SinglePathMessageHandler {
 
@@ -17,7 +19,7 @@ public class PingMessageHandler extends SinglePathMessageHandler {
     public void handleMessage(Message message) {
         try {
             Log.v(TAG, "Received a ping from " + getSourceNodeIdFromMessage(message) + ": " + getDataFromMessageAsString(message));
-            googleApiMessenger.sendMessageToNearbyNodes(MessageHandler.PATH_ECHO, Build.MODEL);
+            googleApiMessenger.sendMessageToNearbyNodes(PATH_ECHO, Build.MODEL);
         } catch (Exception ex) {
             Log.w(TAG, "Unable to answer ping");
         }

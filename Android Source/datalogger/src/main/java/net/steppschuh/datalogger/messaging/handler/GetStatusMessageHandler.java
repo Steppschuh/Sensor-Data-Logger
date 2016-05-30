@@ -1,4 +1,4 @@
-package net.steppschuh.datalogger.message;
+package net.steppschuh.datalogger.messaging.handler;
 
 import android.os.Message;
 import android.util.Log;
@@ -20,7 +20,7 @@ public class GetStatusMessageHandler extends SinglePathMessageHandler {
             String sourceNodeId = getSourceNodeIdFromMessage(message);
             Log.v(TAG, "Received a status request from " + sourceNodeId + ": " + getDataFromMessageAsString(message));
             String statusJson = app.getStatus().toString();
-            app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_SET_STATUS, statusJson, sourceNodeId);
+            app.getGoogleApiMessenger().sendMessageToNode(PATH_SET_STATUS, statusJson, sourceNodeId);
         } catch (Exception ex) {
             Log.w(TAG, "Unable to send status: " + ex.getMessage());
         }

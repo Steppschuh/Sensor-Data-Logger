@@ -51,6 +51,6 @@
         android:layout_margin="16dp"
         android:clickable="true"
         android:tint="@android:color/white"
-        android:src="@drawable/ic_add_black_48dp" />
+        android:src="@drawable/ic_list_black_48dp" />
 
 </RelativeLayout>

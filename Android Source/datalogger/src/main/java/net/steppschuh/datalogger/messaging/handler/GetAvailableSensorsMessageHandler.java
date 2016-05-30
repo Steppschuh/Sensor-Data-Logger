@@ -1,17 +1,13 @@
-package net.steppschuh.datalogger.message;
+package net.steppschuh.datalogger.messaging.handler;
 
 import android.hardware.Sensor;
 import android.os.Message;
 import android.util.Log;
 
 import net.steppschuh.datalogger.MobileApp;
-import net.steppschuh.datalogger.data.SensorDataRequest;
-import net.steppschuh.datalogger.data.SensorDataRequestResponseGenerator;
 import net.steppschuh.datalogger.sensor.DeviceSensors;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GetAvailableSensorsMessageHandler extends SinglePathMessageHandler {
 

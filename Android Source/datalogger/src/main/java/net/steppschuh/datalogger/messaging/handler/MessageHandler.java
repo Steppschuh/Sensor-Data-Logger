@@ -1,8 +1,11 @@
-package net.steppschuh.datalogger.message;
+package net.steppschuh.datalogger.messaging.handler;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+
+import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
+import net.steppschuh.datalogger.messaging.MessageReceiver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,7 @@ public class MessageHandler extends Handler {
     public static final String PATH_ANY = "/*";
     public static final String PATH_PING = "/ping";
     public static final String PATH_ECHO = "/echo";
+    public static final String PATH_CLOSING = "/closing";
     public static final String PATH_GET_STATUS = "/get_status";
     public static final String PATH_SET_STATUS = "/set_status";
     public static final String PATH_GET_SENSORS = "/get_sensors";

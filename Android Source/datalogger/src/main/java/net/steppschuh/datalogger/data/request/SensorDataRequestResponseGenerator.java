@@ -1,4 +1,4 @@
-package net.steppschuh.datalogger.data;
+package net.steppschuh.datalogger.data.request;
 
 import android.os.Handler;
 import android.util.Log;
@@ -6,7 +6,8 @@ import android.util.Log;
 import com.google.android.gms.wearable.Node;
 
 import net.steppschuh.datalogger.MobileApp;
-import net.steppschuh.datalogger.message.MessageHandler;
+import net.steppschuh.datalogger.data.DataBatch;
+import net.steppschuh.datalogger.messaging.handler.MessageHandler;
 
 import java.util.ArrayList;
 import java.util.List;

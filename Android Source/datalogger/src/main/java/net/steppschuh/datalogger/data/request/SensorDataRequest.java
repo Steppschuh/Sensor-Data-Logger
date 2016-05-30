@@ -1,4 +1,4 @@
-package net.steppschuh.datalogger.data;
+package net.steppschuh.datalogger.data.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

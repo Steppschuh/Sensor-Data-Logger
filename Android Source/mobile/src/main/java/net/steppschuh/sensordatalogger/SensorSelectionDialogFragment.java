@@ -16,10 +16,10 @@ import android.widget.ListView;
 import com.google.android.gms.wearable.Node;
 
 import net.steppschuh.datalogger.MobileApp;
-import net.steppschuh.datalogger.data.DataRequest;
-import net.steppschuh.datalogger.data.SensorDataRequest;
-import net.steppschuh.datalogger.message.MessageHandler;
-import net.steppschuh.datalogger.message.SinglePathMessageHandler;
+import net.steppschuh.datalogger.data.request.DataRequest;
+import net.steppschuh.datalogger.data.request.SensorDataRequest;
+import net.steppschuh.datalogger.messaging.handler.MessageHandler;
+import net.steppschuh.datalogger.messaging.handler.SinglePathMessageHandler;
 import net.steppschuh.datalogger.sensor.DeviceSensor;
 import net.steppschuh.datalogger.sensor.DeviceSensors;
 import net.steppschuh.datalogger.ui.UnitHelper;
@@ -269,7 +269,7 @@ public class SensorSelectionDialogFragment extends DialogFragment {
     private void saveCurrentlySelectedSensors(String nodeId) {
         Log.d(TAG, "Saving currently selected sensors for " + nodeId);
         List<DeviceSensor> currentlySelectedSensors;
-        if (multiChoiceAdapter == null) {
+        if (multiChoiceAdapter != null) {
             currentlySelectedSensors = multiChoiceAdapter.getSelectedSensors();
         } else {
             currentlySelectedSensors = new ArrayList<>();

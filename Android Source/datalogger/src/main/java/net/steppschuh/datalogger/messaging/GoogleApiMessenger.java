@@ -1,4 +1,4 @@
-package net.steppschuh.datalogger.message;
+package net.steppschuh.datalogger.messaging;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -55,6 +55,9 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
             public void onStatusUpdated(Status status) {
                 app.getStatus().setGoogleApiStatus((GoogleApiStatus) status);
                 app.getStatus().updated(app.getStatusUpdateHandler());
+
+                // update node reachabilities
+                app.getReachabilityChecker().checkReachabilities(null);
             }
         });
     }
@@ -181,14 +184,11 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
         return null;
     }
 
-    public void sendMessageToNearbyNodes(final String path, final String data) throws Exception {
+    public void sendMessageToNearbyNodes(final String path, final String data) {
         sendMessageToNearbyNodes(path, data.getBytes(DEFAULT_CHARSET));
     }
 
-    public void sendMessageToNearbyNodes(final String path, final byte[] data) throws Exception {
-        if (!googleApiClient.isConnected()) {
-            throw new Exception("Google API client is not connected");
-        }
+    public void sendMessageToNearbyNodes(final String path, final byte[] data) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -200,7 +200,7 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
                         if (!node.isNearby()) {
                             continue;
                         }
-                        sendMessageToNode(path, data, node);
+                        sendMessageToNodeWithResult(path, data, node.getId());
                     } catch (Exception ex) {
                         Log.w(TAG, "Unable to send message to node: " + ex.getMessage());
                     }
@@ -209,24 +209,16 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
         }).start();
     }
 
-    public void sendMessageToNode(final String path, final String data, final String nodeId) throws Exception {
+    public void sendMessageToNode(final String path, final String data, final String nodeId) {
         sendMessageToNode(path, data.getBytes(DEFAULT_CHARSET), nodeId);
     }
 
-    public void sendMessageToNode(final String path, final byte[] data, final String nodeId) throws Exception {
-        if (!googleApiClient.isConnected()) {
-            throw new Exception("Google API client is not connected");
-        }
+    public void sendMessageToNode(final String path, final byte[] data, final String nodeId) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Node node = getLastConnectedNodeById(nodeId);
-                    if (node == null) {
-                        NodeApi.GetConnectedNodesResult getConnectedNodesResult = Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
-                        node = getNodeById(nodeId, getConnectedNodesResult.getNodes());
-                    }
-                    sendMessageToNode(path, data, node);
+                    sendMessageToNodeWithResult(path, data, nodeId);
                 } catch (Exception ex) {
                     Log.w(TAG, "Unable to send message to node: " + nodeId + ": " + ex.getMessage());
                     ex.printStackTrace();
@@ -235,15 +227,14 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
         }).start();
     }
 
-    private MessageApi.SendMessageResult sendMessageToNode(final String path, final byte[] data, Node node) throws Exception {
+    public MessageApi.SendMessageResult sendMessageToNodeWithResult(final String path, final byte[] data, String nodeId) throws Exception {
         if (!googleApiClient.isConnected()) {
             throw new Exception("Google API client is not connected");
         }
-        if (node == null) {
-            throw new Exception("Node is not set");
+        if (nodeId == null) {
+            throw new Exception("Node Id is not set");
         }
-        //Log.v(TAG, "Sending message to: " + node.getDisplayName() + " at: " + path);
-        return Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, data).await();
+        return Wearable.MessageApi.sendMessage(googleApiClient, nodeId, path, data).await();
     }
 
     public GoogleApiClient getGoogleApiClient() {
