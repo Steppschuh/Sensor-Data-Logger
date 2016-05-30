@@ -103,11 +103,15 @@ public class VisualizationCardView extends RelativeLayout {
     }
 
     public void renderData() {
-        if (data == null || data.getDataBatch().getNewestData() == null) {
+        if (data == null || data.getDataBatch() == null) {
             return;
         }
         headingTextView.setText(data.getHeading());
         subHeadingTextView.setText(data.getSubHeading());
+
+        if (data.getDataBatch().getNewestData() == null) {
+            return;
+        }
 
         if (showDimensionValues) {
             float[] latestValues = data.getDataBatch().getNewestData().getValues();

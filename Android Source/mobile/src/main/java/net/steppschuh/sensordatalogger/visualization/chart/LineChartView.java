@@ -36,11 +36,11 @@ public class LineChartView extends ChartView {
     protected float currentPaddedMinimumValue;
     protected float currentPaddedRange;
 
-    protected float paddedMaximumValue = Float.MAX_VALUE;
-    protected float paddedMinimumValue = Float.MIN_VALUE;
+    protected float paddedMaximumValue = 100;
+    protected float paddedMinimumValue = 0 - paddedMaximumValue;
     protected float paddedMinimumRange = 2;
-    protected float targetPaddedMaximumValue = paddedMaximumValue;
-    protected float targetPaddedMinimumValue = paddedMinimumValue;
+    protected float targetPaddedMaximumValue = paddedMaximumValue - 1;
+    protected float targetPaddedMinimumValue = paddedMinimumValue + 1;
 
     float horizontalRange = endTimestamp - startTimestamp;
     float mappedHorizontalRange = paddedEndX - paddedStartX;
@@ -259,7 +259,7 @@ public class LineChartView extends ChartView {
             currentPaddedMinimumValue = currentMinimumValue - currentPadding;
             currentPaddedRange = currentPaddedMaximumValue - currentMinimumValue;
 
-            // avoid 'zooming in' too mouch
+            // avoid 'zooming in' too much
             if (currentPaddedRange < paddedMinimumRange) {
                 if (currentPaddedMaximumValue < 0 + paddedMinimumRange && currentPaddedMinimumValue > 0 - paddedMinimumRange) {
                     // center values in paddedMinimumRange around 0

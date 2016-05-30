@@ -92,6 +92,7 @@ public class SensorSelectionDialogFragment extends DialogFragment {
         super.onAttach(activity);
         app = (MobileApp) activity.getApplicationContext();
         app.registerMessageHandler(setSensorsMessageHandler);
+        app.getReachabilityChecker().checkReachabilities(null);
         try {
             listener = (SelectedSensorsUpdatedListener) activity;
         } catch (ClassCastException e) {
@@ -244,10 +245,10 @@ public class SensorSelectionDialogFragment extends DialogFragment {
             }
         }
 
-        // check nearby connected nodes
-        for (Node node : app.getGoogleApiMessenger().getLastConnectedNearbyNodes()) {
-            if (!hasSelectedSensorsForNode(node.getId())) {
-                return node.getId();
+        // check reachable notes
+        for (String nodeId : app.getReachabilityChecker().getReachableNodeIds()) {
+            if (!hasSelectedSensorsForNode(nodeId)) {
+                return nodeId;
             }
         }
 
@@ -369,7 +370,7 @@ public class SensorSelectionDialogFragment extends DialogFragment {
         }
 
         SensorDataRequest sensorDataRequest = new SensorDataRequest(sensorTypes);
-        sensorDataRequest.setUpdateInteval(DataRequest.UPDATE_INTERVAL_FAST);
+        sensorDataRequest.setUpdateInteval(DataRequest.UPDATE_INTERVAL_NORMAL);
         return sensorDataRequest;
     }
 

@@ -47,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private static final String KEY_SENSOR_DATA_REQUESTS = "sensorDataRequests";
+    private static final String KEY_SELECTED_SENSORS = "selectedSensors";
+
     private PhoneApp app;
     private List<MessageHandler> messageHandlers;
     private ActivityStatus status = new ActivityStatus();
@@ -124,6 +127,50 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
                 //Toast.makeText(MainActivity.this, "Connected devices: " + nearbyNodes, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        try {
+            // restore sensor data requests
+            sensorDataRequests = (HashMap) savedInstanceState.getSerializable(KEY_SENSOR_DATA_REQUESTS);
+            if (sensorDataRequests == null) {
+                sensorDataRequests = new HashMap<>();
+            }
+
+            // restore selected sensors
+            selectedSensors = (HashMap) savedInstanceState.getSerializable(KEY_SELECTED_SENSORS);
+            if (selectedSensors == null) {
+                selectedSensors = new HashMap<>();
+            }
+            Log.d(TAG, "Instance state restored");
+
+            // Update end timestamps of data requests for selected sensors.
+            // This is required because all requests have been terminated when
+            // the activity stopped.
+            for (Map.Entry<String, SensorDataRequest> sensorDataRequestEntry : sensorDataRequests.entrySet()) {
+                List<DeviceSensor> sensors = selectedSensors.get(sensorDataRequestEntry.getKey());
+                if (sensors == null || sensors.size() == 0) {
+                    continue;
+                }
+                sensorDataRequestEntry.getValue().setEndTimestamp(DataRequest.TIMESTAMP_NOT_SET);
+            }
+
+            // send all available data requests
+            sendSensorEventDataRequests();
+        } catch (Exception ex) {
+            Log.w(TAG, "Unable to restore instance state: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(KEY_SENSOR_DATA_REQUESTS, (HashMap) sensorDataRequests);
+        outState.putSerializable(KEY_SELECTED_SENSORS, (HashMap) selectedSensors);
+        Log.d(TAG, "Saved instance state");
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -291,6 +338,7 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
 
         SensorDataRequest sensorDataRequest = SensorSelectionDialogFragment.createSensorDataRequest(sensors);
         sensorDataRequest.setSourceNodeId(app.getGoogleApiMessenger().getLocalNodeId());
+
         sensorDataRequests.put(nodeId, sensorDataRequest);
 
         sendSensorEventDataRequests();

@@ -10,6 +10,8 @@ public class DataRequest {
 
     public static final long UPDATE_INTERVAL_DEFAULT = TimeUnit.SECONDS.toMillis(1);
     public static final long UPDATE_INTERVAL_FAST = 50;
+    public static final long UPDATE_INTERVAL_NORMAL = 100;
+    public static final long UPDATE_INTERVAL_SLOW = 500;
     public static final int TIMESTAMP_NOT_SET = -1;
 
     private String sourceNodeId;

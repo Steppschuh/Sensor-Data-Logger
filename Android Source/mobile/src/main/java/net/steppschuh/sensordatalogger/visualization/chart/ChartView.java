@@ -110,13 +110,18 @@ public abstract class ChartView extends View {
         backgroundColor = Color.WHITE;
         gridColor = Color.argb(50, 0, 0, 0);
 
-        dimensionColors = new int[6];
-        dimensionColors[0] = primaryColor;
-        dimensionColors[1] = secondaryColor;
-        dimensionColors[2] = tertiaryColor;
-        dimensionColors[3] = primaryColor;
-        dimensionColors[4] = secondaryColor;
-        dimensionColors[5] = tertiaryColor;
+        int dimensionCount = 30;
+        dimensionColors = new int[dimensionCount];
+        for (int dimension = 0; dimension < dimensionCount; dimension++) {
+            int mod = dimension % 3;
+            if (mod == 0) {
+                dimensionColors[dimension] = primaryColor;
+            } else if (mod == 1) {
+                dimensionColors[dimension] = secondaryColor;
+            } else {
+                dimensionColors[dimension] = tertiaryColor;
+            }
+        }
     }
 
     protected void updatePaints() {
@@ -230,7 +235,7 @@ public abstract class ChartView extends View {
 
         if (renderTimeTracker.getTrackingCount() >= 100) {
             long averageRenderingDuration = renderTimeTracker.calculateAverageDuration();
-            if (averageRenderingDuration > 3) {
+            if (averageRenderingDuration > 3 && dataBatch != null) {
                 Log.w(TAG, "Chart rendering for " + dataBatch.getDataList().size() + " data points took " + averageRenderingDuration + "ms!");
             }
             renderTimeTracker = new TimeTracker("Chart Rendering");
@@ -291,7 +296,7 @@ public abstract class ChartView extends View {
         if (dimension < 3) {
             return UnitHelper.getCharForNumber(dimension + 23);
         } else {
-            return UnitHelper.getCharForNumber(dimension);
+            return UnitHelper.getCharForNumber(dimension - 3);
         }
     }
 
