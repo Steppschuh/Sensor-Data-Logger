@@ -51,6 +51,7 @@ public class SensorSelectionDialogFragment extends DialogFragment {
     private Map<String, Node> availableNodes = new HashMap<>();
     private Map<String, List<DeviceSensor>> availableSensors = new HashMap<>();
     private Map<String, List<DeviceSensor>> selectedSensors = new HashMap<>();
+    private Map<String, List<DeviceSensor>> previouslySelectedSensors = new HashMap<>();
     private SensorListAdapter multiChoiceAdapter;
     private MessageHandler setSensorsMessageHandler = getSetSensorsMessageHandler();
 
@@ -284,6 +285,19 @@ public class SensorSelectionDialogFragment extends DialogFragment {
                 if (multiChoiceAdapter != null) {
                     // update adapter with sensors
                     multiChoiceAdapter.setAvailableSensors(deviceSensors);
+
+                    // restore previously selected sensors
+                    List<DeviceSensor> selectedSensors = previouslySelectedSensors.get(nodeId);
+                    if (selectedSensors != null) {
+
+                        StringBuilder sb = new StringBuilder("Restoring selected sensors for " + nodeId + ":");
+                        for (DeviceSensor sensor : selectedSensors) {
+                            sb.append("\n - " + sensor.getName());
+                        }
+                        Log.d(TAG, sb.toString());
+
+                        multiChoiceAdapter.setPreviouslySelectedSensors(selectedSensors);
+                    }
                     multiChoiceAdapter.notifyDataSetChanged();
 
                     // update dialog title
@@ -417,4 +431,11 @@ public class SensorSelectionDialogFragment extends DialogFragment {
         return availableSensorsUpdatedListeners;
     }
 
+    public Map<String, List<DeviceSensor>> getPreviouslySelectedSensors() {
+        return previouslySelectedSensors;
+    }
+
+    public void setPreviouslySelectedSensors(Map<String, List<DeviceSensor>> previouslySelectedSensors) {
+        this.previouslySelectedSensors = previouslySelectedSensors;
+    }
 }

@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
     private VisualizationCardListAdapter cardListAdapter;
 
     private Map<String, SensorDataRequest> sensorDataRequests = new HashMap<>();
+    private Map<String, List<DeviceSensor>> selectedSensors = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,46 +226,91 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
 
     @Override
     public void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors) {
-        Log.d(TAG, "onSensorsFromAllNodesSelected");
+        Log.d(TAG, "Sensors from all nodes selected");
+        this.selectedSensors = selectedSensors;
     }
 
     @Override
     public void onSensorsFromNodeSelected(String nodeId, List<DeviceSensor> sensors) {
-        Log.d(TAG, "onSensorsFromNodeSelected: " + nodeId + ": " + sensors.size());
+        StringBuilder sb = new StringBuilder("Selected sensors for " + nodeId + ":");
+        for (DeviceSensor sensor : sensors) {
+            sb.append("\n - " + sensor.getName());
+        }
+        Log.d(TAG, sb.toString());
+
+        selectedSensors.put(nodeId, sensors);
+
         SensorDataRequest sensorDataRequest = SensorSelectionDialogFragment.createSensorDataRequest(sensors);
         sensorDataRequest.setSourceNodeId(app.getGoogleApiMessenger().getLocalNodeId());
         sensorDataRequests.put(nodeId, sensorDataRequest);
 
         sendSensorEventDataRequests();
-        removeUnnededVisualizationCards();
+        removeUnneededVisualizationCards();
     }
 
     @Override
     public void onSensorSelectionCanceled(DialogFragment dialog) {
-        Log.d(TAG, "onSensorSelectionCanceled");
+        Log.d(TAG, "Sensor selection canceled");
     }
 
     private void showSensorSelectionDialog() {
-        DialogFragment sensorSelectionDialogFragment = new SensorSelectionDialogFragment();
+        SensorSelectionDialogFragment sensorSelectionDialogFragment = new SensorSelectionDialogFragment();
+        sensorSelectionDialogFragment.setPreviouslySelectedSensors(selectedSensors);
         sensorSelectionDialogFragment.show(getFragmentManager(), SensorSelectionDialogFragment.class.getSimpleName());
     }
 
+    /**
+     * Returns true if the app is requesting sensor data from
+     * the local or any connected device
+     */
     private boolean isRequestingSensorEventData() {
         for (Map.Entry<String, SensorDataRequest> sensorDataRequestEntry : sensorDataRequests.entrySet()) {
-            if (sensorDataRequestEntry.getValue().getEndTimestamp() != DataRequest.TIMESTAMP_NOT_SET) {
+            if (sensorDataRequestEntry.getValue().getEndTimestamp() == DataRequest.TIMESTAMP_NOT_SET) {
                 return true;
             }
         }
         return false;
     }
 
+    /**
+     * Returns true if the app is requesting sensor data from
+     * the device with the specified node id
+     */
+    private boolean isRequestingSensorEventData(String nodeId) {
+        SensorDataRequest request = sensorDataRequests.get(nodeId);
+        if (request == null) {
+            return false;
+        }
+        return request.getEndTimestamp() == DataRequest.TIMESTAMP_NOT_SET;
+    }
+
+    /**
+     * Returns true if the app is requesting data by the specified sensor
+     * from the device with the specified node id
+     */
+    private boolean isRequestingSensorEventData(String nodeId, String sensorName) {
+        // check if the request has reached is end timestamp
+        if (!isRequestingSensorEventData(nodeId)) {
+            return false;
+        }
+
+        // check if the current sensor is selected
+        boolean sensorIsRequested = false;
+        for (DeviceSensor deviceSensor : selectedSensors.get(nodeId)) {
+            if (!deviceSensor.getName().equals(sensorName)) {
+                continue;
+            }
+            sensorIsRequested = true;
+        }
+        return sensorIsRequested;
+    }
+
+    /**
+     * Sends all available sensor data requests to the assigned nodes
+     */
     private void sendSensorEventDataRequests() {
         try {
-            if (!isRequestingSensorEventData()) {
-                Log.v(TAG, "Starting to request sensor event data");
-            } else {
-                Log.v(TAG, "Updating sensor event data request");
-            }
+            Log.v(TAG, "Updating sensor event data request");
             for (Map.Entry<String, SensorDataRequest> sensorDataRequestEntry : sensorDataRequests.entrySet()) {
                 sendSensorEventDataRequest(sensorDataRequestEntry.getKey(), sensorDataRequestEntry.getValue());
             }
@@ -273,8 +319,14 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         }
     }
 
+
     private void sendSensorEventDataRequest(String nodeId, SensorDataRequest request) {
         try {
+            StringBuilder sb = new StringBuilder("Sending sensor data request to " + nodeId);
+            for (Integer sensorType : request.getSensorTypes()) {
+                sb.append("\n - " + String.valueOf(sensorType));
+            }
+            Log.d(TAG, sb.toString());
             app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_SENSOR_DATA_REQUEST, request.toJson(), nodeId);
         } catch (Exception ex) {
             Log.w(TAG, "Unable to send sensor data request: " + ex.getMessage());
@@ -282,6 +334,10 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         }
     }
 
+    /**
+     * Sets the end timestamps of all available sensor data requests to now
+     * and sends them to the assigned nodes
+     */
     private void stopRequestingSensorEventData() {
         if (!isRequestingSensorEventData()) {
             return;
@@ -297,8 +353,19 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         }
     }
 
+    /**
+     * Creates or updates a visualization card and notifies the @cardListAdapter
+     * in order to update the @ChartView with the provided @DataBatch
+     */
     private void renderDataBatch(DataBatch dataBatch, String sourceNodeId) {
         try {
+            // Don't render if the data isn't requested anymore.
+            // This can happen if the request has been updated but data
+            // has already been sent by the request receiver
+            if (!isRequestingSensorEventData(sourceNodeId, dataBatch.getSource())) {
+                return;
+            }
+
             // get the visualization card
             Node sourceNode = app.getGoogleApiMessenger().getLastConnectedNodeById(sourceNodeId);
             if (sourceNode == null) {
@@ -332,7 +399,11 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         }
     }
 
-    private void removeUnnededVisualizationCards() {
+    /**
+     * Removes all visualizations from the card list adapter that are currently
+     * not requested
+     */
+    private void removeUnneededVisualizationCards() {
         Map<String, VisualizationCardData> removableVisualizationCards = new HashMap<>();
 
         Map<String, VisualizationCardData> visualizationCards = cardListAdapter.getVisualizationCards();
@@ -340,31 +411,15 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
             String nodeId = visualizationCardDataEntry.getKey();
             VisualizationCardData visualizationCard = visualizationCardDataEntry.getValue();
 
-            SensorDataRequest sensorDataRequest = sensorDataRequests.get(nodeId);
-
-            // check if there's any request for the current node
-            if (sensorDataRequest == null) {
-                removableVisualizationCards.put(nodeId, visualizationCard);
-                continue;
-            }
-
-            // check if the request has reached is end timestamp
-            if (sensorDataRequest.getEndTimestamp() != SensorDataRequest.TIMESTAMP_NOT_SET) {
-                if (sensorDataRequest.getEndTimestamp() <= System.currentTimeMillis()) {
-                    removableVisualizationCards.put(nodeId, visualizationCard);
-                    continue;
-                }
-            }
-
-            // check if the current sensor is selected
-            Integer sensorType = visualizationCard.getDataBatch().getType();
-            if (!sensorDataRequest.getSensorTypes().contains(sensorType)) {
+            // check if the data that the current card holds should be rendered
+            if (!isRequestingSensorEventData(nodeId, visualizationCard.getDataBatch().getSource())) {
                 removableVisualizationCards.put(nodeId, visualizationCard);
                 continue;
             }
         }
 
         for (Map.Entry<String, VisualizationCardData> visualizationCardDataEntry : removableVisualizationCards.entrySet()) {
+            Log.d(TAG, "Removing unneeded visualization card: " + visualizationCardDataEntry.getValue().getHeading());
             cardListAdapter.remove(visualizationCardDataEntry.getValue());
         }
     }
