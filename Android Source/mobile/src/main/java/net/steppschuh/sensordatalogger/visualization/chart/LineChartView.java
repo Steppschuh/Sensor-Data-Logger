@@ -234,7 +234,7 @@ public class LineChartView extends ChartView {
 
             // iterate over dimensions and draw data paths, as well as highlights
             // for the newest values
-            for (int dimension = 0; dimension < newestData.getValues().length; dimension++) {
+            for (int dimension = newestData.getValues().length - 1; dimension >= 0; dimension--) {
                 if (!shouldRenderDimension(dimension)) {
                     continue;
                 }
