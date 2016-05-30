@@ -61,7 +61,9 @@ public class VisualizationCardView extends RelativeLayout {
         valueRightTextView = (TextView) findViewById(R.id.valueRightText);
 
         valueLeftButton = (ImageButton) findViewById(R.id.valueLeftButton);
-        valueLeftButton.setOnClickListener(new OnClickListener() {
+        valueRightButton = (ImageButton) findViewById(R.id.valueRightButton);
+
+        OnClickListener previousDimensionClickedListener = new OnClickListener() {
             @Override
             public void onClick(View v) {
                 int current = chartView.getCurrentDataDimension();
@@ -72,10 +74,11 @@ public class VisualizationCardView extends RelativeLayout {
                     chartView.setDataDimension(chartView.getPreviousDataDimension());
                 }
             }
-        });
+        };
+        valueLeftTextView.setOnClickListener(previousDimensionClickedListener);
+        valueLeftButton.setOnClickListener(previousDimensionClickedListener);
 
-        valueRightButton = (ImageButton) findViewById(R.id.valueRightButton);
-        valueRightButton.setOnClickListener(new OnClickListener() {
+        OnClickListener nextDimensionClickedListener = new OnClickListener() {
             @Override
             public void onClick(View v) {
                 int current = chartView.getCurrentDataDimension();
@@ -86,7 +89,9 @@ public class VisualizationCardView extends RelativeLayout {
                     chartView.setDataDimension(chartView.getNextDataDimension());
                 }
             }
-        });
+        };
+        valueRightTextView.setOnClickListener(nextDimensionClickedListener);
+        valueRightButton.setOnClickListener(nextDimensionClickedListener);
 
         chartView = (ChartView) findViewById(R.id.chartView);
     }

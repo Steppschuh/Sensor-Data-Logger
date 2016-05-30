@@ -288,7 +288,11 @@ public abstract class ChartView extends View {
     }
 
     public static String getDimensionName(int dimension) {
-        return UnitHelper.getCharForNumber(dimension + 23);
+        if (dimension < 3) {
+            return UnitHelper.getCharForNumber(dimension + 23);
+        } else {
+            return UnitHelper.getCharForNumber(dimension);
+        }
     }
 
     public static void drawTextCentred(Canvas canvas, String text, float cx, float cy, Paint paint, Rect textBounds){

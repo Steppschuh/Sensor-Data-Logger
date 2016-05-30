@@ -15,7 +15,7 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         android:clipToPadding="false"
-        android:columnWidth="300dp"
+        android:columnWidth="275dp"
         android:numColumns="auto_fit"
         android:verticalSpacing="4dp"
         android:horizontalSpacing="4dp"
