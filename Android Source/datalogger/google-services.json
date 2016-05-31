@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "1003962642366",
+    "firebase_url": "https://sensor-data-logger.firebaseio.com",
+    "project_id": "sensor-data-logger",
+    "storage_bucket": "sensor-data-logger.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1003962642366:android:a979755664b8ee55",
+        "android_client_info": {
+          "package_name": "net.steppschuh.sensordatalogger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1003962642366-al25ecfvmvpc28k7e51o074ahl2reqmu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "net.steppschuh.sensordatalogger",
+            "certificate_hash": "EF680670A013D4D1EC2493737882ADDCFA992DF4"
+          }
+        },
+        {
+          "client_id": "1003962642366-649sf4gffvtg512evbkkgfmkf4o7s9ae.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "1003962642366-0nnv99gutjqtaievsb7a3nl8bqp827oc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXnTT4oyBn_jMPyMRFROpkiENnFuIy6MY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1003962642366-649sf4gffvtg512evbkkgfmkf4o7s9ae.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

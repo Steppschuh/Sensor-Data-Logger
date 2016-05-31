@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.google.android.gms.wearable.Node;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.steppschuh.datalogger.MobileApp;
 import net.steppschuh.datalogger.data.request.DataRequest;
@@ -175,6 +176,12 @@ public class SensorSelectionDialogFragment extends DialogFragment {
             // request sensors
             requestAvailableSensors(nodeId, availableSensorsUpdatedListener);
         }
+
+        // track analytics event
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Device Sensors");
+        bundle.putString(FirebaseAnalytics.Param.VALUE, nodeName);
+        app.getAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM_LIST, bundle);
     }
 
     /**

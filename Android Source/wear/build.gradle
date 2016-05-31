@@ -43,5 +43,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(path: ':datalogger')
     compile 'com.google.android.support:wearable:1.4.0'
-    compile 'com.google.android.gms:play-services-wearable:8.4.0'
+    compile 'com.google.android.gms:play-services-wearable:9.0.0'
 }
+
+apply plugin: 'com.google.gms.google-services'

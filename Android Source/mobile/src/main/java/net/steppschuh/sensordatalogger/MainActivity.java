@@ -1,6 +1,8 @@
 package net.steppschuh.sensordatalogger;
 
 import android.app.DialogFragment;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.steppschuh.datalogger.data.DataBatch;
 import net.steppschuh.datalogger.data.DataChangedListener;
@@ -79,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
         setupUi();
         setupMessageHandlers();
         setupStatusUpdates();
+        setupAnalytics();
 
         status.setInitialized(true);
         status.updated(statusUpdateHandler);
@@ -124,9 +128,21 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
             public void onStatusUpdated(Status status) {
                 GoogleApiStatus googleApiStatus = (GoogleApiStatus) status;
                 int nearbyNodes = GoogleApiMessenger.getNearbyNodes(googleApiStatus.getLastConnectedNodes()).size();
-                //Toast.makeText(MainActivity.this, "Connected devices: " + nearbyNodes, Toast.LENGTH_SHORT).show();
+                // TODO: show notification if devices are nearby but no reachable
             }
         });
+    }
+
+    private void setupAnalytics() {
+        Bundle bundle = new Bundle();
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            bundle.putString("version_code", String.valueOf(packageInfo.versionCode));
+            bundle.putString("version_name", String.valueOf(packageInfo.versionName));
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, "Unable to get package info");
+        }
+        app.getAnalytics().logEvent(FirebaseAnalytics.Event.APP_OPEN, bundle);
     }
 
     @Override
@@ -320,6 +336,17 @@ public class MainActivity extends AppCompatActivity implements DataChangedListen
     public void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors) {
         Log.d(TAG, "Sensors from all nodes selected");
         this.selectedSensors = selectedSensors;
+
+        // track selected sensors in analytics
+        for (Map.Entry<String, List<DeviceSensor>> selectedSensorsEntry : selectedSensors.entrySet()) {
+            for (DeviceSensor deviceSensor : selectedSensorsEntry.getValue()) {
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.ITEM_ID, String.valueOf(deviceSensor.getType()));
+                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, deviceSensor.getName());
+                bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, deviceSensor.getStringType());
+                app.getAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+            }
+        }
     }
 
     /**

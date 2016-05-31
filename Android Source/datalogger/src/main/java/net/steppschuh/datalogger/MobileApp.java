@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.steppschuh.datalogger.logging.TrackerManager;
 import net.steppschuh.datalogger.messaging.ReachabilityChecker;
@@ -42,10 +43,12 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
     private TrackerManager trackerManager;
     private SensorDataManager sensorDataManager;
     private ReachabilityChecker reachabilityChecker;
+    private FirebaseAnalytics analytics;
 
     public void initialize(Activity contextActivity) {
         this.contextActivity = contextActivity;
 
+        setupAnalytics();
         setupStatusUpdates();
         setupGoogleApis();
         setupTrackingManager();
@@ -94,6 +97,13 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
     private void setupReachabilityChecker() {
         reachabilityChecker = new ReachabilityChecker(this);
         reachabilityChecker.registerMessageHandlers();
+    }
+
+    private void setupAnalytics() {
+        analytics = FirebaseAnalytics.getInstance(contextActivity);
+
+        //TODO: offer opt-out of analytics
+        analytics.setAnalyticsCollectionEnabled(true);
     }
 
     public boolean registerMessageHandler(MessageHandler messageHandler) {
@@ -209,4 +219,9 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
     public void setReachabilityChecker(ReachabilityChecker reachabilityChecker) {
         this.reachabilityChecker = reachabilityChecker;
     }
+
+    public FirebaseAnalytics getAnalytics() {
+        return analytics;
+    }
+
 }
