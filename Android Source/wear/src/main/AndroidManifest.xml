@@ -31,7 +31,7 @@
         </service>
 
         <activity
-            android:name=".MainActivityWear"
+            android:name=".WearActivity"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.DeviceDefault.Light">
             <intent-filter>

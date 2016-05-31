@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
@@ -26,8 +25,6 @@ import net.steppschuh.datalogger.data.DataChangedListener;
 import net.steppschuh.datalogger.data.request.DataRequest;
 import net.steppschuh.datalogger.data.request.DataRequestResponse;
 import net.steppschuh.datalogger.data.request.SensorDataRequest;
-import net.steppschuh.datalogger.logging.TimeTracker;
-import net.steppschuh.datalogger.logging.TrackerManager;
 import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
 import net.steppschuh.datalogger.messaging.ReachabilityChecker;
 import net.steppschuh.datalogger.messaging.handler.MessageHandler;
@@ -38,17 +35,18 @@ import net.steppschuh.datalogger.status.GoogleApiStatus;
 import net.steppschuh.datalogger.status.Status;
 import net.steppschuh.datalogger.status.StatusUpdateHandler;
 import net.steppschuh.datalogger.status.StatusUpdateReceiver;
-import net.steppschuh.sensordatalogger.visualization.VisualizationCardData;
-import net.steppschuh.sensordatalogger.visualization.VisualizationCardListAdapter;
+import net.steppschuh.sensordatalogger.ui.SensorSelectionDialogFragment;
+import net.steppschuh.sensordatalogger.ui.visualization.VisualizationCardData;
+import net.steppschuh.sensordatalogger.ui.visualization.VisualizationCardListAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements DataChangedListener, ReachabilityChecker.NodeReachabilityUpdateReceiver, SensorSelectionDialogFragment.SelectedSensorsUpdatedListener {
+public class PhoneActivity extends AppCompatActivity implements DataChangedListener, ReachabilityChecker.NodeReachabilityUpdateReceiver, SensorSelectionDialogFragment.SelectedSensorsUpdatedListener {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = PhoneActivity.class.getSimpleName();
 
     private static final String KEY_SENSOR_DATA_REQUESTS = "sensorDataRequests";
     private static final String KEY_SELECTED_SENSORS = "selectedSensors";

@@ -1,4 +1,4 @@
-package net.steppschuh.sensordatalogger;
+package net.steppschuh.sensordatalogger.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -24,6 +24,7 @@ import net.steppschuh.datalogger.messaging.handler.SinglePathMessageHandler;
 import net.steppschuh.datalogger.sensor.DeviceSensor;
 import net.steppschuh.datalogger.sensor.DeviceSensors;
 import net.steppschuh.datalogger.ui.UnitHelper;
+import net.steppschuh.sensordatalogger.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;

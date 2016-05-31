@@ -1,4 +1,4 @@
-package net.steppschuh.sensordatalogger.visualization.chart;
+package net.steppschuh.sensordatalogger.ui.visualization.chart;
 
 import android.animation.ValueAnimator;
 import android.content.Context;

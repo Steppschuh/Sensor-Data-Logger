@@ -1,9 +1,10 @@
 package net.steppschuh.sensordatalogger;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
 import android.util.Log;
@@ -11,9 +12,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.wearable.Wearable;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.steppschuh.datalogger.messaging.handler.MessageHandler;
-import net.steppschuh.datalogger.messaging.handler.SinglePathMessageHandler;
 import net.steppschuh.datalogger.status.ActivityStatus;
 import net.steppschuh.datalogger.status.Status;
 import net.steppschuh.datalogger.status.StatusUpdateEmitter;
@@ -23,9 +24,9 @@ import net.steppschuh.datalogger.status.StatusUpdateReceiver;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivityWear extends WearableActivity implements StatusUpdateEmitter {
+public class WearActivity extends WearableActivity implements StatusUpdateEmitter {
 
-    private static final String TAG = MainActivityWear.class.getSimpleName();
+    private static final String TAG = WearActivity.class.getSimpleName();
 
     private WearApp app;
 
@@ -54,6 +55,7 @@ public class MainActivityWear extends WearableActivity implements StatusUpdateEm
         setupUi();
         setupMessageHandlers();
         setupStatusUpdates();
+        setupAnalytics();
 
         status.setInitialized(true);
         status.updated(statusUpdateHandler);
@@ -72,7 +74,7 @@ public class MainActivityWear extends WearableActivity implements StatusUpdateEm
         mContainerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // TODO: update status
             }
         });
 
@@ -92,6 +94,18 @@ public class MainActivityWear extends WearableActivity implements StatusUpdateEm
                 app.getStatus().updated(app.getStatusUpdateHandler());
             }
         });
+    }
+
+    private void setupAnalytics() {
+        Bundle bundle = new Bundle();
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            bundle.putString("version_code", String.valueOf(packageInfo.versionCode));
+            bundle.putString("version_name", String.valueOf(packageInfo.versionName));
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, "Unable to get package info");
+        }
+        app.getAnalytics().logEvent(FirebaseAnalytics.Event.APP_OPEN, bundle);
     }
 
     @Override

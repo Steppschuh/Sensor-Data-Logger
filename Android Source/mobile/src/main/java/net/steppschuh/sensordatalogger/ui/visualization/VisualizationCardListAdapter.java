@@ -1,4 +1,4 @@
-package net.steppschuh.sensordatalogger.visualization;
+package net.steppschuh.sensordatalogger.ui.visualization;
 
 import android.content.Context;
 import android.view.View;

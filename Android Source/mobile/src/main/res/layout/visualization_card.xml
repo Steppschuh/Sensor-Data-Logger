@@ -146,7 +146,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp">
 
-                <net.steppschuh.sensordatalogger.visualization.chart.LineChartView
+                <net.steppschuh.sensordatalogger.ui.visualization.chart.LineChartView
                     android:id="@+id/chartView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />

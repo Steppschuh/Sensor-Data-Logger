@@ -1,4 +1,4 @@
-package net.steppschuh.sensordatalogger.visualization;
+package net.steppschuh.sensordatalogger.ui.visualization;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 import net.steppschuh.datalogger.data.Data;
 import net.steppschuh.datalogger.data.DataBatch;
 import net.steppschuh.sensordatalogger.R;
-import net.steppschuh.sensordatalogger.visualization.chart.ChartView;
+import net.steppschuh.sensordatalogger.ui.visualization.chart.ChartView;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package net.steppschuh.sensordatalogger;
+package net.steppschuh.sensordatalogger.ui;
 
 import android.content.Context;
 import android.util.Log;

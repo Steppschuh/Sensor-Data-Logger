@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorLightGrey"
-    tools:context="net.steppschuh.sensordatalogger.MainActivity">
+    tools:context=".PhoneActivity">
 
     <GridView
         android:id="@+id/gridView"

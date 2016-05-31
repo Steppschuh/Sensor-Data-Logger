@@ -1,4 +1,4 @@
-package net.steppschuh.sensordatalogger.visualization;
+package net.steppschuh.sensordatalogger.ui.visualization;
 
 import net.steppschuh.datalogger.data.DataBatch;
 
