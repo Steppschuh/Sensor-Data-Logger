@@ -208,6 +208,23 @@ public class ReachabilityChecker {
         return recentlyReachedNodes;
     }
 
+    /**
+     * Returns a list of node ids that are connected but not reachable
+     */
+    public List<String> getNotReachableNodeIds() {
+        List<String> reachableNodeIds = getReachableNodeIds();
+        List<String> notReachableNodeIds = new ArrayList<>();
+
+        List<Node> nearbyNodes = app.getGoogleApiMessenger().getLastConnectedNearbyNodes();
+        for (Node nearbyNode : nearbyNodes) {
+            if (nearbyNode == null || reachableNodeIds.contains(nearbyNode.getId())) {
+                continue;
+            }
+            notReachableNodeIds.add(nearbyNode.getId());
+        }
+        return notReachableNodeIds;
+    }
+
     public class ReachabilityPingMessageHandler extends PingMessageHandler {
 
         public ReachabilityPingMessageHandler(GoogleApiMessenger googleApiMessenger) {

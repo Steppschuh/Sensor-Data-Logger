@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Sensor Data Logger</string>
 
+    <string name="android_wear_connected">Android Wear connected</string>
+    <string name="device_connected_but_unreachable">If you want to stream sensor data from your watch, start the Sensor Data Logger app on your [DEVICENAME].</string>
+
     <string name="device_connected">[DEVICENAME] connected</string>
     <string name="device_disconnected">[DEVICENAME] disconnected</string>
 

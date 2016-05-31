@@ -1,6 +1,7 @@
 package net.steppschuh.sensordatalogger;
 
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -10,6 +11,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -43,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class PhoneActivity extends AppCompatActivity implements DataChangedListener, ReachabilityChecker.NodeReachabilityUpdateReceiver, SensorSelectionDialogFragment.SelectedSensorsUpdatedListener {
 
@@ -61,9 +64,11 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     private GridView gridView;
 
     private VisualizationCardListAdapter cardListAdapter;
+    private SensorSelectionDialogFragment sensorSelectionDialog;
 
     private Map<String, SensorDataRequest> sensorDataRequests = new HashMap<>();
     private Map<String, List<DeviceSensor>> selectedSensors = new HashMap<>();
+    private Map<String, AlertDialog> reachabilityDialogs = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,13 +82,26 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
             app.initialize(this);
         }
 
+        // setup stuff
         setupUi();
         setupMessageHandlers();
         setupStatusUpdates();
         setupAnalytics();
 
+        // update status
         status.setInitialized(true);
         status.updated(statusUpdateHandler);
+
+        // avoid empty state
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (sensorDataRequests.entrySet().size() == 0) {
+                    // currently not requesting any data, open sensor selection
+                    showSensorSelectionDialog();
+                }
+            }
+        }, TimeUnit.SECONDS.toMillis(1));
     }
 
     private void setupUi() {
@@ -124,9 +142,12 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         app.getGoogleApiMessenger().getStatusUpdateHandler().registerStatusUpdateReceiver(new StatusUpdateReceiver() {
             @Override
             public void onStatusUpdated(Status status) {
-                GoogleApiStatus googleApiStatus = (GoogleApiStatus) status;
-                int nearbyNodes = GoogleApiMessenger.getNearbyNodes(googleApiStatus.getLastConnectedNodes()).size();
-                // TODO: show notification if devices are nearby but no reachable
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkForConnectedButUnreachableNodes();
+                    }
+                }, ReachabilityChecker.REACHABILITY_TIMEOUT_DEFAULT);
             }
         });
     }
@@ -197,6 +218,9 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         }
         Wearable.MessageApi.addListener(app.getGoogleApiMessenger().getGoogleApiClient(), app);
 
+        // register reachability callback
+        app.getReachabilityChecker().registerReachabilityUpdateReceiver(ReachabilityChecker.NODE_ID_ANY, this);
+
         // update status
         status.setInForeground(true);
         status.updated(statusUpdateHandler);
@@ -254,6 +278,15 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         Snackbar.make(parentLayout, message, Snackbar.LENGTH_LONG)
                 .setDuration(Snackbar.LENGTH_LONG)
                 .show();
+
+        if (isReachable) {
+            // update reachability dialog, if any
+            AlertDialog reachabilityDialog = reachabilityDialogs.get(nodeId);
+            if (reachabilityDialog != null && reachabilityDialog.isShowing()) {
+                reachabilityDialog.dismiss();
+                showSensorSelectionDialog();
+            }
+        }
     }
 
     /**
@@ -321,9 +354,14 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
      * on each connected node that he wants to stream
      */
     private void showSensorSelectionDialog() {
-        SensorSelectionDialogFragment sensorSelectionDialogFragment = new SensorSelectionDialogFragment();
-        sensorSelectionDialogFragment.setPreviouslySelectedSensors(selectedSensors);
-        sensorSelectionDialogFragment.show(getFragmentManager(), SensorSelectionDialogFragment.class.getSimpleName());
+        if (sensorSelectionDialog != null) {
+            Log.w(TAG, "Not showing sensor selection dialog, previous dialog is still set");
+            return;
+        }
+        Log.d(TAG, "Showing sensor selection dialog");
+        sensorSelectionDialog = new SensorSelectionDialogFragment();
+        sensorSelectionDialog.setPreviouslySelectedSensors(selectedSensors);
+        sensorSelectionDialog.show(getFragmentManager(), SensorSelectionDialogFragment.class.getSimpleName());
     }
 
     /**
@@ -334,6 +372,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     public void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors) {
         Log.d(TAG, "Sensors from all nodes selected");
         this.selectedSensors = selectedSensors;
+        sensorSelectionDialog = null;
 
         // track selected sensors in analytics
         for (Map.Entry<String, List<DeviceSensor>> selectedSensorsEntry : selectedSensors.entrySet()) {
@@ -377,6 +416,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     @Override
     public void onSensorSelectionCanceled(DialogFragment dialog) {
         Log.d(TAG, "Sensor selection canceled");
+        sensorSelectionDialog = null;
     }
 
     /**
@@ -543,6 +583,45 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
             Log.d(TAG, "Removing unneeded visualization card: " + visualizationCardDataEntry.getValue().getHeading());
             cardListAdapter.remove(visualizationCardDataEntry.getValue());
         }
+    }
+
+    /**
+     * Checks if there are connected wearables that don't have the app running.
+     */
+    private void checkForConnectedButUnreachableNodes() {
+        Log.d(TAG, "Looking for connected but unreachable nodes");
+        List<String> notReachableNodeIds = app.getReachabilityChecker().getNotReachableNodeIds();
+        for (String notReachableNodeId : notReachableNodeIds) {
+            DataRequest dataRequest = sensorDataRequests.get(notReachableNodeId);
+            AlertDialog reachabilityDialog = reachabilityDialogs.get(notReachableNodeId);
+            if (dataRequest == null && reachabilityDialog == null) {
+                showAppNotRunningDialog(notReachableNodeId);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Creates and shows a dialog that informs the user that a device is connected
+     * but not reachable because the app is currently not running
+     */
+    private void showAppNotRunningDialog(String nodeId) {
+        Log.d(TAG, "Showing app not running dialog");
+        String nodeName = app.getGoogleApiMessenger().getNodeName(nodeId);
+        AlertDialog reachabilityDialog = new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.android_wear_connected))
+                .setMessage(getString(R.string.device_connected_but_unreachable).replace("[DEVICENAME]", nodeName))
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        app.getGoogleApiMessenger().updateLastConnectedNodes();
+                        app.getReachabilityChecker().checkReachabilities(null);
+                    }
+                })
+                .setIcon(R.drawable.ic_watch_black_48dp)
+                .create();
+
+        reachabilityDialogs.put(nodeId, reachabilityDialog);
+        reachabilityDialog.show();
     }
 
 }

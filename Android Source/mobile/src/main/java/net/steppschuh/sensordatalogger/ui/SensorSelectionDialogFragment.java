@@ -86,6 +86,7 @@ public class SensorSelectionDialogFragment extends DialogFragment {
                 listener.onSensorSelectionCanceled(SensorSelectionDialogFragment.this);
             }
         });
+        builder.setIcon(R.drawable.ic_phone_android_black_48dp);
         return builder.create();
     }
 
@@ -153,6 +154,13 @@ public class SensorSelectionDialogFragment extends DialogFragment {
         // prepare dialog for new sensor selection
         String title = getString(R.string.loading_sensors_on_device).replace("[DEVICENAME]", nodeName);
         getDialog().setTitle(title);
+
+        // update icon
+        if (nodeId.equals(app.getGoogleApiMessenger().getLocalNodeId())) {
+            ((AlertDialog) getDialog()).setIcon(R.drawable.ic_phone_android_black_48dp);
+        } else {
+            ((AlertDialog) getDialog()).setIcon(R.drawable.ic_watch_black_48dp);
+        }
 
         // create & apply new list adapter
         multiChoiceAdapter = new SensorListAdapter(new ArrayList<DeviceSensor>(), getActivity());
