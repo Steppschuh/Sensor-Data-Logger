@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
-public class DataRequest {
+public class DataRequest implements Serializable {
 
     public static final long UPDATE_INTERVAL_DEFAULT = TimeUnit.SECONDS.toMillis(1);
     public static final long UPDATE_INTERVAL_FAST = 50;

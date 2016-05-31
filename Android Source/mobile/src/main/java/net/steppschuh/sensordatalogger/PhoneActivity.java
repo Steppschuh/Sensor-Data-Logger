@@ -354,7 +354,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
      * on each connected node that he wants to stream
      */
     private void showSensorSelectionDialog() {
-        if (sensorSelectionDialog != null) {
+        if (sensorSelectionDialog != null && sensorSelectionDialog.isVisible()) {
             Log.w(TAG, "Not showing sensor selection dialog, previous dialog is still set");
             return;
         }

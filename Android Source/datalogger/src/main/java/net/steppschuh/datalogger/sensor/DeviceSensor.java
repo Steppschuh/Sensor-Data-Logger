@@ -3,7 +3,9 @@ package net.steppschuh.datalogger.sensor;
 import android.hardware.Sensor;
 import android.os.Build;
 
-public class DeviceSensor {
+import java.io.Serializable;
+
+public class DeviceSensor implements Serializable {
 
     private String name;
     private String vendor;
