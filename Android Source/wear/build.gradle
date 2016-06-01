@@ -9,8 +9,9 @@ android {
         applicationId "net.steppschuh.sensordatalogger"
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -42,6 +43,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(path: ':datalogger')
+    compile 'com.android.support:multidex:1.0.1'
     compile 'com.google.android.support:wearable:1.4.0'
     compile 'com.google.android.gms:play-services-wearable:9.0.0'
 }
