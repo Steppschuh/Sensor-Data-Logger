@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Sensor Data Logger</string>
     <string name="hello_world">Hello World!</string>
+
+    <string name="status_connected_pre">[REGISTERED_SENSORS] of [AVAILABLE_SENSORS] sensors</string>
+    <string name="status_connected_main">streaming</string>
+    <string name="status_connected_post">to [DEVICENAME]</string>
+
+    <string name="status_disconnected_pre">[AVAILABLE_SENSORS] sensors are</string>
+    <string name="status_disconnected_main">idle</string>
+    <string name="status_disconnected_post">waiting for requests</string>
+
 </resources>

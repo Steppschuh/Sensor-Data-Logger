@@ -125,8 +125,6 @@ public class SensorDataManager {
         return dataBatch;
     }
 
-
-
     /**
      * Getter & Setter
      */

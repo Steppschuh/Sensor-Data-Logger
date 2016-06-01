@@ -5,6 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     tools:context=".WearActivity"
     tools:deviceIds="wear">
 
@@ -20,6 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_margin="5dp"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
             style="@style/Base.TextAppearance.AppCompat.Title"
             />
 
@@ -30,6 +33,9 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_above="@id/mainText"
+            android:alpha="0.75"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
             style="@style/Base.TextAppearance.AppCompat.Subhead"
             />
 
@@ -40,6 +46,9 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/mainText"
+            android:alpha="0.75"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
             style="@style/Base.TextAppearance.AppCompat.Subhead"
             />
 
@@ -50,7 +59,9 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
+            android:alpha="0.5"
             android:textSize="10sp"
+            android:textColor="@android:color/white"
             style="@style/Base.TextAppearance.AppCompat.Small"
             />
 

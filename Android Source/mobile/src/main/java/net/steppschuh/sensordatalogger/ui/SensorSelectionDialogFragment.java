@@ -44,7 +44,7 @@ public class SensorSelectionDialogFragment extends DialogFragment {
 
         void onSensorsFromNodeSelected(String nodeId, List<DeviceSensor> sensors);
 
-        void onSensorSelectionCanceled(DialogFragment dialog);
+        void onSensorSelectionClosed(DialogFragment dialog);
     }
 
     private MobileApp app;
@@ -83,7 +83,7 @@ public class SensorSelectionDialogFragment extends DialogFragment {
         });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                listener.onSensorSelectionCanceled(SensorSelectionDialogFragment.this);
+                // dismiss dialog
             }
         });
         builder.setIcon(R.drawable.ic_phone_android_black_48dp);
@@ -140,6 +140,12 @@ public class SensorSelectionDialogFragment extends DialogFragment {
 
         // load the first list of available sensors
         showSensorSelectionForNextNode();
+    }
+
+    @Override
+    public void onStop() {
+        listener.onSensorSelectionClosed(this);
+        super.onStop();
     }
 
     /**

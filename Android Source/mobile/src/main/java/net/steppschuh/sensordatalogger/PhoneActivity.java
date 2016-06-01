@@ -27,13 +27,11 @@ import net.steppschuh.datalogger.data.DataChangedListener;
 import net.steppschuh.datalogger.data.request.DataRequest;
 import net.steppschuh.datalogger.data.request.DataRequestResponse;
 import net.steppschuh.datalogger.data.request.SensorDataRequest;
-import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
 import net.steppschuh.datalogger.messaging.ReachabilityChecker;
 import net.steppschuh.datalogger.messaging.handler.MessageHandler;
 import net.steppschuh.datalogger.messaging.handler.SinglePathMessageHandler;
 import net.steppschuh.datalogger.sensor.DeviceSensor;
 import net.steppschuh.datalogger.status.ActivityStatus;
-import net.steppschuh.datalogger.status.GoogleApiStatus;
 import net.steppschuh.datalogger.status.Status;
 import net.steppschuh.datalogger.status.StatusUpdateHandler;
 import net.steppschuh.datalogger.status.StatusUpdateReceiver;
@@ -287,6 +285,9 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
                 showSensorSelectionDialog();
             }
         }
+
+        // re-send available data requests
+        sendSensorEventDataRequests();
     }
 
     /**
@@ -354,7 +355,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
      * on each connected node that he wants to stream
      */
     private void showSensorSelectionDialog() {
-        if (sensorSelectionDialog != null && sensorSelectionDialog.isVisible()) {
+        if (sensorSelectionDialog != null) {
             Log.w(TAG, "Not showing sensor selection dialog, previous dialog is still set");
             return;
         }
@@ -372,7 +373,6 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     public void onSensorsFromAllNodesSelected(Map<String, List<DeviceSensor>> selectedSensors) {
         Log.d(TAG, "Sensors from all nodes selected");
         this.selectedSensors = selectedSensors;
-        sensorSelectionDialog = null;
 
         // track selected sensors in analytics
         for (Map.Entry<String, List<DeviceSensor>> selectedSensorsEntry : selectedSensors.entrySet()) {
@@ -410,12 +410,11 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     }
 
     /**
-     * Will be called if the sensor selection dialog has been canceled during
-     * the sensor selection of any node
+     * Will be called if the sensor selection dialog has been closed
      */
     @Override
-    public void onSensorSelectionCanceled(DialogFragment dialog) {
-        Log.d(TAG, "Sensor selection canceled");
+    public void onSensorSelectionClosed(DialogFragment dialog) {
+        Log.d(TAG, "Sensor selection closed");
         sensorSelectionDialog = null;
     }
 

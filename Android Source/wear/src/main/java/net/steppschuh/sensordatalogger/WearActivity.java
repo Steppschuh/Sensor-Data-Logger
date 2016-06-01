@@ -3,18 +3,26 @@ package net.steppschuh.sensordatalogger;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.hardware.Sensor;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
+import android.support.v4.content.ContextCompat;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import net.steppschuh.datalogger.data.request.DataRequest;
+import net.steppschuh.datalogger.data.request.SensorDataRequest;
 import net.steppschuh.datalogger.messaging.handler.MessageHandler;
+import net.steppschuh.datalogger.messaging.handler.SinglePathMessageHandler;
+import net.steppschuh.datalogger.sensor.DeviceSensors;
 import net.steppschuh.datalogger.status.ActivityStatus;
 import net.steppschuh.datalogger.status.Status;
 import net.steppschuh.datalogger.status.StatusUpdateEmitter;
@@ -39,6 +47,10 @@ public class WearActivity extends WearableActivity implements StatusUpdateEmitte
     private TextView preTextView;
     private TextView postTextView;
     private TextView logTextView;
+
+    private String lastConnectedDeviceName;
+    private int lastRequestedSensorCount = -1;
+    private int lastAvailableSensorCount = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +86,7 @@ public class WearActivity extends WearableActivity implements StatusUpdateEmitte
         mContainerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: update status
+                updateStatusTexts();
             }
         });
 
@@ -83,6 +95,7 @@ public class WearActivity extends WearableActivity implements StatusUpdateEmitte
 
     private void setupMessageHandlers() {
         messageHandlers = new ArrayList<>();
+        messageHandlers.add(getSensorDataRequestHandler());
     }
 
     private void setupStatusUpdates() {
@@ -168,26 +181,111 @@ public class WearActivity extends WearableActivity implements StatusUpdateEmitte
         if (isAmbient()) {
             mContainerView.setBackgroundColor(Color.BLACK);
 
-            mainTextView.setTextColor(Color.WHITE);
-            preTextView.setTextColor(Color.GRAY);
-            postTextView.setTextColor(Color.GRAY);
-            logTextView.setTextColor(Color.GRAY);
-
             preTextView.setVisibility(View.GONE);
             postTextView.setVisibility(View.GONE);
             logTextView.setVisibility(View.GONE);
         } else {
-            mContainerView.setBackground(null);
-
-            mainTextView.setTextColor(Color.BLACK);
-            preTextView.setTextColor(Color.BLACK);
-            postTextView.setTextColor(Color.BLACK);
-            logTextView.setTextColor(Color.GRAY);
+            mContainerView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
 
             preTextView.setVisibility(View.VISIBLE);
             postTextView.setVisibility(View.VISIBLE);
             logTextView.setVisibility(View.VISIBLE);
         }
+        updateStatusTexts();
+    }
+
+    private void updateStatusTexts() {
+        String connectedDeviceName = getConnectedDeviceName();
+        int availableSensorsCount = getAvailableSensorsCount();
+        int registeredSensorsCount = getRegisteredSensorsCount();
+
+        String preText;
+        String mainText;
+        String postText;
+        String logText = String.valueOf(app.getStatus().getLastUpdateTimestamp());
+
+        if (isSendingRequestResponses()) {
+            preText = getString(R.string.status_connected_pre);
+            preText = preText.replace("[REGISTERED_SENSORS]", String.valueOf(registeredSensorsCount));
+            preText = preText.replace("[AVAILABLE_SENSORS]", String.valueOf(availableSensorsCount));
+            mainText = getString(R.string.status_connected_main);
+            postText = getString(R.string.status_connected_post);
+            postText = postText.replace("[DEVICENAME]", connectedDeviceName);
+        } else {
+            preText = getString(R.string.status_disconnected_pre);
+            preText = preText.replace("[AVAILABLE_SENSORS]", String.valueOf(availableSensorsCount));
+            mainText = getString(R.string.status_disconnected_main);
+            postText = getString(R.string.status_disconnected_post);
+        }
+
+        preTextView.setText(preText);
+        mainTextView.setText(mainText);
+        postTextView.setText(postText);
+        logTextView.setText(logText);
+    }
+
+    private boolean isSendingRequestResponses() {
+        if (!app.getGoogleApiMessenger().getGoogleApiClient().isConnected()) {
+            return false;
+        }
+        if (app.getReachabilityChecker().getReachableNodeIds().size() < 1) {
+            return false;
+        }
+        if (app.getSensorDataManager().getSensorEventListeners().entrySet().size() < 1) {
+            return false;
+        }
+        return true;
+    }
+
+    private int getAvailableSensorsCount() {
+        if (lastAvailableSensorCount < 0) {
+            List<Sensor> availableSensors = app.getSensorDataManager().getSensorManager().getSensorList(Sensor.TYPE_ALL);
+            lastAvailableSensorCount = new DeviceSensors(availableSensors, false).getSensors().size();
+        }
+        return lastAvailableSensorCount;
+    }
+
+    private int getRegisteredSensorsCount() {
+        if (lastRequestedSensorCount < 0) {
+            lastRequestedSensorCount = app.getSensorDataManager().getSensorEventListeners().entrySet().size();
+        }
+        return lastRequestedSensorCount;
+    }
+
+    private String getConnectedDeviceName() {
+        if (lastConnectedDeviceName == null) {
+            List<Node> lastConnectedNodes = app.getGoogleApiMessenger().getLastConnectedNearbyNodes();
+            if (lastConnectedNodes != null && lastConnectedNodes.size() > 0) {
+                lastConnectedDeviceName = app.getGoogleApiMessenger().getNodeName(lastConnectedNodes.get(0).getId());
+            }
+        }
+        return lastConnectedDeviceName;
+    }
+
+    private MessageHandler getSensorDataRequestHandler() {
+        return new SinglePathMessageHandler(MessageHandler.PATH_SENSOR_DATA_REQUEST) {
+            @Override
+            public void handleMessage(Message message) {
+                // parse message
+                String sourceNodeId = getSourceNodeIdFromMessage(message);
+                String dataRequestJson = getDataFromMessageAsString(message);
+                Log.v(TAG, "Received a data request from " + sourceNodeId + ": " + dataRequestJson);
+
+                // update status from sensor data request
+                SensorDataRequest sensorDataRequest = SensorDataRequest.fromJson(dataRequestJson);
+                if (sensorDataRequest != null) {
+                    if (sensorDataRequest.getEndTimestamp() == DataRequest.TIMESTAMP_NOT_SET) {
+                        lastRequestedSensorCount = sensorDataRequest.getSensorTypes().size();
+                    } else {
+                        lastRequestedSensorCount = 0;
+                    }
+                    lastConnectedDeviceName = app.getGoogleApiMessenger().getNodeName(sensorDataRequest.getSourceNodeId());
+                }
+
+                updateStatusTexts();
+                logTextView.setText(String.valueOf(System.currentTimeMillis()));
+            }
+        };
     }
 
     @Override
