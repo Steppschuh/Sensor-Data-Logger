@@ -1,7 +1,8 @@
 package net.steppschuh.datalogger.messaging;
 
-import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -15,6 +16,7 @@ import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
 import net.steppschuh.datalogger.MobileApp;
+import net.steppschuh.datalogger.messaging.handler.MessageHandler;
 import net.steppschuh.datalogger.status.GoogleApiStatus;
 import net.steppschuh.datalogger.status.Status;
 import net.steppschuh.datalogger.status.StatusUpdateEmitter;
@@ -29,26 +31,31 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
 
     private static final String TAG = GoogleApiMessenger.class.getSimpleName();
     public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+    public static final String DEFAULT_NODE_ID = "LOCAL_NODE";
 
     private GoogleApiStatus status = new GoogleApiStatus();
     private StatusUpdateHandler statusUpdateHandler;
 
+    private MobileApp app;
     private GoogleApiClient googleApiClient;
+    private boolean wearableApiAvailable;
 
-    public GoogleApiMessenger(Context context) {
-        initialize(context);
+    public GoogleApiMessenger(MobileApp app) {
+        this.app = app;
+        initialize(app);
     }
 
-    private void initialize(Context context) {
+    private void initialize(MobileApp app) {
         Log.d(TAG, "Initializing Google API client");
-        googleApiClient = new GoogleApiClient.Builder(context)
+        googleApiClient = new GoogleApiClient.Builder(app)
                 .addConnectionCallbacks(this)
-                .addApiIfAvailable(Wearable.API)
+                .addApi(Wearable.API)
                 .build();
         updateLocalNode();
+        setupStatusUpdates();
     }
 
-    public void setupStatusUpdates(final MobileApp app) {
+    public void setupStatusUpdates() {
         statusUpdateHandler = new StatusUpdateHandler();
         statusUpdateHandler.registerStatusUpdateReceiver(new StatusUpdateReceiver() {
             @Override
@@ -100,9 +107,11 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         if (connectionResult.getErrorCode() == ConnectionResult.API_UNAVAILABLE) {
-            // The Wearable API is unavailable
+            wearableApiAvailable = false;
         }
-        Log.w(TAG, "Google API client connection failed: " + connectionResult.getErrorMessage());
+        status.setConnected(false);
+        status.updated(statusUpdateHandler);
+        Log.e(TAG, "Google API client connection failed: " + connectionResult.getErrorMessage());
     }
 
     public void updateLocalNode() {
@@ -112,6 +121,7 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
             public void onResult(@NonNull NodeApi.GetLocalNodeResult getLocalNodeResult) {
                 status.setLocalNode(getLocalNodeResult.getNode());
                 status.updated(statusUpdateHandler);
+                wearableApiAvailable = getLocalNodeResult.getNode() != null;
             }
         });
     }
@@ -149,11 +159,18 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
         if (node != null) {
             return node.getDisplayName();
         } else {
-            return id;
+            if (id == null || id.equals(DEFAULT_NODE_ID)) {
+                return Build.MODEL;
+            } else {
+                return id;
+            }
         }
     }
 
     public Node getLastConnectedNodeById(String id) {
+        if (id == null || id.equals(DEFAULT_NODE_ID)) {
+            return null;
+        }
         String localNodeId = getLocalNodeId();
         if (localNodeId != null && localNodeId.equals(id)) {
             return status.getLocalNode();
@@ -217,11 +234,15 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    sendMessageToNodeWithResult(path, data, nodeId);
-                } catch (Exception ex) {
-                    Log.w(TAG, "Unable to send message to node: " + nodeId + ": " + ex.getMessage());
-                    ex.printStackTrace();
+                if (nodeId == null || nodeId.equals(DEFAULT_NODE_ID) || nodeId.equals(getLocalNodeId())) {
+                    sendMessageToLocalNode(path, data, nodeId);
+                } else {
+                    try {
+                        sendMessageToNodeWithResult(path, data, nodeId);
+                    } catch (Exception ex) {
+                        Log.w(TAG, "Unable to send message to node: " + nodeId + ": " + ex.getMessage());
+                        ex.printStackTrace();
+                    }
                 }
             }
         }).start();
@@ -237,6 +258,26 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
         return Wearable.MessageApi.sendMessage(googleApiClient, nodeId, path, data).await();
     }
 
+    public void sendMessageToLocalNode(final String path, final byte[] data, String nodeId) {
+        try {
+            if (nodeId == null) {
+                 nodeId = DEFAULT_NODE_ID;
+            }
+            Bundle bundle = new Bundle();
+            bundle.putString(MessageHandler.KEY_PATH, path);
+            bundle.putString(MessageHandler.KEY_SOURCE_NODE_ID, nodeId);
+            bundle.putByteArray(MessageHandler.KEY_DATA, data);
+
+            Message message = new Message();
+            message.setData(bundle);
+
+            app.notifyMessageHandlers(message);
+        } catch (Exception ex) {
+            Log.w(TAG, "Unable to send message to local node: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
     public GoogleApiClient getGoogleApiClient() {
         return googleApiClient;
     }
@@ -249,7 +290,7 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
         if (status != null && status.getLocalNode() != null) {
             return status.getLocalNode().getId();
         }
-        return null;
+        return DEFAULT_NODE_ID;
     }
 
     public static List<Node> getNearbyNodes(List<Node> nodes) {
@@ -270,5 +311,9 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
     @Override
     public StatusUpdateHandler getStatusUpdateHandler() {
         return statusUpdateHandler;
+    }
+
+    public boolean isWearableApiAvailable() {
+        return wearableApiAvailable;
     }
 }

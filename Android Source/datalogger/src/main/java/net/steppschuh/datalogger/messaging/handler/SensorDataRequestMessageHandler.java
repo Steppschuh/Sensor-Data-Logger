@@ -6,6 +6,7 @@ import android.util.Log;
 import net.steppschuh.datalogger.MobileApp;
 import net.steppschuh.datalogger.data.request.SensorDataRequest;
 import net.steppschuh.datalogger.data.request.SensorDataRequestResponseGenerator;
+import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,9 @@ public class SensorDataRequestMessageHandler extends SinglePathMessageHandler {
         try {
             // parse message
             String sourceNodeId = getSourceNodeIdFromMessage(message);
+            if (sourceNodeId == null) {
+                sourceNodeId = GoogleApiMessenger.DEFAULT_NODE_ID;
+            }
             String dataRequestJson = getDataFromMessageAsString(message);
             Log.v(TAG, "Received a data request from " + sourceNodeId + ": " + dataRequestJson);
 

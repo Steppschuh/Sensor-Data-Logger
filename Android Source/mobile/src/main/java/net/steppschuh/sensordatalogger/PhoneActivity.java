@@ -110,6 +110,8 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
             @Override
             public void onClick(View v) {
                 showSensorSelectionDialog();
+
+                String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
             }
         });
 
@@ -531,13 +533,10 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
 
             // create a new card if not yet avaialable
             if (visualizationCardData == null) {
-                Node sourceNode = app.getGoogleApiMessenger().getLastConnectedNodeById(sourceNodeId);
-                if (sourceNode == null) {
-                    throw new Exception("Unknown source node");
-                }
+                String deviceName = app.getGoogleApiMessenger().getNodeName(sourceNodeId);
                 visualizationCardData = new VisualizationCardData(key);
                 visualizationCardData.setHeading(dataBatch.getSource());
-                visualizationCardData.setSubHeading(sourceNode.getDisplayName());
+                visualizationCardData.setSubHeading(deviceName);
                 cardListAdapter.add(visualizationCardData);
                 cardListAdapter.notifyDataSetChanged();
             }

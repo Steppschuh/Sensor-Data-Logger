@@ -6,11 +6,18 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.DrawableRes;
+import android.support.v4.view.MarginLayoutParamsCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.google.android.gms.wearable.Node;
@@ -19,6 +26,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import net.steppschuh.datalogger.MobileApp;
 import net.steppschuh.datalogger.data.request.DataRequest;
 import net.steppschuh.datalogger.data.request.SensorDataRequest;
+import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
 import net.steppschuh.datalogger.messaging.handler.MessageHandler;
 import net.steppschuh.datalogger.messaging.handler.SinglePathMessageHandler;
 import net.steppschuh.datalogger.sensor.DeviceSensor;
@@ -86,8 +94,9 @@ public class SensorSelectionDialogFragment extends DialogFragment {
                 // dismiss dialog
             }
         });
-        builder.setIcon(R.drawable.ic_phone_android_black_48dp);
-        return builder.create();
+        AlertDialog dialog = builder.create();
+        dialog.requestWindowFeature(Window.FEATURE_LEFT_ICON);
+        return dialog;
     }
 
     @Override
@@ -162,10 +171,10 @@ public class SensorSelectionDialogFragment extends DialogFragment {
         getDialog().setTitle(title);
 
         // update icon
-        if (nodeId.equals(app.getGoogleApiMessenger().getLocalNodeId())) {
-            ((AlertDialog) getDialog()).setIcon(R.drawable.ic_phone_android_black_48dp);
+        if (nodeId != null && nodeId.equals(app.getGoogleApiMessenger().getLocalNodeId())) {
+            setDialogIcon(R.drawable.ic_phone_android_black_48dp);
         } else {
-            ((AlertDialog) getDialog()).setIcon(R.drawable.ic_watch_black_48dp);
+            setDialogIcon(R.drawable.ic_watch_black_48dp);
         }
 
         // create & apply new list adapter
@@ -174,12 +183,7 @@ public class SensorSelectionDialogFragment extends DialogFragment {
         listView.setAdapter(multiChoiceAdapter);
 
         // update layout params & invalidate list view
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
-        );
-        params.setMargins((int) UnitHelper.convertDpToPixel(16, getActivity()), 0, 0, 0);
-        listView.setLayoutParams(params);
+        ((ViewGroup.MarginLayoutParams) listView.getLayoutParams()).setMargins((int) UnitHelper.convertDpToPixel(16, getActivity()), 0, 0, 0);
         listView.invalidate();
 
         // update available sensors
@@ -257,12 +261,14 @@ public class SensorSelectionDialogFragment extends DialogFragment {
         // check local node
         String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
         if (!hasSelectedSensorsForNode(localNodeId)) {
+            Log.v(TAG, "Next node (local) " + localNodeId);
             return localNodeId;
         }
 
         // check already requested available sensors
         for (Map.Entry<String, List<DeviceSensor>> availableSensors : this.availableSensors.entrySet()) {
             if (!hasSelectedSensorsForNode(availableSensors.getKey())) {
+                Log.v(TAG, "Next node (available sensors) " + availableSensors.getKey());
                 return availableSensors.getKey();
             }
         }
@@ -270,6 +276,7 @@ public class SensorSelectionDialogFragment extends DialogFragment {
         // check reachable notes
         for (String nodeId : app.getReachabilityChecker().getReachableNodeIds()) {
             if (!hasSelectedSensorsForNode(nodeId)) {
+                Log.v(TAG, "Next node (reachability checker) " + nodeId);
                 return nodeId;
             }
         }
@@ -308,34 +315,39 @@ public class SensorSelectionDialogFragment extends DialogFragment {
     private AvailableSensorsUpdatedListener createAvailableSensorsUpdatedListener() {
         return new AvailableSensorsUpdatedListener() {
             @Override
-            public void onAvailableSensorsUpdated(String nodeId, List<DeviceSensor> deviceSensors) {
-                Log.d(TAG, nodeId + " updated, " + deviceSensors.size() + " sensor(s) available");
-                if (!nodeId.equals(getNextSensorSelectionNodeId())) {
-                    Log.w(TAG, "Tried to update list adapter with data wrong node: " + nodeId);
-                    return;
-                }
-                if (multiChoiceAdapter != null) {
-                    // update adapter with sensors
-                    multiChoiceAdapter.setAvailableSensors(deviceSensors);
+            public void onAvailableSensorsUpdated(final String nodeId, final List<DeviceSensor> deviceSensors) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, nodeId + " updated, " + deviceSensors.size() + " sensor(s) available");
+                        if (nodeId != null && nodeId != GoogleApiMessenger.DEFAULT_NODE_ID && !nodeId.equals(getNextSensorSelectionNodeId())) {
+                            Log.w(TAG, "Tried to update list adapter with data wrong node: " + nodeId);
+                            return;
+                        }
+                        if (multiChoiceAdapter != null) {
+                            // update adapter with sensors
+                            multiChoiceAdapter.setAvailableSensors(deviceSensors);
 
-                    // restore previously selected sensors
-                    List<DeviceSensor> selectedSensors = previouslySelectedSensors.get(nodeId);
-                    if (selectedSensors != null) {
-                        multiChoiceAdapter.setPreviouslySelectedSensors(selectedSensors);
+                            // restore previously selected sensors
+                            List<DeviceSensor> selectedSensors = previouslySelectedSensors.get(nodeId);
+                            if (selectedSensors != null) {
+                                multiChoiceAdapter.setPreviouslySelectedSensors(selectedSensors);
+                            }
+                            multiChoiceAdapter.notifyDataSetChanged();
+
+                            // update dialog title
+                            getDialog().setTitle(getDialogTitleForAvailableSensors(nodeId));
+                        } else {
+                            Log.w(TAG, "Sensor selection list adapter is null");
+                            getDialog().setTitle(getString(R.string.no_sensors_available));
+                        }
+
+                        // unregister this observer
+                        if (availableSensorsUpdatedListeners.contains(this)) {
+                            availableSensorsUpdatedListeners.remove(this);
+                        }
                     }
-                    multiChoiceAdapter.notifyDataSetChanged();
-
-                    // update dialog title
-                    getDialog().setTitle(getDialogTitleForAvailableSensors(nodeId));
-                } else {
-                    Log.w(TAG, "Sensor selection list adapter is null");
-                    getDialog().setTitle(getString(R.string.no_sensors_available));
-                }
-
-                // unregister this observer
-                if (availableSensorsUpdatedListeners.contains(this)) {
-                    availableSensorsUpdatedListeners.remove(this);
-                }
+                });
             }
         };
     }
@@ -345,7 +357,7 @@ public class SensorSelectionDialogFragment extends DialogFragment {
      */
     private String getDialogTitleForAvailableSensors(String nodeId) {
         String title;
-        if (nodeId.equals(app.getGoogleApiMessenger().getLocalNodeId())) {
+        if (nodeId == null || nodeId.equals(app.getGoogleApiMessenger().getLocalNodeId())) {
             // current device
             if (app.getGoogleApiMessenger().getLastConnectedNearbyNodes().size() > 0) {
                 title = getString(R.string.available_sensors_on_this_device);
@@ -358,6 +370,10 @@ public class SensorSelectionDialogFragment extends DialogFragment {
             title = getString(R.string.available_sensors_on_device).replace("[DEVICENAME]", nodeName);
         }
         return title;
+    }
+
+    private void setDialogIcon(@DrawableRes int resId) {
+        getDialog().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, resId);
     }
 
     /**

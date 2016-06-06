@@ -26,6 +26,7 @@ import net.steppschuh.datalogger.status.StatusUpdateHandler;
 import net.steppschuh.datalogger.status.StatusUpdateReceiver;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class MobileApp extends MultiDexApplication implements MessageApi.MessageListener, StatusUpdateEmitter {
@@ -72,7 +73,6 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
     private void setupGoogleApis() {
         Log.d(TAG, "Setting up Google APIs");
         googleApiMessenger = new GoogleApiMessenger(this);
-        googleApiMessenger.setupStatusUpdates(this);
         googleApiMessenger.connect();
     }
 
@@ -123,7 +123,10 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
     public void notifyMessageHandlers(Message message) {
         int matchingHandlersCount = 0;
         String path = MessageHandler.getPathFromMessage(message);
-        for (MessageHandler messageHandler : messageHandlers) {
+
+        // create new list to avoid concurrent modification
+        List<MessageHandler> currentMessageHandlers = new ArrayList<>(messageHandlers);
+        for (MessageHandler messageHandler : currentMessageHandlers) {
             try {
                 if (messageHandler.shouldHandleMessage(path)) {
                     messageHandler.handleMessage(message);
@@ -131,6 +134,7 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
                 }
             } catch (Exception ex) {
                 Log.w(TAG, "Message handler is unable to handle message: " + ex.getMessage());
+                ex.printStackTrace();
             }
         }
         if (matchingHandlersCount == 0) {

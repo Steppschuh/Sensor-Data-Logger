@@ -1,12 +1,14 @@
 package net.steppschuh.datalogger.data.request;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.google.android.gms.wearable.Node;
 
 import net.steppschuh.datalogger.MobileApp;
 import net.steppschuh.datalogger.data.DataBatch;
+import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
 import net.steppschuh.datalogger.messaging.handler.MessageHandler;
 
 import java.util.ArrayList;
@@ -51,8 +53,10 @@ public class SensorDataRequestResponseGenerator {
             return;
         }
         Log.v(TAG, "Starting to generate request responses every " + sensorDataRequest.getUpdateInteval() + "ms");
+        Looper.prepare();
         updateHandler = new Handler();
         updateHandler.postDelayed(updateRunnable, 1);
+        Looper.loop();
     }
 
     public void stopGeneratingRequestResponses() {
@@ -98,16 +102,18 @@ public class SensorDataRequestResponseGenerator {
             @Override
             public void run() {
                 try {
-                    Node sourceNode = app.getGoogleApiMessenger().getLastConnectedNodeById(sensorDataRequest.getSourceNodeId());
-                    if (sourceNode == null) {
-                        app.getGoogleApiMessenger().updateLastConnectedNodes();
-                        throw new Exception("Source node hasn't connected recently");
+                    if (!sensorDataRequest.getSourceNodeId().equals(GoogleApiMessenger.DEFAULT_NODE_ID)) {
+                        Node sourceNode = app.getGoogleApiMessenger().getLastConnectedNodeById(sensorDataRequest.getSourceNodeId());
+                        if (sourceNode == null) {
+                            app.getGoogleApiMessenger().updateLastConnectedNodes();
+                            throw new Exception("Source node hasn't connected recently");
+                        }
                     }
 
                     // generate & send request response
                     DataRequestResponse dataRequestResponse = generateDataRequestResponse();
                     String json = dataRequestResponse.toString();
-                    app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_SENSOR_DATA_REQUEST_RESPONSE, json, sourceNode.getId());
+                    app.getGoogleApiMessenger().sendMessageToNode(MessageHandler.PATH_SENSOR_DATA_REQUEST_RESPONSE, json, sensorDataRequest.getSourceNodeId());
                     exceptionCount = 0;
                 } catch (Exception ex) {
                     exceptionCount += 1;
