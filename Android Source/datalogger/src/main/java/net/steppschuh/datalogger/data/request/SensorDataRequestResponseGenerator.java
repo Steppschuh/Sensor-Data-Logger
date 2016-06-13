@@ -53,7 +53,9 @@ public class SensorDataRequestResponseGenerator {
             return;
         }
         Log.v(TAG, "Starting to generate request responses every " + sensorDataRequest.getUpdateInteval() + "ms");
-        Looper.prepare();
+        if (Looper.myLooper() == null) {
+            Looper.prepare();
+        }
         updateHandler = new Handler();
         updateHandler.postDelayed(updateRunnable, 1);
         Looper.loop();

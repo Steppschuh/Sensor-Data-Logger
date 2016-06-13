@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 'android-N'
+    buildToolsVersion '24.0.0 rc1'
 
     defaultConfig {
         applicationId "net.steppschuh.sensordatalogger"
         minSdkVersion 16
-        targetSdkVersion 23
-        versionCode 4
-        versionName "1.3"
+        targetSdkVersion 'N'
+        versionCode 5
+        versionName "1.4"
         multiDexEnabled true
     }
 

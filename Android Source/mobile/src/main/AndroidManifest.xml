@@ -14,7 +14,11 @@
 
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".PhoneActivity">
+        <activity android:name=".PhoneActivity"
+            android:resizeableActivity="true"
+            android:supportsPictureInPicture="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboardHidden|layoutDirection"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

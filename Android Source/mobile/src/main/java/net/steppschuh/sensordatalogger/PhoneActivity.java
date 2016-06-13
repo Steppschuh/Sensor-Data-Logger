@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,7 +19,6 @@ import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -27,6 +27,7 @@ import net.steppschuh.datalogger.data.DataChangedListener;
 import net.steppschuh.datalogger.data.request.DataRequest;
 import net.steppschuh.datalogger.data.request.DataRequestResponse;
 import net.steppschuh.datalogger.data.request.SensorDataRequest;
+import net.steppschuh.datalogger.logging.TimeTracker;
 import net.steppschuh.datalogger.messaging.ReachabilityChecker;
 import net.steppschuh.datalogger.messaging.handler.MessageHandler;
 import net.steppschuh.datalogger.messaging.handler.SinglePathMessageHandler;
@@ -68,6 +69,8 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     private Map<String, List<DeviceSensor>> selectedSensors = new HashMap<>();
     private Map<String, AlertDialog> reachabilityDialogs = new HashMap<>();
 
+    private String lastResponseStatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +88,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         setupMessageHandlers();
         setupStatusUpdates();
         setupAnalytics();
+        setupTracking();
 
         // update status
         status.setInitialized(true);
@@ -110,8 +114,6 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
             @Override
             public void onClick(View v) {
                 showSensorSelectionDialog();
-
-                String localNodeId = app.getGoogleApiMessenger().getLocalNodeId();
             }
         });
 
@@ -162,6 +164,24 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
             Log.w(TAG, "Unable to get package info");
         }
         app.getAnalytics().logEvent(FirebaseAnalytics.Event.APP_OPEN, bundle);
+    }
+
+    private void setupTracking() {
+        TimeTracker tracker = app.getTrackerManager().getTracker("renderDataBatch");
+        tracker.setMaximumTrackingCount(100);
+        tracker.registerTrackingListener(new TimeTracker.TrackingListener() {
+            @Override
+            public void onTrackingFinished(TimeTracker timeTracker) {
+                Log.d(TAG, "Tracking finished: " + timeTracker);
+                Log.d(TAG, "Last response status: " + lastResponseStatus);
+                timeTracker.reset();
+            }
+
+            @Override
+            public void onNewDurationTracked(TimeTracker timeTracker) {
+
+            }
+        });
     }
 
     @Override
@@ -260,6 +280,23 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         super.onStop();
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.d(TAG, "onConfigurationChanged: " + newConfig.toString());
+
+        int verticalMargin = (int) getResources().getDimension(R.dimen.activity_vertical_margin);
+        int horizontalMargin = (int) getResources().getDimension(R.dimen.activity_horizontal_margin);
+
+        Log.d(TAG, "Horizontal: " + horizontalMargin);
+
+        gridView.setPadding(horizontalMargin, verticalMargin, horizontalMargin, verticalMargin);
+        gridView.invalidate();
+        if (this.isInMultiWindowMode()) {
+
+        }
+    }
+
     /**
      * Will be called when the reachability of a connected @Node
      * (e.g. wearable device) has changed
@@ -322,21 +359,42 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        // parse response data
-                        final String sourceNodeId = MessageHandler.getSourceNodeIdFromMessage(message);
-                        final String responseJson = MessageHandler.getDataFromMessageAsString(message);
-                        final DataRequestResponse response = DataRequestResponse.fromJson(responseJson);
+                        try {
+                            // parse response data
+                            final String sourceNodeId = MessageHandler.getSourceNodeIdFromMessage(message);
+                            final String responseJson = MessageHandler.getDataFromMessageAsString(message);
+                            final DataRequestResponse response = DataRequestResponse.fromJson(responseJson);
 
-                        // render data in UI thread
-                        Runnable notifyDataChangedRunnable = new Runnable() {
-                            @Override
-                            public void run() {
-                                for (DataBatch dataBatch : response.getDataBatches()) {
-                                    onDataChanged(dataBatch, sourceNodeId);
-                                }
+                            if (response.getDataBatches().size() > 0) {
+                                long transmissionDuration = System.currentTimeMillis() - response.getEndTimestamp();
+                                TimeTracker tracker = app.getTrackerManager().getTracker("renderDataBatch");
+                                tracker.addDuration(TimeUnit.MILLISECONDS.toNanos(transmissionDuration));
+
+                                StringBuilder sb = new StringBuilder();
+                                sb.append("First data batch items: ");
+                                sb.append(response.getDataBatches().get(0).getDataList().size());
+                                sb.append(" / ");
+                                sb.append(response.getDataBatches().get(0).getCapacity());
+
+                                sb.append("\nSerialized bytes: ");
+                                sb.append(responseJson.getBytes().length);
+
+                                lastResponseStatus = sb.toString();
                             }
-                        };
-                        new Handler(Looper.getMainLooper()).post(notifyDataChangedRunnable);
+
+                            // render data in UI thread
+                            Runnable notifyDataChangedRunnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    for (DataBatch dataBatch : response.getDataBatches()) {
+                                        onDataChanged(dataBatch, sourceNodeId);
+                                    }
+                                }
+                            };
+                            new Handler(Looper.getMainLooper()).post(notifyDataChangedRunnable);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }).start();
             }

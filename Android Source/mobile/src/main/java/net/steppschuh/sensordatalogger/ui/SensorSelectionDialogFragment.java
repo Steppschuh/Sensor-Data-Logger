@@ -408,7 +408,7 @@ public class SensorSelectionDialogFragment extends DialogFragment {
         }
 
         SensorDataRequest sensorDataRequest = new SensorDataRequest(sensorTypes);
-        sensorDataRequest.setUpdateInteval(DataRequest.UPDATE_INTERVAL_NORMAL);
+        sensorDataRequest.setUpdateInteval(DataRequest.UPDATE_INTERVAL_FAST);
         return sensorDataRequest;
     }
 

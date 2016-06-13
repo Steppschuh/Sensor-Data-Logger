@@ -234,7 +234,7 @@ public abstract class ChartView extends View {
         }
 
         if (renderTimeTracker.getTrackingCount() >= 100) {
-            long averageRenderingDuration = renderTimeTracker.calculateAverageDuration();
+            long averageRenderingDuration = TimeUnit.NANOSECONDS.toMillis(renderTimeTracker.calculateAverageDuration());
             if (averageRenderingDuration > 3 && dataBatch != null) {
                 Log.w(TAG, "Chart rendering for " + dataBatch.getDataList().size() + " data points took " + averageRenderingDuration + "ms!");
             }

@@ -1,10 +1,17 @@
 package net.steppschuh.datalogger.logging;
 
-import java.util.Date;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class TimeTracker {
 
+    private static final String TAG = TimeTracker.class.getSimpleName();
     public static final String KEY_DEFAULT = "";
+
+    public static int TRACKING_COUNT_NOT_SET = -1;
 
     private String key;
     private long startTimestamp;
@@ -13,13 +20,22 @@ public class TimeTracker {
 
     private long totalDuration;
     private int trackingCount;
+    private int maximumTrackingCount = TRACKING_COUNT_NOT_SET;
+
+    List<TrackingListener> trackingListeners;
 
     private Object context;
+
+    public interface TrackingListener {
+        void onTrackingFinished(TimeTracker timeTracker);
+        void onNewDurationTracked(TimeTracker timeTracker);
+    }
 
     public TimeTracker() {
         key = KEY_DEFAULT;
         trackingCount = 0;
         totalDuration = 0;
+        trackingListeners = new ArrayList<>();
     }
 
     public TimeTracker(String key) {
@@ -34,14 +50,27 @@ public class TimeTracker {
     }
 
     public void start() {
-        startTimestamp = System.currentTimeMillis();
+        startTimestamp = System.nanoTime();
     }
 
     public void stop() {
-        stopTimestamp = System.currentTimeMillis();
+        stopTimestamp = System.nanoTime();
         duration = calculateDuration();
+        addDuration(duration);
+    }
+
+    public void reset() {
+        totalDuration = 0;
+        trackingCount = 0;
+    }
+
+    public void addDuration(long duration) {
         totalDuration += duration;
         trackingCount += 1;
+        notifyNewDurationTracked();
+        if (trackingCount == maximumTrackingCount) {
+            notifyTrackingFinished();
+        }
     }
 
     public long calculateDuration() {
@@ -56,6 +85,42 @@ public class TimeTracker {
             return totalDuration / trackingCount;
         }
         return 0;
+    }
+
+    public boolean registerTrackingListener(TrackingListener trackingListener) {
+        if (!trackingListeners.contains(trackingListener)) {
+            return trackingListeners.add(trackingListener);
+        }
+        return false;
+    }
+
+    public boolean unregisterTrackingListener(TrackingListener trackingListener) {
+        if (trackingListeners.contains(trackingListener)) {
+            return trackingListeners.remove(trackingListener);
+        }
+        return false;
+    }
+
+    public void notifyTrackingFinished() {
+        for (TrackingListener trackingListener : trackingListeners) {
+            try {
+                trackingListener.onTrackingFinished(this);
+            } catch (Exception ex) {
+                Log.w(TAG, "Unable to notify tracking listener: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public void notifyNewDurationTracked() {
+        for (TrackingListener trackingListener : trackingListeners) {
+            try {
+                trackingListener.onNewDurationTracked(this);
+            } catch (Exception ex) {
+                Log.w(TAG, "Unable to notify tracking listener: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
     }
 
     public boolean isTracking() {
@@ -73,11 +138,15 @@ public class TimeTracker {
             sb.append(key).append(": ");
         }
         if (trackingCount > 1) {
-            sb.append("∅ ").append(calculateAverageDuration()).append("ms");
-            sb.append(" (").append(trackingCount).append(" times tracked)");
+            long averageDuration = calculateAverageDuration();
+            long averageDurationInMillis = TimeUnit.NANOSECONDS.toMillis(averageDuration);
+            sb.append("∅ ");
+            sb.append(averageDuration).append(" ns (");
+            sb.append(averageDurationInMillis).append(" ms ");
+            sb.append(trackingCount).append(" times tracked)");
         } else {
             sb.append(startTimestamp).append(" - ").append(stopTimestamp);
-            sb.append(" (").append(calculateDuration()).append("ms)");
+            sb.append(" (").append(calculateDuration()).append("ns)");
         }
         if (context != null) {
             sb.append(" ").append(context);
@@ -142,5 +211,13 @@ public class TimeTracker {
 
     public void setTrackingCount(int trackingCount) {
         this.trackingCount = trackingCount;
+    }
+
+    public int getMaximumTrackingCount() {
+        return maximumTrackingCount;
+    }
+
+    public void setMaximumTrackingCount(int maximumTrackingCount) {
+        this.maximumTrackingCount = maximumTrackingCount;
     }
 }
