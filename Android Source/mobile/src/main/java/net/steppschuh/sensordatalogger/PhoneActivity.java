@@ -172,8 +172,8 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         tracker.registerTrackingListener(new TimeTracker.TrackingListener() {
             @Override
             public void onTrackingFinished(TimeTracker timeTracker) {
-                Log.d(TAG, "Tracking finished: " + timeTracker);
-                Log.d(TAG, "Last response status: " + lastResponseStatus);
+                //Log.d(TAG, "Tracking finished: " + timeTracker);
+                //Log.d(TAG, "Last response status: " + lastResponseStatus);
                 timeTracker.reset();
             }
 
