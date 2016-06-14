@@ -283,18 +283,12 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Log.d(TAG, "onConfigurationChanged: " + newConfig.toString());
 
+        // update grid padding
         int verticalMargin = (int) getResources().getDimension(R.dimen.activity_vertical_margin);
         int horizontalMargin = (int) getResources().getDimension(R.dimen.activity_horizontal_margin);
-
-        Log.d(TAG, "Horizontal: " + horizontalMargin);
-
         gridView.setPadding(horizontalMargin, verticalMargin, horizontalMargin, verticalMargin);
         gridView.invalidate();
-        if (this.isInMultiWindowMode()) {
-
-        }
     }
 
     /**
@@ -415,14 +409,18 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
      * on each connected node that he wants to stream
      */
     private void showSensorSelectionDialog() {
-        if (sensorSelectionDialog != null) {
-            Log.w(TAG, "Not showing sensor selection dialog, previous dialog is still set");
-            return;
+        try {
+            if (sensorSelectionDialog != null) {
+                Log.w(TAG, "Not showing sensor selection dialog, previous dialog is still set");
+                return;
+            }
+            Log.d(TAG, "Showing sensor selection dialog");
+            sensorSelectionDialog = new SensorSelectionDialogFragment();
+            sensorSelectionDialog.setPreviouslySelectedSensors(selectedSensors);
+            sensorSelectionDialog.show(getFragmentManager(), SensorSelectionDialogFragment.class.getSimpleName());
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        Log.d(TAG, "Showing sensor selection dialog");
-        sensorSelectionDialog = new SensorSelectionDialogFragment();
-        sensorSelectionDialog.setPreviouslySelectedSensors(selectedSensors);
-        sensorSelectionDialog.show(getFragmentManager(), SensorSelectionDialogFragment.class.getSimpleName());
     }
 
     /**

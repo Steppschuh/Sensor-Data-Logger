@@ -39,16 +39,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf6b13e8-2a93-4bd1-ac77-6e3ab7bd0eaf" name="Default" comment="Improved sensor selection dialog">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/request/SensorDataRequestResponseGenerator.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/request/SensorDataRequestResponseGenerator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/logging/TimeTracker.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/logging/TimeTracker.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/SensorDataManager.java" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/sensor/SensorDataManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/build.gradle" afterPath="$PROJECT_DIR$/mobile/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/mobile/src/main/AndroidManifest.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/PhoneActivity.java" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/PhoneActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/SensorSelectionDialogFragment.java" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/SensorSelectionDialogFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/chart/ChartView.java" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/chart/ChartView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/VisualizationCardView.java" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/VisualizationCardView.java" />
     </list>
     <ignored path="Android Source.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -157,33 +151,49 @@
       <file leaf-file-name="PhoneActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/PhoneActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0">
-              <caret line="38" column="53" selection-start-line="38" selection-start-column="53" selection-end-line="38" selection-end-column="53" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="280" column="5" selection-start-line="280" selection-start-column="5" selection-end-line="280" selection-end-column="5" />
               <folding>
+                <element signature="imports" expanded="true" />
                 <element signature="method#setupMessageHandlers#0;class#PhoneActivity#0" expanded="false" />
                 <element signature="method#setupStatusUpdates#0;class#PhoneActivity#0" expanded="false" />
                 <element signature="method#setupAnalytics#0;class#PhoneActivity#0" expanded="false" />
+                <element signature="e#11205#11266#0" expanded="true" />
+                <element signature="e#11305#11368#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="true">
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mobile/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6672355">
-              <caret line="23" column="35" selection-start-line="23" selection-start-column="35" selection-end-line="23" selection-end-column="35" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="4" column="34" selection-start-line="4" selection-start-column="34" selection-end-line="4" selection-end-column="34" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AndroidManifest.xml" pinned="false" current-in-tab="false">
+      <file leaf-file-name="AndroidManifest.xml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mobile/src/main/AndroidManifest.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="2" column="46" selection-start-line="2" selection-start-column="46" selection-end-line="2" selection-end-column="46" />
+            <state vertical-scroll-proportion="0.44041452">
+              <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="VisualizationCardView.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/VisualizationCardView.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="126" column="43" selection-start-line="126" selection-start-column="43" selection-end-line="126" selection-end-column="43" />
+              <folding>
+                <element signature="e#5603#6265#0" expanded="true" />
+                <element signature="e#6264#6265#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -224,20 +234,20 @@
           <value>
             <list>
               <ExternalProjectPojo>
-                <option name="name" value=":wear" />
-                <option name="path" value="$PROJECT_DIR$/wear" />
-              </ExternalProjectPojo>
-              <ExternalProjectPojo>
-                <option name="name" value="Android Source" />
-                <option name="path" value="$PROJECT_DIR$" />
+                <option name="name" value=":datalogger" />
+                <option name="path" value="$PROJECT_DIR$/datalogger" />
               </ExternalProjectPojo>
               <ExternalProjectPojo>
                 <option name="name" value=":mobile" />
                 <option name="path" value="$PROJECT_DIR$/mobile" />
               </ExternalProjectPojo>
               <ExternalProjectPojo>
-                <option name="name" value=":datalogger" />
-                <option name="path" value="$PROJECT_DIR$/datalogger" />
+                <option name="name" value=":wear" />
+                <option name="path" value="$PROJECT_DIR$/wear" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="Android Source" />
+                <option name="path" value="$PROJECT_DIR$" />
               </ExternalProjectPojo>
             </list>
           </value>
@@ -4030,7 +4040,7 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="7326107751000" />
+        <entry key="$PROJECT_DIR$" value="7326108895000" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -4216,11 +4226,6 @@
                             <option value="$APPLICATION_HOME_DIR$/gradle/m2repository/com/android/tools/external/lombok/lombok-ast/0.2.3/lombok-ast-0.2.3-sources.jar" />
                             <option value="$APPLICATION_HOME_DIR$/gradle/m2repository/com/android/tools/external/lombok/lombok-ast/0.2.3/lombok-ast-0.2.3.jar" />
                             <option value="$APPLICATION_HOME_DIR$/gradle/m2repository/org/abego/treelayout/org.abego.treelayout.core/1.0.1/org.abego.treelayout.core-1.0.1.jar" />
-                            <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-basement/9.0.0/play-services-basement-9.0.0.aar" />
-                            <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-wearable/9.0.0/play-services-wearable-9.0.0.aar" />
-                            <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-base/9.0.0/play-services-base-9.0.0.aar" />
-                            <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/firebase/firebase-common/9.0.0/firebase-common-9.0.0.aar" />
-                            <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-tasks/9.0.0/play-services-tasks-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/android/m2repository/com/android/support/appcompat-v7/23.4.0/appcompat-v7-23.4.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/android/m2repository/com/android/support/multidex/1.0.1/multidex-1.0.1.aar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.4.2/ceb72830d95c512b4b300a38f29febc85bdf6e4b/jackson-core-2.4.2.jar" />
@@ -4237,7 +4242,9 @@
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-appinvite/9.0.0/play-services-appinvite-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-auth/9.0.0/play-services-auth-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-auth-base/9.0.0/play-services-auth-base-9.0.0.aar" />
+                            <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-base/9.0.0/play-services-base-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-cast/9.0.0/play-services-cast-9.0.0.aar" />
+                            <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-basement/9.0.0/play-services-basement-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/firebase/firebase-config/9.0.0/firebase-config-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/firebase/firebase-crash/9.0.0/firebase-crash-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-drive/9.0.0/play-services-drive-9.0.0.aar" />
@@ -4250,6 +4257,7 @@
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/firebase/firebase-messaging/9.0.0/firebase-messaging-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/firebase/firebase-storage/9.0.0/firebase-storage-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/firebase/firebase-storage-common/9.0.0/firebase-storage-common-9.0.0.aar" />
+                            <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/firebase/firebase-common/9.0.0/firebase-common-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-fitness/9.0.0/play-services-fitness-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-games/9.0.0/play-services-games-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-gcm/9.0.0/play-services-gcm-9.0.0.aar" />
@@ -4266,8 +4274,10 @@
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-safetynet/9.0.0/play-services-safetynet-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-tagmanager-api/9.0.0/play-services-tagmanager-api-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-tagmanager/9.0.0/play-services-tagmanager-9.0.0.aar" />
+                            <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-tasks/9.0.0/play-services-tasks-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-vision/9.0.0/play-services-vision-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-wallet/9.0.0/play-services-wallet-9.0.0.aar" />
+                            <option value="$USER_HOME$/Library/Android/sdk/extras/google/m2repository/com/google/android/gms/play-services-wearable/9.0.0/play-services-wearable-9.0.0.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.4.0/support-annotations-23.4.0.jar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/android/m2repository/com/android/support/mediarouter-v7/23.0.0/mediarouter-v7-23.0.0.aar" />
                           </list>
@@ -4754,8 +4764,9 @@
         <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/SensorSelectionDialogFragment.java" />
         <option value="$PROJECT_DIR$/mobile/build/intermediates/bundles/debug/instant-run/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/mobile/src/main/AndroidManifest.xml" />
-        <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/PhoneActivity.java" />
         <option value="$PROJECT_DIR$/mobile/build.gradle" />
+        <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/VisualizationCardView.java" />
+        <option value="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/PhoneActivity.java" />
       </list>
     </option>
   </component>
@@ -4788,6 +4799,128 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="AndroidView">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Gradle Scripts" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidBuildScriptsGroupNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="wear" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mobile" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mobile" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mobile" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sensordatalogger" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mobile" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sensordatalogger" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ui" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mobile" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sensordatalogger" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ui" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="visualization" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Android Source" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -4836,49 +4969,7 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
-      <pane id="AndroidView">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Android Source" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Gradle Scripts" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidBuildScriptsGroupNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Android Source" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="wear" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.NonAndroidModuleNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Android Source" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mobile" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.NonAndroidModuleNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Android Source" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -4892,6 +4983,8 @@
     <property name="ExportApk.ApkPath" value="$PROJECT_DIR$/mobile" />
     <property name="ExportApk.Flavors" value="" />
     <property name="ExportApk.BuildType" value="release" />
+    <property name="android.project.structure.last.selected" value="SDK Location" />
+    <property name="android.project.structure.proportion" value="0.15" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -5292,15 +5385,15 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3294979" sideWeight="0.492674" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.492674" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3378661" sideWeight="0.492674" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3378661" sideWeight="0.492674" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5502092" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.495116" order="7" side_tool="false" content_ui="tabs" />
@@ -5493,13 +5586,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/VisualizationCardView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.762226">
-          <caret line="127" column="0" selection-start-line="127" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/VisualizationCardListAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.51293105">
@@ -5575,10 +5661,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.3322314">
           <caret line="859" column="15" selection-start-line="859" selection-start-column="15" selection-end-line="859" selection-end-column="15" />
-          <folding>
-            <element signature="e#30964#30965#0" expanded="false" />
-            <element signature="e#30992#30993#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -5664,7 +5746,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="17680" column="5" selection-start-line="17680" selection-start-column="5" selection-end-line="17680" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -5679,31 +5760,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mobile/src/main/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="2" column="46" selection-start-line="2" selection-start-column="46" selection-end-line="2" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/PhoneActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="38" column="53" selection-start-line="38" selection-start-column="53" selection-end-line="38" selection-end-column="53" />
-          <folding>
-            <element signature="method#setupMessageHandlers#0;class#PhoneActivity#0" expanded="false" />
-            <element signature="method#setupStatusUpdates#0;class#PhoneActivity#0" expanded="false" />
-            <element signature="method#setupAnalytics#0;class#PhoneActivity#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mobile/build/intermediates/manifests/full/debug/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.3475298">
           <caret line="38" column="0" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -5719,7 +5779,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -5727,7 +5786,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -5741,8 +5799,42 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/mobile/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6672355">
-          <caret line="23" column="35" selection-start-line="23" selection-start-column="35" selection-end-line="23" selection-end-column="35" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="4" column="34" selection-start-line="4" selection-start-column="34" selection-end-line="4" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/PhoneActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="280" column="5" selection-start-line="280" selection-start-column="5" selection-end-line="280" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#setupMessageHandlers#0;class#PhoneActivity#0" expanded="false" />
+            <element signature="method#setupStatusUpdates#0;class#PhoneActivity#0" expanded="false" />
+            <element signature="method#setupAnalytics#0;class#PhoneActivity#0" expanded="false" />
+            <element signature="e#11205#11266#0" expanded="true" />
+            <element signature="e#11305#11368#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/VisualizationCardView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="126" column="43" selection-start-line="126" selection-start-column="43" selection-end-line="126" selection-end-column="43" />
+          <folding>
+            <element signature="e#5603#6265#0" expanded="true" />
+            <element signature="e#6264#6265#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mobile/src/main/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44041452">
+          <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
           <folding />
         </state>
       </provider>

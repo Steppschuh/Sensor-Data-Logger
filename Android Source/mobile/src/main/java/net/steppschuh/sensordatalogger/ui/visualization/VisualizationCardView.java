@@ -106,40 +106,49 @@ public class VisualizationCardView extends RelativeLayout {
         if (data == null || data.getDataBatch() == null) {
             return;
         }
-        headingTextView.setText(data.getHeading());
-        subHeadingTextView.setText(data.getSubHeading());
 
-        if (data.getDataBatch().getNewestData() == null) {
-            return;
-        }
+        try {
+            headingTextView.setText(data.getHeading());
+            subHeadingTextView.setText(data.getSubHeading());
 
-        if (showDimensionValues) {
-            float[] latestValues = data.getDataBatch().getNewestData().getValues();
-            String[] lastestReadableValues = new String[latestValues.length];
-            for (int valueIndex = 0; valueIndex < latestValues.length; valueIndex++) {
-                lastestReadableValues[valueIndex] = String.format("%.02f", latestValues[valueIndex]);
+            if (data.getDataBatch().getNewestData() == null) {
+                return;
             }
-            if (chartView.getDataDimension() == ChartView.DATA_DIMENSION_ALL) {
-                valueCenterTextView.setText(chartView.getCurrentDimensionName());
+
+            if (showDimensionValues) {
+                float[] latestValues = data.getDataBatch().getNewestData().getValues();
+                String[] lastestReadableValues = new String[latestValues.length];
+                for (int valueIndex = 0; valueIndex < latestValues.length; valueIndex++) {
+                    lastestReadableValues[valueIndex] = String.format("%.02f", latestValues[valueIndex]);
+                }
+                if (chartView.getDataDimension() == ChartView.DATA_DIMENSION_ALL) {
+                    valueCenterTextView.setText(chartView.getCurrentDimensionName());
+                } else {
+                    valueCenterTextView.setText(lastestReadableValues[chartView.getCurrentDataDimension()]);
+                }
+                valueRightTextView.setText(lastestReadableValues[chartView.getNextDataDimension()]);
+                valueLeftTextView.setText(lastestReadableValues[chartView.getPreviousDataDimension()]);
             } else {
-                valueCenterTextView.setText(lastestReadableValues[chartView.getCurrentDataDimension()]);
+                valueCenterTextView.setText(chartView.getCurrentDimensionName());
+                valueRightTextView.setText(ChartView.getDimensionName(chartView.getNextDataDimension()));
+                valueLeftTextView.setText(ChartView.getDimensionName(chartView.getPreviousDataDimension()));
             }
-            valueRightTextView.setText(lastestReadableValues[chartView.getNextDataDimension()]);
-            valueLeftTextView.setText(lastestReadableValues[chartView.getPreviousDataDimension()]);
-        } else {
-            valueCenterTextView.setText(chartView.getCurrentDimensionName());
-            valueRightTextView.setText(ChartView.getDimensionName(chartView.getNextDataDimension()));
-            valueLeftTextView.setText(ChartView.getDimensionName(chartView.getPreviousDataDimension()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                long minimumTimestamp = chartView.getStartTimestamp() - TimeUnit.SECONDS.toMillis(1);
-                DataBatch processedDataBatch = new DataBatch(data.getDataBatch());
-                List<Data> processedData = getProcessedDataList(data.getDataBatch().getDataSince(minimumTimestamp));
-                processedDataBatch.setDataList(processedData);
-                chartView.setDataBatch(processedDataBatch);
+                try {
+                    long minimumTimestamp = chartView.getStartTimestamp() - TimeUnit.SECONDS.toMillis(1);
+                    DataBatch processedDataBatch = new DataBatch(data.getDataBatch());
+                    List<Data> processedData = getProcessedDataList(data.getDataBatch().getDataSince(minimumTimestamp));
+                    processedDataBatch.setDataList(processedData);
+                    chartView.setDataBatch(processedDataBatch);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }).start();
     }
