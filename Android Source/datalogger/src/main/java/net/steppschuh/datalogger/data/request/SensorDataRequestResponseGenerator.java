@@ -1,10 +1,10 @@
 package net.steppschuh.datalogger.data.request;
 
+import com.google.android.gms.wearable.Node;
+
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-
-import com.google.android.gms.wearable.Node;
 
 import net.steppschuh.datalogger.MobileApp;
 import net.steppschuh.datalogger.data.DataBatch;

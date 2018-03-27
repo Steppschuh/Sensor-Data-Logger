@@ -1,23 +1,22 @@
 package net.steppschuh.datalogger;
 
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
-import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.MessageEvent;
-import com.google.firebase.analytics.FirebaseAnalytics;
-
 import net.steppschuh.datalogger.logging.TrackerManager;
+import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
 import net.steppschuh.datalogger.messaging.ReachabilityChecker;
 import net.steppschuh.datalogger.messaging.handler.GetAvailableSensorsMessageHandler;
-import net.steppschuh.datalogger.messaging.handler.SensorDataRequestMessageHandler;
 import net.steppschuh.datalogger.messaging.handler.GetStatusMessageHandler;
-import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
 import net.steppschuh.datalogger.messaging.handler.MessageHandler;
-import net.steppschuh.datalogger.messaging.handler.PingMessageHandler;
+import net.steppschuh.datalogger.messaging.handler.SensorDataRequestMessageHandler;
 import net.steppschuh.datalogger.sensor.SensorDataManager;
 import net.steppschuh.datalogger.status.AppStatus;
 import net.steppschuh.datalogger.status.Status;
@@ -26,7 +25,6 @@ import net.steppschuh.datalogger.status.StatusUpdateHandler;
 import net.steppschuh.datalogger.status.StatusUpdateReceiver;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class MobileApp extends MultiDexApplication implements MessageApi.MessageListener, StatusUpdateEmitter {

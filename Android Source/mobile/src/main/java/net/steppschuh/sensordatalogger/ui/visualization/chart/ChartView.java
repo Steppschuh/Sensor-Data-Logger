@@ -300,17 +300,17 @@ public abstract class ChartView extends View {
         }
     }
 
-    public static void drawTextCentred(Canvas canvas, String text, float cx, float cy, Paint paint, Rect textBounds){
+    public static void drawTextCentred(Canvas canvas, String text, float cx, float cy, Paint paint, Rect textBounds) {
         paint.getTextBounds(text, 0, text.length(), textBounds);
         canvas.drawText(text, cx - textBounds.exactCenterX(), cy - textBounds.exactCenterY(), paint);
     }
 
-    public static void drawTextCentredLeft(Canvas canvas, String text, float cx, float cy, Paint paint, Rect textBounds){
+    public static void drawTextCentredLeft(Canvas canvas, String text, float cx, float cy, Paint paint, Rect textBounds) {
         paint.getTextBounds(text, 0, text.length(), textBounds);
         canvas.drawText(text, cx, cy - textBounds.exactCenterY(), paint);
     }
 
-    public static void drawTextCentredRight(Canvas canvas, String text, float cx, float cy, Paint paint, Rect textBounds){
+    public static void drawTextCentredRight(Canvas canvas, String text, float cx, float cy, Paint paint, Rect textBounds) {
         paint.getTextBounds(text, 0, text.length(), textBounds);
         canvas.drawText(text, cx - textBounds.width(), cy - textBounds.exactCenterY(), paint);
     }

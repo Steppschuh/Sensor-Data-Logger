@@ -1,9 +1,9 @@
 package net.steppschuh.sensordatalogger.service;
 
-import android.util.Log;
-
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
+
+import android.util.Log;
 
 public class ListenerService extends WearableListenerService {
 

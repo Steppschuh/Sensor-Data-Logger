@@ -1,11 +1,5 @@
 package net.steppschuh.datalogger.messaging;
 
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Message;
-import android.support.annotation.NonNull;
-import android.util.Log;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -14,6 +8,12 @@ import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
+
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Message;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 import net.steppschuh.datalogger.MobileApp;
 import net.steppschuh.datalogger.messaging.handler.MessageHandler;
@@ -261,7 +261,7 @@ public class GoogleApiMessenger implements GoogleApiClient.ConnectionCallbacks, 
     public void sendMessageToLocalNode(final String path, final byte[] data, String nodeId) {
         try {
             if (nodeId == null) {
-                 nodeId = DEFAULT_NODE_ID;
+                nodeId = DEFAULT_NODE_ID;
             }
             Bundle bundle = new Bundle();
             bundle.putString(MessageHandler.KEY_PATH, path);

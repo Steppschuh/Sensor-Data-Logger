@@ -1,5 +1,8 @@
 package net.steppschuh.sensordatalogger;
 
+import com.google.android.gms.wearable.Wearable;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
@@ -18,9 +21,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
-
-import com.google.android.gms.wearable.Wearable;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.steppschuh.datalogger.data.DataBatch;
 import net.steppschuh.datalogger.data.DataChangedListener;

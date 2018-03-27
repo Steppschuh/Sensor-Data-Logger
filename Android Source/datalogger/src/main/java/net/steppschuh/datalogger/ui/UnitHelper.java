@@ -11,7 +11,8 @@ public abstract class UnitHelper {
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.
      *
-     * @param dp      A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param dp      A value in dp (density independent pixels) unit. Which we need to convert into
+     *                pixels
      * @param context Context to get resources and device specific display metrics
      * @return A float value to represent px equivalent to dp depending on device density
      */
@@ -64,7 +65,7 @@ public abstract class UnitHelper {
     }
 
     public static String getCharForNumber(int i) {
-        return i >= 0 && i < 26 ? String.valueOf((char)(i + 65)) : null;
+        return i >= 0 && i < 26 ? String.valueOf((char) (i + 65)) : null;
     }
 
 }
