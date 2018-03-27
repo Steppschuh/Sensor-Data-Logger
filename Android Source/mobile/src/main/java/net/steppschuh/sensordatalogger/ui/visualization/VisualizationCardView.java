@@ -15,13 +15,14 @@ import net.steppschuh.sensordatalogger.ui.visualization.chart.ChartView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class VisualizationCardView extends RelativeLayout {
 
     private VisualizationCardData data;
 
-    boolean showDimensionValues = true;
+    boolean showDimensionValues = false;
 
     private ImageButton moreImageButton;
 
@@ -117,19 +118,20 @@ public class VisualizationCardView extends RelativeLayout {
 
             if (showDimensionValues) {
                 float[] latestValues = data.getDataBatch().getNewestData().getValues();
-                String[] lastestReadableValues = new String[latestValues.length];
+                String[] latestReadableValues = new String[latestValues.length];
                 for (int valueIndex = 0; valueIndex < latestValues.length; valueIndex++) {
-                    lastestReadableValues[valueIndex] = String.format("%.02f", latestValues[valueIndex]);
+                    latestReadableValues[valueIndex] = String.format(Locale.US, "%.02f", latestValues[valueIndex]);
                 }
                 if (chartView.getDataDimension() == ChartView.DATA_DIMENSION_ALL) {
                     valueCenterTextView.setText(chartView.getCurrentDimensionName());
                 } else {
-                    valueCenterTextView.setText(lastestReadableValues[chartView.getCurrentDataDimension()]);
+                    valueCenterTextView.setText(latestReadableValues[chartView.getCurrentDataDimension()]);
                 }
-                valueRightTextView.setText(lastestReadableValues[chartView.getNextDataDimension()]);
-                valueLeftTextView.setText(lastestReadableValues[chartView.getPreviousDataDimension()]);
+                valueRightTextView.setText(latestReadableValues[chartView.getNextDataDimension()]);
+                valueLeftTextView.setText(latestReadableValues[chartView.getPreviousDataDimension()]);
             } else {
-                valueCenterTextView.setText(chartView.getCurrentDimensionName());
+                String readableFrequency = String.format(Locale.US, "%.0f%s", data.getDataBatch().getFrequency(), " Hz");
+                valueCenterTextView.setText(readableFrequency);
                 valueRightTextView.setText(ChartView.getDimensionName(chartView.getNextDataDimension()));
                 valueLeftTextView.setText(ChartView.getDimensionName(chartView.getPreviousDataDimension()));
             }

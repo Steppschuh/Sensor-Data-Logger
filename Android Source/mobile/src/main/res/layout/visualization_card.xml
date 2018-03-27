@@ -1,155 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
     <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/cardView"
-        android:layout_gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        card_view:cardUseCompatPadding="true"
-        card_view:cardCornerRadius="2dp">
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/cardView"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            card_view:cardUseCompatPadding="true"
+            card_view:cardCornerRadius="2dp">
 
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
             <RelativeLayout
-                android:id="@+id/headerLayout"
-                android:background="@color/colorPrimary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp">
-
-                <TextView
-                    android:id="@+id/headingText"
-                    android:text="Heading Text"
+                    android:id="@+id/headerLayout"
+                    android:background="@color/colorPrimary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="40dp"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp"
-                    style="@style/TextAppearance.AppCompat.Title"/>
+                    android:padding="16dp">
+
+                <TextView
+                        android:id="@+id/headingText"
+                        android:text="Heading Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="40dp"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp"
+                        style="@style/TextAppearance.AppCompat.Title"/>
 
                 <ImageButton
-                    android:id="@+id/moreButton"
-                    android:layout_width="25dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/headingText"
-                    android:layout_alignBottom="@id/headingText"
-                    android:layout_alignParentRight="true"
-                    android:scaleType="centerInside"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:tint="@android:color/white"
-                    android:src="@drawable/ic_more_vert_black_48dp" />
+                        android:id="@+id/moreButton"
+                        android:layout_width="25dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@id/headingText"
+                        android:layout_alignBottom="@id/headingText"
+                        android:layout_alignParentRight="true"
+                        android:scaleType="centerInside"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:visibility="gone"
+                        android:tint="@android:color/white"
+                        android:src="@drawable/ic_more_vert_black_48dp"/>
 
                 <TextView
-                    android:id="@+id/subHeadingText"
-                    android:text="Subheading Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/headingText"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"
-                    android:alpha="0.5"
-                    style="@style/TextAppearance.AppCompat.Subhead"/>
+                        android:id="@+id/subHeadingText"
+                        android:text="Subheading Text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/headingText"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:alpha="0.5"
+                        style="@style/TextAppearance.AppCompat.Subhead"/>
 
                 <RelativeLayout
-                    android:id="@+id/valuePreviewLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_below="@id/subHeadingText">
+                        android:id="@+id/valuePreviewLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/subHeadingText">
 
                     <TextView
-                        android:id="@+id/valueCenterText"
-                        android:text="0.00"
-                        android:layout_width="125dp"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:ellipsize="end"
-                        android:singleLine="true"
-                        android:layout_centerInParent="true"
-                        android:textColor="@android:color/white"
-                        android:textSize="25sp"
-                        style="@style/TextAppearance.AppCompat.Display1"/>
+                            android:id="@+id/valueCenterText"
+                            android:text="0.00"
+                            android:layout_width="125dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:layout_centerInParent="true"
+                            android:textColor="@android:color/white"
+                            android:textSize="25sp"
+                            style="@style/TextAppearance.AppCompat.Display1"/>
 
                     <TextView
-                        android:id="@+id/valueLeftText"
-                        android:text="0.00"
-                        android:layout_width="60dp"
-                        android:layout_height="match_parent"
-                        android:gravity="left|center"
-                        android:ellipsize="end"
-                        android:singleLine="true"
-                        android:layout_alignParentLeft="true"
-                        android:textColor="@android:color/white"
-                        android:textSize="14sp"
-                        android:alpha="0.5"
-                        style="@style/TextAppearance.AppCompat.Subhead"/>
+                            android:id="@+id/valueLeftText"
+                            android:text="0.00"
+                            android:layout_width="60dp"
+                            android:layout_height="match_parent"
+                            android:gravity="left|center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:layout_alignParentLeft="true"
+                            android:textColor="@android:color/white"
+                            android:textSize="14sp"
+                            android:alpha="0.5"
+                            style="@style/TextAppearance.AppCompat.Subhead"/>
 
                     <TextView
-                        android:id="@+id/valueRightText"
-                        android:text="0.00"
-                        android:layout_width="60dp"
-                        android:layout_height="match_parent"
-                        android:gravity="right|center"
-                        android:ellipsize="end"
-                        android:singleLine="true"
-                        android:layout_alignParentRight="true"
-                        android:textColor="@android:color/white"
-                        android:textSize="14sp"
-                        android:alpha="0.5"
-                        style="@style/TextAppearance.AppCompat.Subhead"/>
+                            android:id="@+id/valueRightText"
+                            android:text="0.00"
+                            android:layout_width="60dp"
+                            android:layout_height="match_parent"
+                            android:gravity="right|center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:layout_alignParentRight="true"
+                            android:textColor="@android:color/white"
+                            android:textSize="14sp"
+                            android:alpha="0.5"
+                            style="@style/TextAppearance.AppCompat.Subhead"/>
 
                     <ImageButton
-                        android:id="@+id/valueLeftButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerInside"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:layout_margin="4dp"
-                        android:clickable="true"
-                        android:layout_toLeftOf="@id/valueCenterText"
-                        android:layout_toRightOf="@id/valueLeftText"
-                        android:tint="@android:color/white"
-                        android:src="@drawable/ic_chevron_left_black_48dp" />
+                            android:id="@+id/valueLeftButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerInside"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:layout_margin="4dp"
+                            android:clickable="true"
+                            android:layout_toLeftOf="@id/valueCenterText"
+                            android:layout_toRightOf="@id/valueLeftText"
+                            android:tint="@android:color/white"
+                            android:src="@drawable/ic_chevron_left_black_48dp"/>
 
                     <ImageButton
-                        android:id="@+id/valueRightButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerInside"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:layout_margin="4dp"
-                        android:clickable="true"
-                        android:layout_toRightOf="@id/valueCenterText"
-                        android:layout_toLeftOf="@id/valueRightText"
-                        android:tint="@android:color/white"
-                        android:src="@drawable/ic_chevron_right_black_48dp" />
+                            android:id="@+id/valueRightButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerInside"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:layout_margin="4dp"
+                            android:clickable="true"
+                            android:layout_toRightOf="@id/valueCenterText"
+                            android:layout_toLeftOf="@id/valueRightText"
+                            android:tint="@android:color/white"
+                            android:src="@drawable/ic_chevron_right_black_48dp"/>
 
                 </RelativeLayout>
 
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/visualizationLayout"
-                android:layout_width="match_parent"
-                android:layout_height="200dp">
+                    android:id="@+id/visualizationLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp">
 
                 <net.steppschuh.sensordatalogger.ui.visualization.chart.LineChartView
-                    android:id="@+id/chartView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                        android:id="@+id/chartView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
 
             </RelativeLayout>
 
