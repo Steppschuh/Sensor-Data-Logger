@@ -2,15 +2,14 @@ apply plugin: 'com.android.application'
 
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 27
 
     defaultConfig {
         applicationId "net.steppschuh.sensordatalogger"
         minSdkVersion 21
-        targetSdkVersion 23
-        versionCode 6
-        versionName "1.5"
+        targetSdkVersion 27
+        versionCode 7
+        versionName "1.6"
         multiDexEnabled true
     }
 
@@ -43,9 +42,9 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(path: ':datalogger')
-    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support:multidex:1.0.3'
     compile 'com.google.android.support:wearable:1.4.0'
-    compile 'com.google.android.gms:play-services-wearable:9.0.0'
+    compile 'com.google.android.gms:play-services-wearable:12.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
