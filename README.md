@@ -15,7 +15,9 @@ Data from every sensor of connected Android Wear devices can be streamed to the 
 
 ### Exporting data
 Starting with version 1.7, you can now record the captured data. 
-The data is stored as a JSON-list in the external storage directory (e.g., your SD card).
+The data is stored as a list of JSON within the storage of the Android phone in a directory named `net.steppschuh.sensordatalogger`.
+The filenames contain the current timestamp.
+
 Currently, no CSV export is supported as the data originating from the sensors is not uniform, yet parsing a JSON should not be too complicated.
 
 ### Tested sensor types
