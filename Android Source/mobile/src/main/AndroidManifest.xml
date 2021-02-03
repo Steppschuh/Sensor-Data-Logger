@@ -3,6 +3,7 @@
     package="net.steppschuh.sensordatalogger">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <supports-screens
         android:resizeable="true"

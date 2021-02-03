@@ -12,7 +12,11 @@
     <string name="available_sensors">Available sensors</string>
     <string name="available_sensors_on_device">Sensors on [DEVICENAME]</string>
     <string name="available_sensors_on_this_device">Sensors on this device</string>
-    <string name="loading_available_sensors">Loading available sensors ...</string>
-    <string name="loading_sensors_on_device">Loading sensors on [DEVICENAME] ...</string>
+    <string name="loading_available_sensors">Loading available sensors …</string>
+    <string name="loading_sensors_on_device">Loading sensors on [DEVICENAME] …</string>
     <string name="no_sensors_available">No sensors available</string>
+
+    <string name="datahandler_start_recording">Recording to CSV …</string>
+    <string name="datahandler_stop_recording">Saved recording to file: </string>
+    <string name="datahandler_request_users_permission">Error: You must grant permission to write the file to your storage.</string>
 </resources>
