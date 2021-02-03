@@ -28,6 +28,7 @@ public class DataHandler {
     private boolean isRecording = false;
     private FileWriter filewriter;
     private String filename;
+    private boolean firstEntryWasWritten;
 
     public void logDataBatch(DataBatch dataBatch, String sourceNodeId) {
         /**
@@ -42,6 +43,11 @@ public class DataHandler {
         // Log.v(TAG, dataBatch.toString());
 
         try {
+            // write the comma only if we added some entries before
+            if (firstEntryWasWritten) {
+                filewriter.write(",");
+            }
+            firstEntryWasWritten = true;
             filewriter.write(dataBatch.toJson());
         } catch (IOException e) {
             Log.e(TAG, "FileWriter could not write.");
@@ -68,6 +74,7 @@ public class DataHandler {
 
         // set recording status
         isRecording = true;
+        firstEntryWasWritten = false;
 
         // set path
         String path = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID + "/";
