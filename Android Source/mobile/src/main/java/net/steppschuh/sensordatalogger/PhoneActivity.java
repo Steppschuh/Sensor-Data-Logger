@@ -1,5 +1,7 @@
 package net.steppschuh.sensordatalogger;
 
+import de.jo2k.loggingmodule.DataHandler;
+
 import com.google.android.gms.wearable.Wearable;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -8,19 +10,24 @@ import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.Manifest;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.steppschuh.datalogger.data.DataBatch;
 import net.steppschuh.datalogger.data.DataChangedListener;
@@ -40,7 +47,10 @@ import net.steppschuh.sensordatalogger.ui.SensorSelectionDialogFragment;
 import net.steppschuh.sensordatalogger.ui.visualization.VisualizationCardData;
 import net.steppschuh.sensordatalogger.ui.visualization.VisualizationCardListAdapter;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +68,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     private ActivityStatus status = new ActivityStatus();
     private StatusUpdateHandler statusUpdateHandler;
 
-    private FloatingActionButton floatingActionButton;
+    private FloatingActionButton floatingActionButton, floatingActionRecordButton;
     private TextView logTextView;
     private GridView gridView;
 
@@ -70,6 +80,10 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     private Map<String, AlertDialog> reachabilityDialogs = new HashMap<>();
 
     private String lastResponseStatus;
+
+    // initialize DataHandler
+    // csv logger
+    private DataHandler dataHandler = new DataHandler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +128,32 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
             @Override
             public void onClick(View v) {
                 showSensorSelectionDialog();
+            }
+        });
+
+        floatingActionRecordButton = (FloatingActionButton) findViewById(R.id.recordActionButton);
+        floatingActionRecordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // start a new recording if no recording is going on.
+                // name current file after timestamp and raise a Toast to notify user of start
+                // and stop action. Also assign a new icon to the second floating action button.
+                if (!dataHandler.isRecording()) {
+                    String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+                    String pathname = getExternalFilesDir(null) + "/" + timestamp + ".json";
+                    dataHandler.startRecording(new File(pathname));
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.datahandler_start_recording),
+                            Toast.LENGTH_SHORT).show();
+                    floatingActionRecordButton.setImageResource(R.drawable.ic_pause_black_48dp);
+                } else {
+                    // stops recording and gets filename to show in Toast
+                    String filename = dataHandler.stopRecording().getAbsolutePath();
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.datahandler_stop_recording) + filename,
+                            Toast.LENGTH_LONG).show();
+                    floatingActionRecordButton.setImageResource(R.drawable.ic_play_arrow_black_48dp);
+                }
             }
         });
 
@@ -329,6 +369,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     @Override
     public void onDataChanged(DataBatch dataBatch, String sourceNodeId) {
         renderDataBatch(dataBatch, sourceNodeId);
+        dataHandler.logDataBatch(dataBatch, sourceNodeId);
     }
 
     /*

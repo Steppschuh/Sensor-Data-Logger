@@ -13,8 +13,12 @@ The sensor data logger can display data from all generic sensor types, such as a
 ### Android Wear support
 Data from every sensor of connected Android Wear devices can be streamed to the app in real-time, even from multiple devices at once. Just open the app on your watch and you are good to go.
 
-### Exporting in development
-You'll be able to record and export the collected data to JSON or CSV files in an upcoming release.
+### Exporting data
+Starting with version 1.7, you can now record the captured data. 
+The data is stored as a list of JSON within the storage of the Android phone in a directory named `net.steppschuh.sensordatalogger`.
+The filenames contain the current timestamp.
+
+Currently, no CSV export is supported as the data originating from the sensors is not uniform, yet parsing a JSON should not be too complicated.
 
 ### Tested sensor types
 - Accelerometer

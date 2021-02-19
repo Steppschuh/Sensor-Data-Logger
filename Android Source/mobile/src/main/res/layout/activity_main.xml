@@ -53,4 +53,20 @@
         android:tint="@android:color/white"
         android:src="@drawable/ic_list_black_48dp" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/recordActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="90dp"
+        android:clickable="true"
+        android:src="@drawable/ic_play_arrow_black_48dp"
+        android:tint="@android:color/white" />
+
 </RelativeLayout>
