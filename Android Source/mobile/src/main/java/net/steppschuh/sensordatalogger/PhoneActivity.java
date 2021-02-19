@@ -13,6 +13,7 @@ import android.content.res.Configuration;
 import android.Manifest;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -46,6 +47,7 @@ import net.steppschuh.sensordatalogger.ui.SensorSelectionDialogFragment;
 import net.steppschuh.sensordatalogger.ui.visualization.VisualizationCardData;
 import net.steppschuh.sensordatalogger.ui.visualization.VisualizationCardListAdapter;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -133,42 +135,20 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         floatingActionRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // request runtime permission
-                if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(app.getContextActivity(),
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    } else {
-                        ActivityCompat.requestPermissions(app.getContextActivity(),
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},23
-                        );
-                        return;
-                    }
-                }
-
-                // if user did not grant permission, notify by Toast
-                if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(getApplicationContext(),
-                            getString(R.string.datahandler_request_users_permission),
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-
                 // start a new recording if no recording is going on.
-                // pass current timestamp as a filename and raise a Toast to notify user of start
+                // name current file after timestamp and raise a Toast to notify user of start
                 // and stop action. Also assign a new icon to the second floating action button.
-                if (! dataHandler.isRecording()) {
+                if (!dataHandler.isRecording()) {
                     String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
-                    dataHandler.startRecording(timestamp);
+                    String pathname = getExternalFilesDir(null) + "/" + timestamp + ".json";
+                    dataHandler.startRecording(new File(pathname));
                     Toast.makeText(getApplicationContext(),
                             getString(R.string.datahandler_start_recording),
                             Toast.LENGTH_SHORT).show();
                     floatingActionRecordButton.setImageResource(R.drawable.ic_pause_black_48dp);
                 } else {
-                    String filename = dataHandler.stopRecording();
+                    // stops recording and gets filename to show in Toast
+                    String filename = dataHandler.stopRecording().getAbsolutePath();
                     Toast.makeText(getApplicationContext(),
                             getString(R.string.datahandler_stop_recording) + filename,
                             Toast.LENGTH_LONG).show();
