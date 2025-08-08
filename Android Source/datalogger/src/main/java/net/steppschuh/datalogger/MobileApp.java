@@ -3,7 +3,8 @@ package net.steppschuh.datalogger;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
-import android.support.multidex.MultiDexApplication;
+
+import androidx.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.google.android.gms.wearable.MessageApi;

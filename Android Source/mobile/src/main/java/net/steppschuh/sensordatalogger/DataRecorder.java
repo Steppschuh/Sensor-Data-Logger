@@ -4,7 +4,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import net.steppschuh.datalogger.data.DataBatch;
-import net.steppschuh.datalogger.data.DataPoint;
+import net.steppschuh.datalogger.data.Data;
 import net.steppschuh.datalogger.sensor.DeviceSensor;
 
 import java.io.File;
@@ -42,15 +42,14 @@ public class DataRecorder {
 
         // create directory for recordings
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        recordingDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "SensorDataLogger" + File.separator + timestamp);
+        recordingDirectory = new File(Environment.getExternalStorageDirectory(), "SensorDataLogger" + File.separator + timestamp);
         if (!recordingDirectory.mkdirs()) {
             Log.e(TAG, "Directory not created");
         }
 
-        // create a file writer for each sensor
         for (Map.Entry<String, List<DeviceSensor>> entry : selectedSensors.entrySet()) {
             for (DeviceSensor sensor : entry.getValue()) {
-                String key = sensor.getStringType() + "_" + sensor.getIdentifier();
+                String key = sensor.getStringType() + "_" + sensor.getName();
                 try {
                     File file = new File(recordingDirectory, key + ".csv");
                     fileWriters.put(key, new FileWriter(file));
@@ -104,14 +103,14 @@ public class DataRecorder {
         if (!recording) {
             return;
         }
-        String key = dataBatch.getSource() + "_" + dataBatch.getSensorType();
+        String key = dataBatch.getSource() + "_" + dataBatch.getType();
         StringBuilder buffer = dataBuffers.get(key);
         if (buffer != null) {
             if (!headerWritten.get(key)) {
-                if (dataBatch.getDataPoints().size() > 0) {
-                    DataPoint firstDataPoint = dataBatch.getDataPoints().get(0);
-                    StringBuilder header = new StringBuilder("timestamp,accuracy");
-                    for (int i = 0; i < firstDataPoint.getValues().length; i++) {
+                if (dataBatch.getDataList().size() > 0) {
+                    Data firstData = dataBatch.getDataList().get(0);
+                    StringBuilder header = new StringBuilder("timestamp");
+                    for (int i = 0; i < firstData.getValues().length; i++) {
                         header.append(",value_").append(i);
                     }
                     header.append('\n');
@@ -120,10 +119,9 @@ public class DataRecorder {
                 }
             }
 
-            for (DataPoint dataPoint : dataBatch.getDataPoints()) {
-                buffer.append(dataPoint.getTimestamp()).append(',')
-                        .append(dataPoint.getAccuracy());
-                for (float value : dataPoint.getValues()) {
+            for (Data data : dataBatch.getDataList()) {
+                buffer.append(data.getTimestamp());
+                for (float value : data.getValues()) {
                     buffer.append(',').append(value);
                 }
                 buffer.append('\n');
