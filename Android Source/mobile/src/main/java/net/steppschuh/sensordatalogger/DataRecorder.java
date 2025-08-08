@@ -23,12 +23,12 @@ import java.util.concurrent.TimeUnit;
 public class DataRecorder {
 
     private static final String TAG = DataRecorder.class.getSimpleName();
-    private static final String CSV_HEADER = "timestamp,accuracy,x,y,z";
 
     private boolean recording;
     private File recordingDirectory;
     private Map<String, FileWriter> fileWriters = new ConcurrentHashMap<>();
     private Map<String, StringBuilder> dataBuffers = new ConcurrentHashMap<>();
+    private Map<String, Boolean> headerWritten = new ConcurrentHashMap<>();
     private ScheduledExecutorService scheduler;
 
     public DataRecorder() {
@@ -55,7 +55,7 @@ public class DataRecorder {
                     File file = new File(recordingDirectory, key + ".csv");
                     fileWriters.put(key, new FileWriter(file));
                     dataBuffers.put(key, new StringBuilder());
-                    fileWriters.get(key).append(CSV_HEADER).append('\\n');
+                    headerWritten.put(key, false);
                 } catch (IOException e) {
                     Log.e(TAG, "Could not create file writer for " + key, e);
                 }
@@ -95,6 +95,7 @@ public class DataRecorder {
         }
         fileWriters.clear();
         dataBuffers.clear();
+        headerWritten.clear();
 
         Log.d(TAG, "Stopped recording");
     }
@@ -106,12 +107,26 @@ public class DataRecorder {
         String key = dataBatch.getSource() + "_" + dataBatch.getSensorType();
         StringBuilder buffer = dataBuffers.get(key);
         if (buffer != null) {
+            if (!headerWritten.get(key)) {
+                if (dataBatch.getDataPoints().size() > 0) {
+                    DataPoint firstDataPoint = dataBatch.getDataPoints().get(0);
+                    StringBuilder header = new StringBuilder("timestamp,accuracy");
+                    for (int i = 0; i < firstDataPoint.getValues().length; i++) {
+                        header.append(",value_").append(i);
+                    }
+                    header.append('\n');
+                    buffer.append(header.toString());
+                    headerWritten.put(key, true);
+                }
+            }
+
             for (DataPoint dataPoint : dataBatch.getDataPoints()) {
                 buffer.append(dataPoint.getTimestamp()).append(',')
-                        .append(dataPoint.getAccuracy()).append(',')
-                        .append(dataPoint.getValues()[0]).append(',')
-                        .append(dataPoint.getValues()[1]).append(',')
-                        .append(dataPoint.getValues()[2]).append('\\n');
+                        .append(dataPoint.getAccuracy());
+                for (float value : dataPoint.getValues()) {
+                    buffer.append(',').append(value);
+                }
+                buffer.append('\n');
             }
         }
     }

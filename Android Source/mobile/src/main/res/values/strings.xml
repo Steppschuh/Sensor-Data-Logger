@@ -17,6 +17,6 @@
     <string name="no_sensors_available">No sensors available</string>
     <string name="action_record">Record</string>
     <string name="recording_stopped_dialog_title">Recording stopped</string>
-    <string name="recording_stopped_dialog_message">Your recordings have been saved to: [FOLDER_PATH]</string>
+    <string name="recording_stopped_dialog_message">Your recordings have been saved to:\n[FOLDER_PATH]</string>
     <string name="recording_stopped_dialog_positive_button">Open directory</string>
 </resources>

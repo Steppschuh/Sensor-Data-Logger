@@ -56,6 +56,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
 
     private static final String TAG = PhoneActivity.class.getSimpleName();
 
+    private static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
     private static final String KEY_SENSOR_DATA_REQUESTS = "sensorDataRequests";
     private static final String KEY_SELECTED_SENSORS = "selectedSensors";
 
@@ -567,8 +568,12 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     }
 
     private void startRecording() {
+        if (selectedSensors.isEmpty()) {
+            Snackbar.make(findViewById(android.R.id.content), "Please select sensors first", Snackbar.LENGTH_LONG).show();
+            return;
+        }
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
             return;
         }
 
@@ -602,7 +607,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == 0) {
+        if (requestCode == PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startRecording();
             }
