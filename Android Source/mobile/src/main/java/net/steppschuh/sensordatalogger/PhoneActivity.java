@@ -2,9 +2,12 @@ package net.steppschuh.sensordatalogger;
 
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.Manifest;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,7 +17,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -61,6 +67,11 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     private FloatingActionButton floatingActionButton;
     private TextView logTextView;
     private GridView gridView;
+    private Toolbar toolbar;
+    private MenuItem recordingMenuItem;
+
+    private DataRecorder dataRecorder;
+    private boolean isRecording = false;
 
     private VisualizationCardListAdapter cardListAdapter;
     private SensorSelectionDialogFragment sensorSelectionDialog;
@@ -73,6 +84,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
 
         // get reference to global application
@@ -109,6 +121,9 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     private void setupUi() {
         setContentView(R.layout.activity_main);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         floatingActionButton = (FloatingActionButton) findViewById(R.id.floadtingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +138,24 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         List<VisualizationCardData> visualizationCardData = new ArrayList<>();
         cardListAdapter = new VisualizationCardListAdapter(this, R.id.gridView, visualizationCardData);
         gridView.setAdapter(cardListAdapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        recordingMenuItem = menu.findItem(R.id.action_record);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_record:
+                toggleRecording();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void setupMessageHandlers() {
@@ -328,6 +361,9 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
      */
     @Override
     public void onDataChanged(DataBatch dataBatch, String sourceNodeId) {
+        if (isRecording && dataRecorder != null) {
+            dataRecorder.onDataChanged(dataBatch);
+        }
         renderDataBatch(dataBatch, sourceNodeId);
     }
 
@@ -520,6 +556,77 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
             sensorIsRequested = true;
         }
         return sensorIsRequested;
+    }
+
+    private void toggleRecording() {
+        if (isRecording) {
+            stopRecording();
+        } else {
+            startRecording();
+        }
+    }
+
+    private void startRecording() {
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+            return;
+        }
+
+        isRecording = true;
+        dataRecorder = new DataRecorder();
+        dataRecorder.start(selectedSensors);
+
+        if (recordingMenuItem != null) {
+            recordingMenuItem.setIcon(R.drawable.ic_pause_black_48dp);
+        }
+
+        setTheme(R.style.AppTheme_Recording);
+        recreate();
+    }
+
+    private void stopRecording() {
+        isRecording = false;
+        if (dataRecorder != null) {
+            dataRecorder.stop();
+        }
+
+        if (recordingMenuItem != null) {
+            recordingMenuItem.setIcon(R.drawable.ic_record_black_24dp);
+        }
+
+        setTheme(R.style.AppTheme);
+        recreate();
+
+        showRecordingStoppedDialog();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 0) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startRecording();
+            }
+        }
+    }
+
+    private void showRecordingStoppedDialog() {
+        if (dataRecorder == null) {
+            return;
+        }
+        String message = getString(R.string.recording_stopped_dialog_message).replace("[FOLDER_PATH]", dataRecorder.getRecordingDirectory().getAbsolutePath());
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.recording_stopped_dialog_title)
+                .setMessage(message)
+                .setPositiveButton(R.string.recording_stopped_dialog_positive_button, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setDataAndType(Uri.fromFile(dataRecorder.getRecordingDirectory()), "*/*");
+                        if (intent.resolveActivity(getPackageManager()) != null) {
+                            startActivity(intent);
+                        }
+                    }
+                })
+                .show();
     }
 
     /**

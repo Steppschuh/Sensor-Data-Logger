@@ -6,5 +6,6 @@
     <color name="colorSecondary">#607D8B</color>
     <color name="colorTertiary">#795548</color>
     <color name="colorAccent">#607D8B</color>
+    <color name="colorPrimaryRecording">#F44336</color>
     <color name="colorLightGrey">#EEEEEE</color>
 </resources>

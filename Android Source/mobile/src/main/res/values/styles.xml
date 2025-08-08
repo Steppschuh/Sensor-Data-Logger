@@ -8,4 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.Recording" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryRecording</item>
+    </style>
+
 </resources>
