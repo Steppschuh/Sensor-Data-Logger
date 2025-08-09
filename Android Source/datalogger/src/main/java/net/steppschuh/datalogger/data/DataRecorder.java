@@ -1,10 +1,8 @@
-package net.steppschuh.sensordatalogger;
+package net.steppschuh.datalogger.data;
 
-import android.os.Environment;
+import android.content.Context;
 import android.util.Log;
 
-import net.steppschuh.datalogger.data.DataBatch;
-import net.steppschuh.datalogger.data.Data;
 import net.steppschuh.datalogger.sensor.DeviceSensor;
 
 import java.io.File;
@@ -30,8 +28,10 @@ public class DataRecorder {
     private Map<String, StringBuilder> dataBuffers = new ConcurrentHashMap<>();
     private Map<String, Boolean> headerWritten = new ConcurrentHashMap<>();
     private ScheduledExecutorService scheduler;
+    private Context context;
 
-    public DataRecorder() {
+    public DataRecorder(Context context) {
+        this.context = context;
     }
 
     public void start(Map<String, List<DeviceSensor>> selectedSensors) {
@@ -42,7 +42,8 @@ public class DataRecorder {
 
         // create directory for recordings
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        recordingDirectory = new File(Environment.getExternalStorageDirectory(), "SensorDataLogger" + File.separator + timestamp);
+        File baseDir = context.getExternalFilesDir(null);
+        recordingDirectory = new File(baseDir, "SensorDataLogger" + File.separator + timestamp);
         if (!recordingDirectory.mkdirs()) {
             Log.e(TAG, "Directory not created");
         }

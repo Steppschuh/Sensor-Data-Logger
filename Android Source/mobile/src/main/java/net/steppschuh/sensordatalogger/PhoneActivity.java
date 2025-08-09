@@ -3,7 +3,6 @@ package net.steppschuh.sensordatalogger;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.Manifest;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -16,6 +15,7 @@ import android.os.Message;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,6 +31,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.steppschuh.datalogger.data.DataBatch;
 import net.steppschuh.datalogger.data.DataChangedListener;
+import net.steppschuh.datalogger.data.DataRecorder;
 import net.steppschuh.datalogger.data.request.DataRequest;
 import net.steppschuh.datalogger.data.request.DataRequestResponse;
 import net.steppschuh.datalogger.data.request.SensorDataRequest;
@@ -57,7 +58,6 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
 
     private static final String TAG = PhoneActivity.class.getSimpleName();
 
-    private static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
     private static final String KEY_SENSOR_DATA_REQUESTS = "sensorDataRequests";
     private static final String KEY_SELECTED_SENSORS = "selectedSensors";
 
@@ -71,9 +71,6 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     private GridView gridView;
     private MenuItem recordingMenuItem;
 
-    private DataRecorder dataRecorder;
-    private boolean isRecording = false;
-
     private VisualizationCardListAdapter cardListAdapter;
     private SensorSelectionDialogFragment sensorSelectionDialog;
 
@@ -85,13 +82,12 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
 
         // get reference to global application
         app = (PhoneApp) getApplicationContext();
 
-        // initialize with context activity if needed
+        // initialize without DataRecorder (now handled by MobileApp)
         if (!app.getStatus().isInitialized() || app.getContextActivity() == null) {
             app.initialize(this);
         }
@@ -117,10 +113,18 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
                 }
             }
         }, TimeUnit.SECONDS.toMillis(1));
+
     }
 
     private void setupUi() {
         setContentView(R.layout.activity_main);
+
+        // Set up custom toolbar
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Sensor Data Logger");
+        }
 
         floatingActionButton = (FloatingActionButton) findViewById(R.id.floadtingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -142,6 +146,11 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         recordingMenuItem = menu.findItem(R.id.action_record);
+        if (app.isRecording()) {
+            recordingMenuItem.setIcon(R.drawable.ic_pause_black_48dp);
+        } else {
+            recordingMenuItem.setIcon(R.drawable.ic_record_black_24dp);
+        }
         return true;
     }
 
@@ -229,7 +238,6 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
             if (selectedSensors == null) {
                 selectedSensors = new HashMap<>();
             }
-            Log.d(TAG, "Instance state restored");
 
             // Update end timestamps of data requests for selected sensors.
             // This is required because all requests have been terminated when
@@ -358,8 +366,8 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
      */
     @Override
     public void onDataChanged(DataBatch dataBatch, String sourceNodeId) {
-        if (isRecording && dataRecorder != null) {
-            dataRecorder.onDataChanged(dataBatch);
+        if (app.isRecording() && app.getDataRecorder() != null) {
+            app.getDataRecorder().onDataChanged(dataBatch);
         }
         renderDataBatch(dataBatch, sourceNodeId);
     }
@@ -556,7 +564,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     }
 
     private void toggleRecording() {
-        if (isRecording) {
+        if (app.isRecording()) {
             stopRecording();
         } else {
             startRecording();
@@ -565,64 +573,38 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
 
     private void startRecording() {
         if (selectedSensors.isEmpty()) {
-            Snackbar.make(findViewById(android.R.id.content), "Please select sensors first", Snackbar.LENGTH_LONG).show();
-            return;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
+            Snackbar.make(findViewById(android.R.id.content), getString(R.string.select_sensors_first), Snackbar.LENGTH_LONG).show();
             return;
         }
 
-        isRecording = true;
-        dataRecorder = new DataRecorder();
-        dataRecorder.start(selectedSensors);
+        app.startRecording(selectedSensors);
 
         if (recordingMenuItem != null) {
             recordingMenuItem.setIcon(R.drawable.ic_pause_black_48dp);
         }
-
-        setTheme(R.style.AppTheme_Recording);
-        recreate();
     }
 
     private void stopRecording() {
-        isRecording = false;
-        if (dataRecorder != null) {
-            dataRecorder.stop();
-        }
+        java.io.File recordingDirectory = app.stopRecording();
 
         if (recordingMenuItem != null) {
             recordingMenuItem.setIcon(R.drawable.ic_record_black_24dp);
         }
-
-        setTheme(R.style.AppTheme);
-        recreate();
-
-        showRecordingStoppedDialog();
+        showRecordingStoppedDialog(recordingDirectory);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startRecording();
-            }
-        }
-    }
-
-    private void showRecordingStoppedDialog() {
-        if (dataRecorder == null) {
+    private void showRecordingStoppedDialog(java.io.File recordingDirectory) {
+        if (recordingDirectory == null) {
             return;
         }
-        String message = getString(R.string.recording_stopped_dialog_message).replace("[FOLDER_PATH]", dataRecorder.getRecordingDirectory().getAbsolutePath());
+        String message = getString(R.string.recording_stopped_dialog_message).replace("[FOLDER_PATH]", recordingDirectory.getAbsolutePath());
         new AlertDialog.Builder(this)
                 .setTitle(R.string.recording_stopped_dialog_title)
                 .setMessage(message)
                 .setPositiveButton(R.string.recording_stopped_dialog_positive_button, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setDataAndType(Uri.fromFile(dataRecorder.getRecordingDirectory()), "*/*");
+                        intent.setDataAndType(Uri.fromFile(recordingDirectory), "*/*");
                         if (intent.resolveActivity(getPackageManager()) != null) {
                             startActivity(intent);
                         }

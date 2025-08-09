@@ -35,7 +35,7 @@ class StatusNotification {
     private PendingIntent getDefaultPendingIntent() {
         Intent intent = new Intent(service, targetActivityClass);
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        return PendingIntent.getActivity(service, 0, intent, 0);
+        return PendingIntent.getActivity(service, 0, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     private void setupOngoingNotification() {
