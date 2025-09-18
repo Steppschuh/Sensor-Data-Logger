@@ -28,6 +28,7 @@ public class TimeTracker {
 
     public interface TrackingListener {
         void onTrackingFinished(TimeTracker timeTracker);
+
         void onNewDurationTracked(TimeTracker timeTracker);
     }
 

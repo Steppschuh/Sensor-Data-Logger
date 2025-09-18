@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class DataBatch implements Serializable {
 
@@ -71,6 +72,17 @@ public class DataBatch implements Serializable {
     public static float roundToDecimalPlaces(float value, int decimalPlaces) {
         double shift = Math.pow(10, decimalPlaces);
         return (float) (Math.round(value * shift) / shift);
+    }
+
+    @JsonIgnore
+    public float getFrequency() {
+        Data newest = getNewestData();
+        Data oldest = getOldestData();
+        if (newest == oldest) {
+            return 0;
+        }
+        long delta = newest.getTimestamp() - oldest.getTimestamp();
+        return dataList.size() / (delta / TimeUnit.SECONDS.toMillis(1));
     }
 
     public void addData(Data data) {

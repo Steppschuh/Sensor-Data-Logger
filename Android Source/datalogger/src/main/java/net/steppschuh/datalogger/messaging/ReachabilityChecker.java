@@ -1,13 +1,13 @@
 package net.steppschuh.datalogger.messaging;
 
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.Node;
+
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-
-import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.Node;
 
 import net.steppschuh.datalogger.MobileApp;
 import net.steppschuh.datalogger.messaging.handler.MessageHandler;
