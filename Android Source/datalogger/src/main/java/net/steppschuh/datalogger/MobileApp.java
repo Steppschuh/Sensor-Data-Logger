@@ -1,22 +1,25 @@
 package net.steppschuh.datalogger;
 
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Message;
+import androidx.multidex.MultiDexApplication;
+import android.util.Log;
+
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.os.Message;
-import android.support.multidex.MultiDexApplication;
-import android.util.Log;
-
+import net.steppschuh.datalogger.data.DataRecorder;
 import net.steppschuh.datalogger.logging.TrackerManager;
-import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
 import net.steppschuh.datalogger.messaging.ReachabilityChecker;
 import net.steppschuh.datalogger.messaging.handler.GetAvailableSensorsMessageHandler;
-import net.steppschuh.datalogger.messaging.handler.GetStatusMessageHandler;
-import net.steppschuh.datalogger.messaging.handler.MessageHandler;
 import net.steppschuh.datalogger.messaging.handler.SensorDataRequestMessageHandler;
+import net.steppschuh.datalogger.messaging.handler.GetStatusMessageHandler;
+import net.steppschuh.datalogger.messaging.GoogleApiMessenger;
+import net.steppschuh.datalogger.messaging.handler.MessageHandler;
+import net.steppschuh.datalogger.messaging.handler.PingMessageHandler;
+import net.steppschuh.datalogger.sensor.DeviceSensor;
 import net.steppschuh.datalogger.sensor.SensorDataManager;
 import net.steppschuh.datalogger.status.AppStatus;
 import net.steppschuh.datalogger.status.Status;
@@ -26,6 +29,7 @@ import net.steppschuh.datalogger.status.StatusUpdateReceiver;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MobileApp extends MultiDexApplication implements MessageApi.MessageListener, StatusUpdateEmitter {
 
@@ -43,6 +47,8 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
     private SensorDataManager sensorDataManager;
     private ReachabilityChecker reachabilityChecker;
     private FirebaseAnalytics analytics;
+
+    private DataRecorder dataRecorder;
 
     public void initialize(Activity contextActivity) {
         this.contextActivity = contextActivity;
@@ -226,4 +232,29 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
         return analytics;
     }
 
+    public DataRecorder getDataRecorder() {
+        return dataRecorder;
+    }
+
+    public boolean isRecording() {
+        return dataRecorder != null && dataRecorder.isRecording();
+    }
+
+    public void startRecording(Map<String, List<DeviceSensor>> selectedSensors) {
+        if (isRecording()) {
+            return;
+        }
+        dataRecorder = new DataRecorder(contextActivity);
+        dataRecorder.start(selectedSensors);
+    }
+
+    public String stopRecording() {
+        if (!isRecording()) {
+            return null;
+        }
+        String recordingPath = dataRecorder.getRecordingPath();
+        dataRecorder.stop();
+        dataRecorder = null;
+        return recordingPath;
+    }
 }

@@ -1,8 +1,5 @@
 package net.steppschuh.sensordatalogger.ui;
 
-import com.google.android.gms.wearable.Node;
-import com.google.firebase.analytics.FirebaseAnalytics;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,13 +9,25 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.DrawableRes;
+
+import androidx.annotation.DrawableRes;
+import androidx.core.view.MarginLayoutParamsCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.google.android.gms.wearable.Node;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.steppschuh.datalogger.MobileApp;
 import net.steppschuh.datalogger.data.request.DataRequest;

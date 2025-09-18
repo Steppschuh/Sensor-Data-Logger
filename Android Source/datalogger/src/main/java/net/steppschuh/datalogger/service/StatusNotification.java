@@ -7,8 +7,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
 
 class StatusNotification {
 
@@ -34,7 +35,7 @@ class StatusNotification {
     private PendingIntent getDefaultPendingIntent() {
         Intent intent = new Intent(service, targetActivityClass);
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        return PendingIntent.getActivity(service, 0, intent, 0);
+        return PendingIntent.getActivity(service, 0, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     private void setupOngoingNotification() {

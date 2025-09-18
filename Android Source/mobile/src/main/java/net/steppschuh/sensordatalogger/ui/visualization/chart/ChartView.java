@@ -7,10 +7,11 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+
+import androidx.core.content.ContextCompat;
 
 import net.steppschuh.datalogger.data.DataBatch;
 import net.steppschuh.datalogger.logging.TimeTracker;
@@ -363,34 +364,48 @@ public abstract class ChartView extends View {
     }
 
     public int getCurrentDataDimension() {
+        if (dataBatch == null || dataBatch.getNewestData() == null || dataBatch.getNewestData().getValues() == null || dataBatch.getNewestData().getValues().length == 0) {
+            return 0;
+        }
         int currentIndex = 0;
         if (dataDimension != ChartView.DATA_DIMENSION_ALL) {
             currentIndex = dataDimension;
+            // Ensure the dimension is within bounds
+            int arrayLength = dataBatch.getNewestData().getValues().length;
+            if (currentIndex >= arrayLength) {
+                currentIndex = 0;
+            } else if (currentIndex < 0) {
+                currentIndex = 0;
+            }
         }
         return currentIndex;
     }
 
     public int getNextDataDimension() {
-        if (dataBatch == null || dataBatch.getNewestData() == null) {
+        if (dataBatch == null || dataBatch.getNewestData() == null || dataBatch.getNewestData().getValues() == null || dataBatch.getNewestData().getValues().length == 0) {
             return 0;
         }
         if (dataDimension == DATA_DIMENSION_ALL) {
             return 0;
         } else {
-            return (getCurrentDataDimension() + 1) % dataBatch.getNewestData().getValues().length;
+            int currentDimension = getCurrentDataDimension();
+            int arrayLength = dataBatch.getNewestData().getValues().length;
+            return (currentDimension + 1) % arrayLength;
         }
     }
 
     public int getPreviousDataDimension() {
-        if (dataBatch == null || dataBatch.getNewestData() == null) {
+        if (dataBatch == null || dataBatch.getNewestData() == null || dataBatch.getNewestData().getValues() == null || dataBatch.getNewestData().getValues().length == 0) {
             return 0;
         }
         if (dataDimension == DATA_DIMENSION_ALL) {
             return dataBatch.getNewestData().getValues().length - 1;
         } else {
-            int previousIndex = (getCurrentDataDimension() - 1) % dataBatch.getNewestData().getValues().length;
+            int currentDimension = getCurrentDataDimension();
+            int arrayLength = dataBatch.getNewestData().getValues().length;
+            int previousIndex = (currentDimension - 1) % arrayLength;
             if (previousIndex < 0) {
-                previousIndex += dataBatch.getNewestData().getValues().length;
+                previousIndex += arrayLength;
             }
             return previousIndex;
         }

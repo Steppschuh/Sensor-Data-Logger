@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 35
 
     defaultConfig {
         applicationId "net.steppschuh.sensordatalogger"
         minSdkVersion 21
-        targetSdkVersion 27
-        versionCode 7
-        versionName "1.6"
+        targetSdkVersion 35
+        versionCode 6
+        versionName "1.5"
         multiDexEnabled true
     }
 
@@ -20,31 +20,24 @@ android {
         }
     }
 
-    dexOptions {
-        javaMaxHeapSize "4g" //specify the heap size for the dex process
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/DEPENDENCIES.txt', 'META-INF/LICENSE.txt', 'META-INF/NOTICE.txt', 'META-INF/NOTICE', 'META-INF/LICENSE', 'META-INF/DEPENDENCIES', 'META-INF/notice.txt', 'META-INF/license.txt', 'META-INF/dependencies.txt', 'META-INF/LGPL2.1']
+        }
     }
 
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES.txt'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/dependencies.txt'
-        exclude 'META-INF/LGPL2.1'
-    }
+    namespace 'net.steppschuh.sensordatalogger'
 
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(path: ':datalogger')
-    compile 'com.android.support:multidex:1.0.3'
-    compile 'com.google.android.support:wearable:1.4.0'
-    compile 'com.google.android.gms:play-services-wearable:12.0.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(path: ':datalogger')
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.google.android.support:wearable:2.9.0'
+    compileOnly 'com.google.android.wearable:wearable:2.9.0'
+    implementation 'com.google.android.gms:play-services-wearable:19.0.0'
+    implementation 'com.google.firebase:firebase-analytics:22.1.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

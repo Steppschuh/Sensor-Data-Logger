@@ -1,9 +1,5 @@
 package net.steppschuh.sensordatalogger;
 
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.Wearable;
-import com.google.firebase.analytics.FirebaseAnalytics;
-
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -11,12 +7,19 @@ import android.hardware.Sensor;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import android.support.v4.content.ContextCompat;
-import android.support.wearable.activity.WearableActivity;
-import android.support.wearable.view.BoxInsetLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
+
+import android.support.wearable.activity.WearableActivity;
+import android.support.wearable.view.BoxInsetLayout;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.Wearable;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.steppschuh.datalogger.data.request.DataRequest;
 import net.steppschuh.datalogger.data.request.SensorDataRequest;

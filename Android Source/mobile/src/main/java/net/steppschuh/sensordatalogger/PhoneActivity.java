@@ -1,26 +1,36 @@
 package net.steppschuh.sensordatalogger;
 
-import com.google.android.gms.wearable.Wearable;
-import com.google.firebase.analytics.FirebaseAnalytics;
-
+import android.Manifest;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.gms.wearable.Wearable;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.steppschuh.datalogger.data.DataBatch;
 import net.steppschuh.datalogger.data.DataChangedListener;
@@ -52,6 +62,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
 
     private static final String KEY_SENSOR_DATA_REQUESTS = "sensorDataRequests";
     private static final String KEY_SELECTED_SENSORS = "selectedSensors";
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
     private PhoneApp app;
     private List<MessageHandler> messageHandlers;
@@ -61,6 +72,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
     private FloatingActionButton floatingActionButton;
     private TextView logTextView;
     private GridView gridView;
+    private MenuItem recordingMenuItem;
 
     private VisualizationCardListAdapter cardListAdapter;
     private SensorSelectionDialogFragment sensorSelectionDialog;
@@ -78,7 +90,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         // get reference to global application
         app = (PhoneApp) getApplicationContext();
 
-        // initialize with context activity if needed
+        // initialize without DataRecorder (now handled by MobileApp)
         if (!app.getStatus().isInitialized() || app.getContextActivity() == null) {
             app.initialize(this);
         }
@@ -104,10 +116,18 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
                 }
             }
         }, TimeUnit.SECONDS.toMillis(1));
+
     }
 
     private void setupUi() {
         setContentView(R.layout.activity_main);
+
+        // Set up custom toolbar
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Sensor Data Logger");
+        }
 
         floatingActionButton = (FloatingActionButton) findViewById(R.id.floadtingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +143,29 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         List<VisualizationCardData> visualizationCardData = new ArrayList<>();
         cardListAdapter = new VisualizationCardListAdapter(this, R.id.gridView, visualizationCardData);
         gridView.setAdapter(cardListAdapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        recordingMenuItem = menu.findItem(R.id.action_record);
+        if (app.isRecording()) {
+            recordingMenuItem.setIcon(R.drawable.save);
+        } else {
+            recordingMenuItem.setIcon(R.drawable.recording);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_record:
+                toggleRecording();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void setupMessageHandlers() {
@@ -198,7 +241,6 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
             if (selectedSensors == null) {
                 selectedSensors = new HashMap<>();
             }
-            Log.d(TAG, "Instance state restored");
 
             // Update end timestamps of data requests for selected sensors.
             // This is required because all requests have been terminated when
@@ -307,7 +349,6 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         // notify the user with a @Snackbar
         View parentLayout = findViewById(android.R.id.content);
         Snackbar.make(parentLayout, message, Snackbar.LENGTH_LONG)
-                .setDuration(Snackbar.LENGTH_LONG)
                 .show();
 
         if (isReachable) {
@@ -328,6 +369,9 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
      */
     @Override
     public void onDataChanged(DataBatch dataBatch, String sourceNodeId) {
+        if (app.isRecording() && app.getDataRecorder() != null) {
+            app.getDataRecorder().onDataChanged(dataBatch);
+        }
         renderDataBatch(dataBatch, sourceNodeId);
     }
 
@@ -522,6 +566,108 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         return sensorIsRequested;
     }
 
+    private void toggleRecording() {
+        if (app.isRecording()) {
+            stopRecording();
+        } else {
+            startRecording();
+        }
+    }
+
+    private void startRecording() {
+        if (selectedSensors.isEmpty()) {
+            Snackbar.make(findViewById(android.R.id.content), getString(R.string.select_sensors_first), Snackbar.LENGTH_LONG).show();
+            return;
+        }
+        if (Build.VERSION.SDK_INT < 29) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE);
+                return;
+            }
+        }
+        app.startRecording(selectedSensors);
+        Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show();
+        if (recordingMenuItem != null) {
+            recordingMenuItem.setIcon(R.drawable.save);
+        }
+    }
+
+    private void stopRecording() {
+        String recordingPath = app.stopRecording();
+        if (recordingMenuItem != null) {
+            recordingMenuItem.setIcon(R.drawable.recording);
+        }
+        showRecordingStoppedDialog(recordingPath);
+    }
+
+    private void showRecordingStoppedDialog(String recordingPath) {
+        if (recordingPath == null) {
+            return;
+        }
+        String message = getString(R.string.recording_stopped_dialog_message).replace("[FOLDER_PATH]", recordingPath);
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.recording_stopped_dialog_title)
+                .setMessage(message)
+                .setPositiveButton(R.string.recording_stopped_dialog_view_button, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        openDirectory(recordingPath);
+                    }
+                })
+                .setNegativeButton(R.string.recording_stopped_dialog_close_button, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .show();
+    }
+
+    private void openDirectory(String recordingPath) {
+        boolean opened = false;
+
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            Uri folderUri = Uri.parse("file://" + recordingPath);
+            intent.setDataAndType(folderUri, "*/*");
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+                opened = true;
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Opening directory via view file URI intent failed: " + e.getMessage());
+        }
+
+        if (!opened && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                    opened = true;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Opening directory via get content intent failed: " + e.getMessage());
+            }
+        }
+
+        if (!opened) {
+            View parentLayout = findViewById(android.R.id.content);
+            Snackbar.make(parentLayout, getString(R.string.no_file_manager_found), Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startRecording();
+            } else {
+                Snackbar.make(findViewById(android.R.id.content), getString(R.string.permission_required_for_recording), Snackbar.LENGTH_LONG).show();
+            }
+        }
+    }
+
     /**
      * Sends all available sensor data requests to the assigned nodes
      */
@@ -677,5 +823,4 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         reachabilityDialogs.put(nodeId, reachabilityDialog);
         reachabilityDialog.show();
     }
-
 }
