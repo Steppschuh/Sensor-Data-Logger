@@ -1,5 +1,6 @@
 package net.steppschuh.sensordatalogger;
 
+import android.Manifest;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,26 +13,27 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.appbar.MaterialToolbar;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.wearable.Wearable;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.steppschuh.datalogger.data.DataBatch;
 import net.steppschuh.datalogger.data.DataChangedListener;
-import net.steppschuh.datalogger.data.DataRecorder;
 import net.steppschuh.datalogger.data.request.DataRequest;
 import net.steppschuh.datalogger.data.request.DataRequestResponse;
 import net.steppschuh.datalogger.data.request.SensorDataRequest;
@@ -60,6 +62,7 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
 
     private static final String KEY_SENSOR_DATA_REQUESTS = "sensorDataRequests";
     private static final String KEY_SELECTED_SENSORS = "selectedSensors";
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
     private PhoneApp app;
     private List<MessageHandler> messageHandlers;
@@ -147,9 +150,9 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         getMenuInflater().inflate(R.menu.main_menu, menu);
         recordingMenuItem = menu.findItem(R.id.action_record);
         if (app.isRecording()) {
-            recordingMenuItem.setIcon(R.drawable.ic_pause_black_48dp);
+            recordingMenuItem.setIcon(R.drawable.save);
         } else {
-            recordingMenuItem.setIcon(R.drawable.ic_record_black_24dp);
+            recordingMenuItem.setIcon(R.drawable.recording);
         }
         return true;
     }
@@ -576,41 +579,93 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
             Snackbar.make(findViewById(android.R.id.content), getString(R.string.select_sensors_first), Snackbar.LENGTH_LONG).show();
             return;
         }
-
+        if (Build.VERSION.SDK_INT < 29) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE);
+                return;
+            }
+        }
         app.startRecording(selectedSensors);
-
+        Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show();
         if (recordingMenuItem != null) {
-            recordingMenuItem.setIcon(R.drawable.ic_pause_black_48dp);
+            recordingMenuItem.setIcon(R.drawable.save);
         }
     }
 
     private void stopRecording() {
-        java.io.File recordingDirectory = app.stopRecording();
-
+        String recordingPath = app.stopRecording();
         if (recordingMenuItem != null) {
-            recordingMenuItem.setIcon(R.drawable.ic_record_black_24dp);
+            recordingMenuItem.setIcon(R.drawable.recording);
         }
-        showRecordingStoppedDialog(recordingDirectory);
+        showRecordingStoppedDialog(recordingPath);
     }
 
-    private void showRecordingStoppedDialog(java.io.File recordingDirectory) {
-        if (recordingDirectory == null) {
+    private void showRecordingStoppedDialog(String recordingPath) {
+        if (recordingPath == null) {
             return;
         }
-        String message = getString(R.string.recording_stopped_dialog_message).replace("[FOLDER_PATH]", recordingDirectory.getAbsolutePath());
+        String message = getString(R.string.recording_stopped_dialog_message).replace("[FOLDER_PATH]", recordingPath);
         new AlertDialog.Builder(this)
                 .setTitle(R.string.recording_stopped_dialog_title)
                 .setMessage(message)
-                .setPositiveButton(R.string.recording_stopped_dialog_positive_button, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.recording_stopped_dialog_view_button, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setDataAndType(Uri.fromFile(recordingDirectory), "*/*");
-                        if (intent.resolveActivity(getPackageManager()) != null) {
-                            startActivity(intent);
-                        }
+                        openDirectory(recordingPath);
+                    }
+                })
+                .setNegativeButton(R.string.recording_stopped_dialog_close_button, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
                     }
                 })
                 .show();
+    }
+
+    private void openDirectory(String recordingPath) {
+        boolean opened = false;
+
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            Uri folderUri = Uri.parse("file://" + recordingPath);
+            intent.setDataAndType(folderUri, "*/*");
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+                opened = true;
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Opening directory via view file URI intent failed: " + e.getMessage());
+        }
+
+        if (!opened && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                    opened = true;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Opening directory via get content intent failed: " + e.getMessage());
+            }
+        }
+
+        if (!opened) {
+            View parentLayout = findViewById(android.R.id.content);
+            Snackbar.make(parentLayout, getString(R.string.no_file_manager_found), Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startRecording();
+            } else {
+                Snackbar.make(findViewById(android.R.id.content), getString(R.string.permission_required_for_recording), Snackbar.LENGTH_LONG).show();
+            }
+        }
     }
 
     /**
@@ -768,5 +823,4 @@ public class PhoneActivity extends AppCompatActivity implements DataChangedListe
         reachabilityDialogs.put(nodeId, reachabilityDialog);
         reachabilityDialog.show();
     }
-
 }

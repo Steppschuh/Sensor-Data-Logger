@@ -17,7 +17,10 @@
     <string name="no_sensors_available">No sensors available</string>
     <string name="action_record">Record</string>
     <string name="select_sensors_first">Select sensors first</string>
+    <string name="permission_required_for_recording">Storage permission is required to save sensor data recordings</string>
     <string name="recording_stopped_dialog_title">Recording stopped</string>
-    <string name="recording_stopped_dialog_message">Your recordings have been saved to:\n[FOLDER_PATH]</string>
-    <string name="recording_stopped_dialog_positive_button">Open directory</string>
+    <string name="recording_stopped_dialog_message">Recordings have been saved to your Documents directory at:\n\n[FOLDER_PATH]</string>
+    <string name="recording_stopped_dialog_view_button">Open directory</string>
+    <string name="recording_stopped_dialog_close_button">Got it</string>
+    <string name="no_file_manager_found">No file manager app found</string>
 </resources>

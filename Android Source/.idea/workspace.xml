@@ -17,6 +17,11 @@
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/mobile/src/main/res/menu/main_menu.xml">
+        <config>
+          <theme>@android:style/Theme.Material.Light</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/wear/src/main/res/layout/main_activity_wear.xml">
         <config>
           <theme>@android:style/Theme.DeviceDefault.Light</theme>
@@ -32,23 +37,52 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf6b13e8-2a93-4bd1-ac77-6e3ab7bd0eaf" name="Default" comment="Improved sensor selection dialog">
-      <change afterPath="$PROJECT_DIR$/mobile/src/main/res/values-v21/styles.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile/src/main/res/values-v23/styles.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile/src/main/res/values-v31/styles.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile/src/main/res/drawable/recording.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile/src/main/res/drawable/save.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile/src/main/res/drawable/sensors.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datalogger/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/datalogger/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datalogger/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/datalogger/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/MobileApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/MobileApp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/service/StatusNotification.java" beforeDir="false" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/service/StatusNotification.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRecorder.java" beforeDir="false" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRecorder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/DataRecorder.java" beforeDir="false" afterPath="$PROJECT_DIR$/datalogger/src/main/java/net/steppschuh/datalogger/data/DataRecorder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/PhoneActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/PhoneActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/VisualizationCardView.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/VisualizationCardView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/chart/ChartView.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/src/main/java/net/steppschuh/sensordatalogger/ui/visualization/chart/ChartView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_add_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_assessment_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_av_timer_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_clear_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_cloud_download_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_done_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_equalizer_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_error_outline_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_expand_less_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_expand_more_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_filter_1_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_filter_2_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_filter_3_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_folder_open_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_format_list_numbered_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_grain_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_list_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_more_horiz_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_pause_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_play_arrow_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_record_black_24dp.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_remove_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_settings_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_tablet_android_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_timeline_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_timer_10_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_timer_3_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_timer_black_48dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/drawable/ic_timer_off_black_48dp.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/src/main/res/layout/activity_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/layout/visualization_card.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/src/main/res/layout/visualization_card.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/menu/main_menu.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/src/main/res/menu/main_menu.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/values-v21/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/src/main/res/values-v21/styles.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/values-v23/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/src/main/res/values-v23/styles.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/src/main/res/values/styles.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wear/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/wear/build.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,7 +98,7 @@
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/Users/steppschuh/.android/avd/Pixel_6_API_33.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/Users/steppschuh/.android/avd/Pixel_8_API_35.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -4893,6 +4927,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Android App.mobile.executor": "Run",
+    "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -5395,6 +5430,17 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
       <collection />
@@ -5820,12 +5866,12 @@
         </entry>
         <entry key="net.steppschuh.sensordatalogger">
           <value>
-            <CheckInfo lastCheckTimestamp="1754684332730" />
+            <CheckInfo lastCheckTimestamp="1758209753450" />
           </value>
         </entry>
         <entry key="net.steppschuh.sensordatalogger.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1754684332729" />
+            <CheckInfo lastCheckTimestamp="1758209753450" />
           </value>
         </entry>
       </map>

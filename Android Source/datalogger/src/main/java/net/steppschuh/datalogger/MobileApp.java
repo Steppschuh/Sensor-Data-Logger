@@ -248,13 +248,13 @@ public class MobileApp extends MultiDexApplication implements MessageApi.Message
         dataRecorder.start(selectedSensors);
     }
 
-    public java.io.File stopRecording() {
+    public String stopRecording() {
         if (!isRecording()) {
             return null;
         }
-        java.io.File recordingDirectory = dataRecorder.getRecordingDirectory();
+        String recordingPath = dataRecorder.getRecordingPath();
         dataRecorder.stop();
         dataRecorder = null;
-        return recordingDirectory;
+        return recordingPath;
     }
 }

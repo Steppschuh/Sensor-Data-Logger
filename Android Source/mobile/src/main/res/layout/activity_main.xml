@@ -63,17 +63,16 @@
 
         </ScrollView>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floadtingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_margin="16dp"
-            android:clickable="true"
-            android:tint="@android:color/white"
-            android:src="@drawable/ic_list_black_48dp" />
-
     </RelativeLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floadtingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:tint="@android:color/white"
+        android:src="@drawable/sensors" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -66,6 +66,9 @@ public class VisualizationCardView extends RelativeLayout {
         OnClickListener previousDimensionClickedListener = new OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (data == null || data.getDataBatch() == null || data.getDataBatch().getNewestData() == null) {
+                    return;
+                }
                 int current = chartView.getCurrentDataDimension();
                 int breakIndex = 0;
                 if (current == breakIndex && chartView.getDataDimension() != ChartView.DATA_DIMENSION_ALL) {
@@ -81,6 +84,9 @@ public class VisualizationCardView extends RelativeLayout {
         OnClickListener nextDimensionClickedListener = new OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (data == null || data.getDataBatch() == null || data.getDataBatch().getNewestData() == null) {
+                    return;
+                }
                 int current = chartView.getCurrentDataDimension();
                 int breakIndex = data.getDataBatch().getNewestData().getValues().length - 1;
                 if (current == breakIndex && chartView.getDataDimension() != ChartView.DATA_DIMENSION_ALL) {
@@ -115,8 +121,13 @@ public class VisualizationCardView extends RelativeLayout {
                 return;
             }
 
+            // Additional safety check for values array
+            float[] latestValues = data.getDataBatch().getNewestData().getValues();
+            if (latestValues == null || latestValues.length == 0) {
+                return;
+            }
+
             if (showDimensionValues) {
-                float[] latestValues = data.getDataBatch().getNewestData().getValues();
                 String[] lastestReadableValues = new String[latestValues.length];
                 for (int valueIndex = 0; valueIndex < latestValues.length; valueIndex++) {
                     lastestReadableValues[valueIndex] = String.format("%.02f", latestValues[valueIndex]);
@@ -124,10 +135,27 @@ public class VisualizationCardView extends RelativeLayout {
                 if (chartView.getDataDimension() == ChartView.DATA_DIMENSION_ALL) {
                     valueCenterTextView.setText(chartView.getCurrentDimensionName());
                 } else {
-                    valueCenterTextView.setText(lastestReadableValues[chartView.getCurrentDataDimension()]);
+                    int currentDimension = chartView.getCurrentDataDimension();
+                    if (currentDimension >= 0 && currentDimension < lastestReadableValues.length) {
+                        valueCenterTextView.setText(lastestReadableValues[currentDimension]);
+                    } else {
+                        valueCenterTextView.setText("N/A");
+                    }
                 }
-                valueRightTextView.setText(lastestReadableValues[chartView.getNextDataDimension()]);
-                valueLeftTextView.setText(lastestReadableValues[chartView.getPreviousDataDimension()]);
+
+                int nextDimension = chartView.getNextDataDimension();
+                if (nextDimension >= 0 && nextDimension < lastestReadableValues.length) {
+                    valueRightTextView.setText(lastestReadableValues[nextDimension]);
+                } else {
+                    valueRightTextView.setText("N/A");
+                }
+
+                int previousDimension = chartView.getPreviousDataDimension();
+                if (previousDimension >= 0 && previousDimension < lastestReadableValues.length) {
+                    valueLeftTextView.setText(lastestReadableValues[previousDimension]);
+                } else {
+                    valueLeftTextView.setText("N/A");
+                }
             } else {
                 valueCenterTextView.setText(chartView.getCurrentDimensionName());
                 valueRightTextView.setText(ChartView.getDimensionName(chartView.getNextDataDimension()));

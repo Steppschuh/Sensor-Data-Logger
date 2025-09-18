@@ -1,13 +1,13 @@
 <resources>
 
     <!-- Base application theme for API 21+ -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
-        <item name="windowActionBar">true</item>
-        <item name="windowNoTitle">false</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
